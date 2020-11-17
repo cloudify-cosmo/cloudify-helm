@@ -1,0 +1,29 @@
+nameOverride: ""
+fullnameOverride: ""
+
+namespace: ""
+
+image:
+  repository: "cloudifyplatform/community-cloudify-manager-aio"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: None
+  name: cloudify-manager-service
+  ui_http:
+    port: 80
+  ui_https:
+    port: 443
+  rabbitmq:
+    port: 5671
+  internal_rest:
+    port: 53333
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
