@@ -41,5 +41,3 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: "2Gi"
-      nodeSelector:
-        instance-type: spot

@@ -9,7 +9,7 @@ image:
   pullPolicy: IfNotPresent
 
 service:
-  type: None
+  type: LoadBalancer
   name: cloudify-manager-service
   ui_http:
     port: 80
