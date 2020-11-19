@@ -1,0 +1,27 @@
+nameOverride: ""
+fullnameOverride: ""
+
+namespace: ""
+
+image:
+  repository: "cloudifyplatform/community-cloudify-manager-worker"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClustereIP
+  name: cloudify-manager-worker-service
+  ui_http:
+    port: 80
+  ui_https:
+    port: 443
+  internal_rest:
+    port: 53333
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

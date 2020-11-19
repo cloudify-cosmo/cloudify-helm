@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cloudify-manager-worker.name" . }}
+  labels:
+    name: {{ template "cloudify-manager-worker.name" . }}
+{{ include "cloudify-manager-worker.labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "cloudify-manager-worker.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "cloudify-manager-worker.name" . }}
+    spec:
+      containers:
+      - name: {{ template "cloudify-manager-worker.name" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        volumeMounts:
+        - mountPath: /run
+          name: run
+        - mountPath: /run/lock
+          name: runlock
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+          readOnly:  true
+        securityContext:
+          capabilities:
+            add: ["SYS_ADMIN"]
+      volumes:
+      - name: cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+      - name: run
+        emptyDir:
+          medium: Memory
+          sizeLimit: "2Gi"
+      - name: runlock
+        emptyDir:
+          medium: Memory
+          sizeLimit: "2Gi"

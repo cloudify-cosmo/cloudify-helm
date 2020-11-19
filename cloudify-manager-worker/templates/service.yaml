@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+{{ include "cloudify-manager-aio.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.ui_http.port }}
+      targetPort: {{ .Values.service.ui_http.port }}
+      protocol: TCP
+      name: http
+    - port: {{ .Values.service.ui_https.port }}
+      targetPort: {{ .Values.service.ui_https.port }}
+      protocol: TCP
+      name: https
+    - port: {{ .Values.service.internal_rest.port }}
+      targetPort: {{ .Values.service.internal_rest.port }}
+      protocol: TCP
+      name: internal-rest
+  selector:
+    app: {{ template "cloudify-manager-worker.name" . }}
