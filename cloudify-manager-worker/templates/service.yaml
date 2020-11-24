@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Values.service.name }}
   labels:
-{{ include "cloudify-manager-aio.labels" . | indent 4 }}
+{{ include "cloudify-manager-worker.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

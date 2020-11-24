@@ -4,12 +4,12 @@ fullnameOverride: ""
 namespace: ""
 
 image:
-  repository: "cloudifyplatform/community-cloudify-manager-worker"
+  repository: "cloudifyplatform/premium-cloudify-manager-worker"
   tag: "latest"
   pullPolicy: IfNotPresent
 
 service:
-  type: ClustereIP
+  type: ClusterIP
   name: cloudify-manager-worker-service
   ui_http:
     port: 80
