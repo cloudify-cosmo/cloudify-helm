@@ -5,8 +5,22 @@ namespace: ""
 
 image:
   repository: "cloudifyplatform/premium-cloudify-manager-worker"
-  tag: "latest"
-  pullPolicy: IfNotPresent
+  tag: "5.1.1"
+  pull_policy: Always
+
+db:
+  host: postgres-postgresql.cfy-helm.svc.cluster.local
+  cloudify_db_name: 'cloudify_db'
+  cloudify_username: 'cloudify'
+  cloudify_password: 'cloudify'
+  server_db_name: 'postgres'
+  server_username: 'postgres'
+  server_password: 'postgres_password'
+
+queue:
+  host: rabbitmq.cfy-helm.svc.cluster.local
+  username: 'cfy_user'
+  password: 'rabbit_password'
 
 service:
   type: ClusterIP

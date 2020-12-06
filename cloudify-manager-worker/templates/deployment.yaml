@@ -18,6 +18,7 @@ spec:
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         volumeMounts:
         - mountPath: /run
           name: run
@@ -26,12 +27,33 @@ spec:
         - mountPath: /sys/fs/cgroup
           name: cgroup
           readOnly:  true
+        - name: cloudify-config
+          mountPath: /tmp/cloudify/config.yaml
+          subPath: config.yaml
+        - name: systemd-script
+          mountPath: /tmp/cloudify/script.sh
+          subPath: script.sh
+        - name: systemd-unit
+          mountPath: /etc/systemd/system/cfybefore.service
+          subPath: cfybefore.service
+        - name: systemd-unit
+          mountPath: /etc/systemd/system/multi-user.target.wants/cfybefore.service
+          subPath: cfybefore.service
+        - name: one-key
+          mountPath: /tmp/cloudify/one-key.pem
+          subPath: one-key.pem
+        - name: one-cert
+          mountPath: /tmp/cloudify/one-cert.pem
+          subPath: one-cert.pem
+        - name: ca-cert
+          mountPath: /tmp/cloudify/ca-cert.pem
+          subPath: ca-cert.pem
         securityContext:
           capabilities:
             add: ["SYS_ADMIN"]
       volumes:
       - name: cgroup
-        hostPath:
+        hostPath: 
           path: /sys/fs/cgroup
       - name: run
         emptyDir:
@@ -41,3 +63,33 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: "2Gi"
+      - name: cloudify-config
+        configMap:
+          name: cloudify-config
+      - name: systemd-script
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: systemd-script
+      - name: systemd-unit
+        configMap:
+          name: systemd-unit
+      - name: one-key
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: one-key
+      - name: one-cert
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: one-cert
+      - name: ca-cert
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: ca-cert
