@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: one-key
+data:
+  one-key.pem: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCZS+PEMmj9bczc
+    dFPxukDnPv4983BWlAT0SUHzBuoyTaPsN6pnOq9ieZBIhotknXFKk4jlpmb2lAYm
+    +n4tgTS3FCAqfqWf1jCWpBI7cewGmDvU2CuJgbAo2leg2Om97zHDTL9FX0BgTEnR
+    NAZQOzclQiQiTUV/w68vt5Q/ZQ0aWr2NVskcopsfVe/2jx9Fvq4rTDKOjsHzue/7
+    SGSMK2qn4vWZIoKscb/fPtWp9Xqb2Xn16pRQuCJL66t8NE2wAykhkno0pQxHKb+z
+    eFmjGt64OTBZLtJ9J6ESkDbfpsmBTTsIvjFf4yh58bPc9pZtFl2rQRLcQaLPJT8w
+    2BX+Skn/AgMBAAECggEBAInOmjPO6Wkh4u8vuCLvP9diXqYMiSmbqRR+IsY5qiGM
+    gFci95ITRIUvKRC5uue5TZYwKPnh7F+wVBOIThPUOjJ26i+paHTW1Rkm56j+0aJg
+    CjFeH01fA6DGH85eEUqIk+CwxqWzaijni9iAf0hy4zEgU2Fuu5KOtJcd3ixbSDsu
+    gUwcWKhhhiySMZsT1D51JmLNr4RUHgwayD72R+Z36s58/dDYJCmazq+WnDW4LMZ+
+    r2zEuH/AWtLU+4hHsxeq1ZSedFVQmd3EJ3pGwxWNW9NZ0L46gUCiYkpBqkOHu16N
+    asb6fzDf0Ixxw7xu7w9GAgDfMAWgQre3AAgHqYNGP2kCgYEAyZOFEhKLkxIohXsP
+    PBdim1h8UhdpJm0SzMuX8eR5Hyc5goQbCZg8S0kiwi/rs9ckBfOqg7XKgn5daU5T
+    vg9HbSn6BirzlPjaopZ8OfC1JkaTOFVtdzqMZRKbc7pW693i3LIuxajYDGMCUTOH
+    ixnM1etakFGfYMvE6/ud6ZDlbS0CgYEAwq9h5CPPBQkUB7+mAcDDIV4B2Z4ERgYP
+    fKfsl0p4Vj4FEVLWC7kq2ymtXDOc+CqjNBe3EjuL4ll7aEKAyBWB+egZqMbu5fbw
+    a87cVjg4YFCifORbAax3fr1vWjUQQZYdmqBsgGw+jjmXZdVArIvGbKT+bTYoHspu
+    3qIz8uRpR1sCgYBsNiNjtkzzYPYb4holmjA3UOM8dpDeLgO/qTQiiRJ0pOv8osqY
+    9f64M8TTFkKkQsR15X8OQdM7BndDBudxymX/tl8gXIJy4L0ON1btC8lTiOOThFjF
+    fsrLn5eQIuJysKUO8SCmv6Nr0uL1kIIdLHaICFaPzyGOJxXJ0UPOlRh06QKBgHU2
+    5vdW3/OmLZsktixkBJf4Y6DEVMpcJ8Ljz7yfJ6i1GpP9jcXtLHJbu3bB1IZOFYjt
+    plmh5GzZd0WklKji2ii+p4RIkdl/Pe2K1HpMyxSiN9J+IpT1Y9S49WwYersiSJyq
+    bek8QsWawx6asJ+yYDtVc6IJc0pmky4T9rcM8p31AoGAR1hRkVjcnrCz9cEEQx7h
+    gqb8vNy5Ka01bzr0KaI1jy3lHOVOcQ7Iv89idzQkpSmDyBVehb/2wIxC8+QcfXWd
+    INyaDoSa2sUmyDi7N3bBehBUs5r5snola/2WJ8454/5Rl3nn9NQthSwUiifCSG1L
+    dfK8gz7xvsFS9Z3tLdyym2Q=
+    -----END PRIVATE KEY-----
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: one-cert
+data:
+  one-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIDlDCCAnygAwIBAgIJAMHozfpfuHbjMA0GCSqGSIb3DQEBCwUAMCkxJzAlBgNV
+    BAMMHkNsb3VkaWZ5IGdlbmVyYXRlZCBjZXJ0aWZpY2F0ZTAeFw0yMDEyMDExMzEw
+    MDJaFw0zMDExMjkxMzEwMDJaMDkxNzA1BgNVBAMMLnBvc3RncmVzLXBvc3RncmVz
+    cWwuY2Z5LWhlbG0uc3ZjLmNsdXN0ZXIubG9jYWwwggEiMA0GCSqGSIb3DQEBAQUA
+    A4IBDwAwggEKAoIBAQCZS+PEMmj9bczcdFPxukDnPv4983BWlAT0SUHzBuoyTaPs
+    N6pnOq9ieZBIhotknXFKk4jlpmb2lAYm+n4tgTS3FCAqfqWf1jCWpBI7cewGmDvU
+    2CuJgbAo2leg2Om97zHDTL9FX0BgTEnRNAZQOzclQiQiTUV/w68vt5Q/ZQ0aWr2N
+    VskcopsfVe/2jx9Fvq4rTDKOjsHzue/7SGSMK2qn4vWZIoKscb/fPtWp9Xqb2Xn1
+    6pRQuCJL66t8NE2wAykhkno0pQxHKb+zeFmjGt64OTBZLtJ9J6ESkDbfpsmBTTsI
+    vjFf4yh58bPc9pZtFl2rQRLcQaLPJT8w2BX+Skn/AgMBAAGjga4wgaswCQYDVR0T
+    BAIwADAfBgNVHSMEGDAWgBS40ggo/lu56sMqWIqvQqnUo5FDvDAdBgNVHQ4EFgQU
+    TKOVF4a0bT7zarVzS04CEYUYn5YwXgYDVR0RBFcwVYIjcmFiYml0bXEuY2Z5LWhl
+    bG0uc3ZjLmNsdXN0ZXIubG9jYWyCLnBvc3RncmVzLXBvc3RncmVzcWwuY2Z5LWhl
+    bG0uc3ZjLmNsdXN0ZXIubG9jYWwwDQYJKoZIhvcNAQELBQADggEBAGMs2LZKxL6j
+    ZiUIjX9MKDvPKe9gKWtRPZBzLC38Q2p+KIN6HJBZ7J0wEOz59EFO4rWpeqsGBUcS
+    OivR5XvfYtAs+P+sii6aWRTlZ01D+QHynWa5/O9bSq4R2agnTrscGSeFDJf8JIrn
+    +ImOqLfNAZbs2lXrJXYZqxTVAomI5czfW3I2Q4Se8L7vJwd2jLU2qSYmjhY9Ij9w
+    LCF8Gnx4eFqSryFJYw1OFeD3v+/bpl/mQcEhJ/pBeadcaPcoWEdawkMgxysn0RJ7
+    9CMVcQtJYRW/633io/z4aP85fSiLITSszofo1s+0Y0JE+RMHQJSyUfUoOk4g5gGN
+    pN8y+3FzuKM=
+    -----END CERTIFICATE-----
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: ca-cert
+data:
+  ca-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIDBDCCAeygAwIBAgIJALShICPKO85mMA0GCSqGSIb3DQEBCwUAMCkxJzAlBgNV
+    BAMMHkNsb3VkaWZ5IGdlbmVyYXRlZCBjZXJ0aWZpY2F0ZTAeFw0yMDEyMDExMzEw
+    MDFaFw0zMDExMjkxMzEwMDFaMCkxJzAlBgNVBAMMHkNsb3VkaWZ5IGdlbmVyYXRl
+    ZCBjZXJ0aWZpY2F0ZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANNr
+    F/kvG1IwNe2KOrmnboBX7b9HSrVIeMeK7lt5Ln++PR84WFRHtmIl922PDft5OEE1
+    OuD3REvfnITSA0vAbLI8YUaGPpCKWHs/DzqlkjOb84xSDkeA2vZrTiCnviqVLo4K
+    XtEIixtPWY0UisfuOBp+2EokE0PouwrjyNI+WLGVc632HNKVM8tDnxyYlBRZsl4K
+    ptk94287XMcjMNq1EjPTot6KfDRQqxyLaX9vJmbOuJHnTTLN9rEH3aHuCqLJizHZ
+    eEY2lZSUQrYz3K1uAMbwhcfRJhkhLNkhgOPcVC+x4BEhwzK5EyN8moforiJqdgWI
+    /of11RG3Vle/xazp4CECAwEAAaMvMC0wDAYDVR0TBAUwAwEB/zAdBgNVHQ4EFgQU
+    uNIIKP5buerDKliKr0Kp1KORQ7wwDQYJKoZIhvcNAQELBQADggEBAJmx59P15o86
+    r/g1EuoEfMWx1Qntlqvu4P33AE+stgVJN0ZDBvsPvQJPSdWhXSjYZyKnOv1FEDiE
+    NvtITudk/Za0FNoFS/8gj3U/bXHgnLyo2Ep6Juut0oO2qA98z4SPuNV3O57R3fRj
+    RP3zr/Y2HF7BE6CafVU6jmt9d0iAauqozJ+dUxlvRuwriyfEwC40zUjZaJ6HSGv6
+    mJPzZU1T2E1eAT/38XWh4BtIi/i0BzX++agDzr3mamfdUBzwRqOQjcD45n6DNuiR
+    Qta5vC0d2A35oRSAPGCUmuSKhJeNEcfIoRXJayM8q9hQM8XAHrbdTegI7mnoeARI
+    Z/hVVltj7qw=
+    -----END CERTIFICATE-----
