@@ -94,5 +94,3 @@ spec:
           sources:
           - configMap:
               name: ca-cert
-      nodeSelector:
-        instance-type: spot

@@ -7,7 +7,7 @@ data:
   config.yaml: |
     manager:
       private_ip: {{ .Values.service.host }}
-      public_ip: {{ .Valueblus.service.host }}
+      public_ip: {{ .Values.service.host }}
       hostname: {{ .Values.service.host }}
       cli_local_profile_host_name: {{ .Values.service.host }}
       security:
@@ -64,4 +64,4 @@ data:
     - manager_service
     - monitoring_service
 
-    service_management: systemd
+    service_management: supervisord
