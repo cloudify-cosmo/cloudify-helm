@@ -6,6 +6,10 @@ metadata:
 data:
   config.yaml: |
     manager:
+      private_ip: {{ .Values.service.host }}
+      public_ip: {{ .Valueblus.service.host }}
+      hostname: {{ .Values.service.host }}
+      cli_local_profile_host_name: {{ .Values.service.host }}
       security:
         ssl_enabled: true
         admin_password: admin
@@ -49,10 +53,9 @@ data:
       ca_cert_path: /etc/cloudify/ca.pem
       internal_cert_path: /etc/cloudify/cert.pem
       internal_key_path: /etc/cloudify/key.pem
-      external_cert_path: /etc/cloudify/external_cert.pem
-      external_key_path: /etc/cloudify/external_key.pem
+      external_cert_path: /etc/cloudify/external-cert.pem
+      external_key_path: /etc/cloudify/external-key.pem
       external_ca_cert_path: /etc/cloudify/ca.pem
-
 
     validations:
       skip_validations: true
@@ -61,4 +64,4 @@ data:
     - manager_service
     - monitoring_service
 
-    service_management: supervisord
+    service_management: systemd

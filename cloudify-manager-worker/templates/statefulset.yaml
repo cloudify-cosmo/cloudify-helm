@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "cloudify-manager-worker.name" . }}
   labels:
@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: {{ template "cloudify-manager-worker.name" . }}
+  serviceName: {{ .Values.service.name }}
   template:
     metadata:
       labels:
@@ -93,3 +94,5 @@ spec:
           sources:
           - configMap:
               name: ca-cert
+      nodeSelector:
+        instance-type: spot

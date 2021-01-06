@@ -4,7 +4,7 @@ fullnameOverride: ""
 namespace: ""
 
 image:
-  repository: "cloudifyplatform/premium-cloudify-manager-worker"
+  repository: "263721492972.dkr.ecr.eu-west-1.amazonaws.com/premium-cloudify-manager-worker"
   tag: "5.1.1"
   pull_policy: Always
 
@@ -15,16 +15,17 @@ db:
   cloudify_password: 'cloudify'
   server_db_name: 'postgres'
   server_username: 'postgres'
-  server_password: 'postgres_password'
+  server_password: 'cfy_test_pass'
 
 queue:
   host: rabbitmq.cfy-helm.svc.cluster.local
   username: 'cfy_user'
-  password: 'rabbit_password'
+  password: 'cfy_test_pass'
 
 service:
+  host: cloudify-manager-worker.cfy-helm.svc.cluster.local
   type: ClusterIP
-  name: cloudify-manager-worker-service
+  name: cloudify-manager-worker
   ui_http:
     port: 80
   ui_https:
