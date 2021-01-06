@@ -37,15 +37,18 @@ helm install --dry-run cloudify-manager-aio ./cloudify-manager-aio
 helm template ./cloudify-manager-aio
 
 
-# cloudify manager worker
+
+# Cloudify manager worker
+
 
 ## Cloudify manager solution for 3 layers includes:
 
-  * One cloudify manager worker: 1 Pod +  1 Deployment + 1 Service
+  * One cloudify manager worker: Pod with Statefulset
 
-  * One external DB (Postgres)
+  * One external DB, for POC used Bitnami's postgres helm chart
 
-  * One external QUEUE (RabbitMQ)
+  * One external QUEUE, for POC used Bitnami's rabbitmq helm chart
+
 
 ## SSL certificates must be provided - at least 3 certs:
 
@@ -55,21 +58,22 @@ helm template ./cloudify-manager-aio
 
 * one-cert.pem, crt used for internal/external/db/queue ssl_inputs
 
+
 ## Create certificates using cloudify manager:
 
 ```
 cfy_manager generate-test-cert -s 'cloudify-manager-worker.cfy-helm.svc.cluster.local,rabbitmq.cfy-helm.svc.cluster.local,postgres-postgresql.cfy-helm.svc.cluster.local'
 ```
 
-## Install PostgreSQL to Kubernetes cluster with helm
+## Install PostgreSQL(bitnami) to Kubernetes cluster with helm
 
-Create secret with certificates to be used by helm chart:
+Create k8s secret (postgresql-certs) with certificates to be used by helm chart:
 
 ```
 kubectl create secret generic postgresql-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt 
 ```
 
-Use created certificates in postgress-values.yaml
+Use created certificates in postgress-values.yaml (values file of bitnami's postgress)
 
 ```
 volumePermissions.enabled=true
@@ -85,16 +89,16 @@ tls:
 helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/postgres-values.yaml -n cfy-helm
 ```
 
-## Install RabbitMQ to Kubernetes cluster with helm
+## Install RabbitMQ(bitnami) to Kubernetes cluster with helm
 
-Create secret with certificates to be used by helm chart:
+Create k8s secret (rabbitmq-certs) with certificates to be used by helm chart:
 
 ```
 kubectl create secret generic rabbitmq-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt 
   certKeyFilename: 'tls.key'
 ```
 
-Use created certificates in rabbitmq-values.yaml
+Use created certificates in rabbitmq-values.yaml (values file of bitnami's rabbitmq)
 
 ```
 tls:
@@ -139,7 +143,7 @@ cd cloudify-helm
 kubectl create ns cfy-manager-worker
 ```
 
-First certificated must be added to certificates.yaml, you need at least 3 certs( I explained how to generate them above):
+First certificated must be replaced in certificates.yaml, you need at least 3 certs( I explained how to generate them above):
 
 ca.pem
 
