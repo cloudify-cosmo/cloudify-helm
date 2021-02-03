@@ -13,7 +13,7 @@ data:
 
     if [ -f "$FILE" ]; then
       cp -a --verbose "$CLOUDIFY_DATA_DIR/config.yaml" /etc/cloudify/config.yaml
-      cp -a --verbose "$CLOUDIFY_DATA_DIR/ssl" /etc/cloudify/ssl
+      cp -a --verbose "$CLOUDIFY_DATA_DIR/ssl" /etc/cloudify
     else 
         echo "Copy config"
         rm -f /etc/cloudify/config.yaml

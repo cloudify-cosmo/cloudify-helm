@@ -40,6 +40,15 @@ spec:
         - name: systemd-before-unit
           mountPath: /etc/systemd/system/multi-user.target.wants/cfybefore.service
           subPath: cfybefore.service
+        - name: systemd-after-script
+          mountPath: /tmp/cloudify/after_script.sh
+          subPath: after_script.sh
+        - name: systemd-after-unit
+          mountPath: /etc/systemd/system/cfyafter.service
+          subPath: cfyafter.service
+        - name: systemd-after-unit
+          mountPath: /etc/systemd/system/multi-user.target.wants/cfyafter.service
+          subPath: cfyafter.service
         - name: one-key
           mountPath: /tmp/cloudify/one-key.pem
           subPath: one-key.pem
@@ -78,6 +87,15 @@ spec:
       - name: systemd-before-unit
         configMap:
           name: cfy-before-unit
+      - name: systemd-after-script
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: cfy-after-script
+      - name: systemd-after-unit
+        configMap:
+          name: cfy-after-unit
       - name: one-key
         projected:
           defaultMode: 0754

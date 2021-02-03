@@ -11,8 +11,8 @@ data:
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
 
     if [ -f "$FILE" ]; then
+      echo "Init flag exists!"
     else 
-        cfy_manager wait-for-starter
         echo "Copy data to Persitent Volume"
 
         cp -a --verbose /etc/cloudify/ssl $CLOUDIFY_DATA_DIR
