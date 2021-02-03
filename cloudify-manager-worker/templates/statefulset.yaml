@@ -49,6 +49,8 @@ spec:
         - name: ca-cert
           mountPath: /tmp/cloudify/ca-cert.pem
           subPath: ca-cert.pem
+        - mountPath: /mnt/cloudify-data
+          name: cloudify-data
         securityContext:
           capabilities:
             add: ["SYS_ADMIN"]
@@ -94,3 +96,14 @@ spec:
           sources:
           - configMap:
               name: ca-cert
+      nodeSelector:
+        instance-type: spot
+  volumeClaimTemplates:
+  - metadata:
+      name: cloudify-data
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "8Gi"

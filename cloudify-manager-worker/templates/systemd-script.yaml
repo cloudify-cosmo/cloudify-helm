@@ -6,23 +6,25 @@ metadata:
 data:
   script.sh: |
     #!/usr/bin/env bash
-    echo "Copy config and certs!"
     
+    echo "Copy config"
     rm -f /etc/cloudify/config.yaml
     cp  /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
     sudo chown cfyuser /etc/cloudify/config.yaml
     
-    cp /tmp/cloudify/one-key.pem /etc/cloudify/postgres-client-key.pem
-    cp /tmp/cloudify/one-key.pem /etc/cloudify/key.pem
-    cp /tmp/cloudify/one-key.pem /etc/cloudify/external-key.pem
-
-    cp /tmp/cloudify/one-cert.pem /etc/cloudify/postgres-client-cert.pem
-    cp /tmp/cloudify/ca-cert.pem /etc/cloudify/postgresql-ca-cert.pem
-    cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ca.pem
-    cp /tmp/cloudify/one-cert.pem /etc/cloudify/cert.pem
-    cp /tmp/cloudify/one-cert.pem /etc/cloudify/external-cert.pem
-
     mkdir -p /etc/cloudify/ssl
+    
+    echo "Copy certificates"
+    cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/postgres-client-key.pem
+    cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/key.pem
+    cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/external-key.pem
+
+    cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/postgres-client-cert.pem
+    cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/postgresql-ca-cert.pem
+    cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/ca.pem
+    cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/cert.pem
+    cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/external-cert.pem
+
     cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/postgresql_ca.crt
     sudo chown cfyuser /etc/cloudify/ssl/postgresql_ca.crt
 
