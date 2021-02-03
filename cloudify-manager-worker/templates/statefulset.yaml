@@ -31,13 +31,13 @@ spec:
         - name: cloudify-config
           mountPath: /tmp/cloudify/config.yaml
           subPath: config.yaml
-        - name: systemd-script
-          mountPath: /tmp/cloudify/script.sh
-          subPath: script.sh
-        - name: systemd-unit
+        - name: systemd-before-script
+          mountPath: /tmp/cloudify/before_script.sh
+          subPath: before_script.sh
+        - name: systemd-before-unit
           mountPath: /etc/systemd/system/cfybefore.service
           subPath: cfybefore.service
-        - name: systemd-unit
+        - name: systemd-before-unit
           mountPath: /etc/systemd/system/multi-user.target.wants/cfybefore.service
           subPath: cfybefore.service
         - name: one-key
@@ -69,15 +69,15 @@ spec:
       - name: cloudify-config
         configMap:
           name: cloudify-config
-      - name: systemd-script
+      - name: systemd-before-script
         projected:
           defaultMode: 0754
           sources:
           - configMap:
-              name: systemd-script
-      - name: systemd-unit
+              name: cfy-before-script
+      - name: systemd-before-unit
         configMap:
-          name: systemd-unit
+          name: cfy-before-unit
       - name: one-key
         projected:
           defaultMode: 0754
