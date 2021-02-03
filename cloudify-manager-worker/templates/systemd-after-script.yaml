@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: cfy-after-script
+data:
+  after_script.sh: |
+    #!/usr/bin/env bash
+
+    FILE=/mnt/cloudify-data/init-completed
+    CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
+
+    if [ -f "$FILE" ]; then
+    else 
+        cfy_manager wait-for-starter
+        echo "Copy data to Persitent Volume"
+
+        cp -a --verbose /etc/cloudify/ssl $CLOUDIFY_DATA_DIR
+        cp -a --verbose /etc/cloudify/config.yaml $CLOUDIFY_DATA_DIR
+        
+        touch "$CLOUDIFY_DATA_DIR/init-completed"
+    fi
