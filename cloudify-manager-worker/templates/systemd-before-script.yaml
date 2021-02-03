@@ -12,31 +12,58 @@ data:
     mkdir -p /etc/cloudify/ssl
 
     if [ -f "$FILE" ]; then
+      echo "The Data exists on PV - creating symbolic links to files and folders on PV"
+      rm -f /etc/cloudify/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/config.yaml" /etc/cloudify/config.yaml
-      cp -a --verbose "$CLOUDIFY_DATA_DIR/ssl" /etc/cloudify
+
+      echo "Removed unused directory"
+      rm -rf --verbose /etc/cloudify/ssl
+      rm -rf --verbose /opt/manager/resources
+      rm -rf --verbose /opt/mgmtworker/env/plugins
+      rm -rf --verbose /opt/cloudify-stage/dist/userData
+
+      echo "Removed unused files"
+      rm --verbose /opt/mgmtworker/work/admin_token
+      rm --verbose /opt/manager/authorization.conf
+      rm --verbose /opt/manager/rest-security.conf
+      rm --verbose /opt/cloudify-composer/backend/conf/prod.json
+      rm --verbose /opt/cloudify-stage/conf/manager.json
+      
+      echo "Making symbolic links for files"
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/admin_token" /opt/mgmtworker/work/admin_token
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/authorization.conf" /opt/manager/authorization.conf
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/rest-security.conf" /opt/manager/rest-security.conf
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/prod.json" /opt/cloudify-composer/backend/conf/prod.json
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/manager.json" /opt/cloudify-stage/conf/manager.json
+
+      echo "Making symbolic links for directory"
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/ssl" /etc/cloudify/ssl
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/resources" /opt/manager/resources
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/plugins" /opt/mgmtworker/env/plugins
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/userData" /opt/cloudify-stage/dist/userData
     else 
-        echo "Copy config"
-        rm -f /etc/cloudify/config.yaml
-        cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
-        sudo chown cfyuser /etc/cloudify/config.yaml
-        
-        echo "Copy certificates"
-        cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/postgres-client-key.pem
-        cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/key.pem
-        cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/external-key.pem
+      echo "Copy config"
+      rm -f /etc/cloudify/config.yaml
+      cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
+      sudo chown cfyuser /etc/cloudify/config.yaml
+      
+      echo "Copy certificates"
+      cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/postgres-client-key.pem
+      cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/key.pem
+      cp /tmp/cloudify/one-key.pem /etc/cloudify/ssl/external-key.pem
 
-        cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/postgres-client-cert.pem
-        cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/postgresql-ca-cert.pem
-        cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/ca.pem
-        cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/cert.pem
-        cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/external-cert.pem
+      cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/postgres-client-cert.pem
+      cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/postgresql-ca-cert.pem
+      cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/ca.pem
+      cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/cert.pem
+      cp /tmp/cloudify/one-cert.pem /etc/cloudify/ssl/external-cert.pem
 
-        cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/postgresql_ca.crt
-        sudo chown cfyuser /etc/cloudify/ssl/postgresql_ca.crt
+      cp /tmp/cloudify/ca-cert.pem /etc/cloudify/ssl/postgresql_ca.crt
+      sudo chown cfyuser /etc/cloudify/ssl/postgresql_ca.crt
 
-        cp /tmp/cloudify/ca-cert.pem /opt/cloudify-stage/conf/db_ca.crt
-        sudo chown cfyuser /opt/cloudify-stage/conf/db_ca.crt
+      cp /tmp/cloudify/ca-cert.pem /opt/cloudify-stage/conf/db_ca.crt
+      sudo chown cfyuser /opt/cloudify-stage/conf/db_ca.crt
 
-        cp /tmp/cloudify/ca-cert.pem /opt/cloudify-composer/backend/conf/db_ca.crt
-        sudo chown cfyuser /opt/cloudify-composer/backend/conf/db_ca.crt
+      cp /tmp/cloudify/ca-cert.pem /opt/cloudify-composer/backend/conf/db_ca.crt
+      sudo chown cfyuser /opt/cloudify-composer/backend/conf/db_ca.crt
     fi
