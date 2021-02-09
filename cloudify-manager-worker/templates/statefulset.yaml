@@ -25,30 +25,21 @@ spec:
           name: run
         - mountPath: /run/lock
           name: runlock
-        - mountPath: /sys/fs/cgroup
-          name: cgroup
-          readOnly:  true
         - name: cloudify-config
           mountPath: /tmp/cloudify/config.yaml
           subPath: config.yaml
-        - name: systemd-before-script
+        - name: supervisord-config
+          mountPath: /etc/supervisord.conf
+          subPath: supervisord.conf
+        - name: cfy-starter
+          mountPath: /tmp/cloudify/cfy_starter.sh
+          subPath: cfy_starter.sh
+        - name: before-script
           mountPath: /tmp/cloudify/before_script.sh
           subPath: before_script.sh
-        - name: systemd-before-unit
-          mountPath: /etc/systemd/system/cfybefore.service
-          subPath: cfybefore.service
-        - name: systemd-before-unit
-          mountPath: /etc/systemd/system/multi-user.target.wants/cfybefore.service
-          subPath: cfybefore.service
-        - name: systemd-after-script
+        - name: after-script
           mountPath: /tmp/cloudify/after_script.sh
           subPath: after_script.sh
-        - name: systemd-after-unit
-          mountPath: /etc/systemd/system/cfyafter.service
-          subPath: cfyafter.service
-        - name: systemd-after-unit
-          mountPath: /etc/systemd/system/multi-user.target.wants/cfyafter.service
-          subPath: cfyafter.service
         - name: one-key
           mountPath: /tmp/cloudify/one-key.pem
           subPath: one-key.pem
@@ -64,9 +55,6 @@ spec:
           capabilities:
             add: ["SYS_ADMIN"]
       volumes:
-      - name: cgroup
-        hostPath: 
-          path: /sys/fs/cgroup
       - name: run
         emptyDir:
           medium: Memory
@@ -78,24 +66,27 @@ spec:
       - name: cloudify-config
         configMap:
           name: cloudify-config
-      - name: systemd-before-script
+      - name: supervisord-config
+        configMap:
+          name: supervisord-config
+      - name: cfy-starter
         projected:
           defaultMode: 0754
           sources:
           - configMap:
-              name: cfy-before-script
-      - name: systemd-before-unit
-        configMap:
-          name: cfy-before-unit
-      - name: systemd-after-script
+              name: cfy-starter
+      - name: before-script
         projected:
           defaultMode: 0754
           sources:
           - configMap:
-              name: cfy-after-script
-      - name: systemd-after-unit
-        configMap:
-          name: cfy-after-unit
+              name: before-script
+      - name: after-script
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: after-script
       - name: one-key
         projected:
           defaultMode: 0754

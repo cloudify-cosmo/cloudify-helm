@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: cfy-after-script
+  name: after-script
 data:
   after_script.sh: |
     #!/usr/bin/env bash

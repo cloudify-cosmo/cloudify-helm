@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: supervisord-config
+data:
+  supervisord.conf: |
+    [supervisord]
+    logfile = /var/log/cloudify/supervisord.log
+
+    [unix_http_server]
+    file = /tmp/supervisor.sock
+    chmod = 0770
+    chown = cfyuser:cfyuser
+
+    [supervisorctl]
+    serverurl = unix:///tmp/supervisor.sock
+
+    [rpcinterface:supervisor]
+    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+
+    [program:cloudify-starter]
+    command=/tmp/cloudify/cfy_starter.sh
+    stdout_logfile=/dev/fd/1
+    stdout_logfile_maxbytes=0
+    stderr_logfile=/dev/fd/2
+    stderr_logfile_maxbytes=0
+    startsecs=0
+    autorestart=false
+
+    [include]
+    files=/etc/supervisord.d/*.conf

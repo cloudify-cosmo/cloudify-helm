@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: cfy-before-script
+  name: before-script
 data:
   before_script.sh: |
     #!/usr/bin/env bash
