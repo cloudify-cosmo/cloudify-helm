@@ -34,12 +34,12 @@ spec:
         - name: cfy-starter
           mountPath: /tmp/cloudify/cfy_starter.sh
           subPath: cfy_starter.sh
-        - name: before-script
-          mountPath: /tmp/cloudify/before_script.sh
-          subPath: before_script.sh
-        - name: after-script
-          mountPath: /tmp/cloudify/after_script.sh
-          subPath: after_script.sh
+        - name: before-hook
+          mountPath: /tmp/cloudify/before_hook.sh
+          subPath: before_hook.sh
+        - name: after-hook
+          mountPath: /tmp/cloudify/after_hook.sh
+          subPath: after_hook.sh
         - name: one-key
           mountPath: /tmp/cloudify/one-key.pem
           subPath: one-key.pem
@@ -75,18 +75,18 @@ spec:
           sources:
           - configMap:
               name: cfy-starter
-      - name: before-script
+      - name: before-hook
         projected:
           defaultMode: 0754
           sources:
           - configMap:
-              name: before-script
-      - name: after-script
+              name: before-hook
+      - name: after-hook
         projected:
           defaultMode: 0754
           sources:
           - configMap:
-              name: after-script
+              name: after-hook
       - name: one-key
         projected:
           defaultMode: 0754

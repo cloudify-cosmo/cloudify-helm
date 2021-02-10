@@ -2,9 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: after-script
+  name: after-hook
 data:
-  after_script.sh: |
+  after_hook.sh: |
     #!/usr/bin/env bash
 
     FILE=/mnt/cloudify-data/init-completed
