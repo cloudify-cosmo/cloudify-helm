@@ -105,8 +105,9 @@ spec:
           sources:
           - configMap:
               name: ca-cert
-      nodeSelector:
-        instance-type: spot
+    {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+    {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: cloudify-data
@@ -115,4 +116,4 @@ spec:
         - "ReadWriteOnce"
       resources:
         requests:
-          storage: "8Gi"
+          storage: {{ .Values.volume.size }}
