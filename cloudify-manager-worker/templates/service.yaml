@@ -7,12 +7,12 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.ui_http.port }}
-      targetPort: {{ .Values.service.ui_http.port }}
+    - port: {{ .Values.service.http.port }}
+      targetPort: {{ .Values.service.http.port }}
       protocol: TCP
       name: http
-    - port: {{ .Values.service.ui_https.port }}
-      targetPort: {{ .Values.service.ui_https.port }}
+    - port: {{ .Values.service.https.port }}
+      targetPort: {{ .Values.service.https.port }}
       protocol: TCP
       name: https
     - port: {{ .Values.service.internal_rest.port }}
