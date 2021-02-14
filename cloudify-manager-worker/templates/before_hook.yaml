@@ -2,19 +2,25 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: cfy-before-script
+  name: before-hook
 data:
-  before_script.sh: |
+  before_hook.sh: |
     #!/usr/bin/env bash
 
     FILE=/mnt/cloudify-data/init-completed
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
+    
     mkdir -p /etc/cloudify/ssl
-
+    mkdir -p /mnt/cloudify-data/etc
+    mkdir -p /mnt/cloudify-data/manager
+    mkdir -p /mnt/cloudify-data/mgmtworker
+    mkdir -p /mnt/cloudify-data/cloudify-composer
+    mkdir -p /mnt/cloudify-data/cloudify-stage
+    
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
-      cp -a --verbose "$CLOUDIFY_DATA_DIR/config.yaml" /etc/cloudify/config.yaml
+      cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
 
       echo "Removed unused directory"
       rm -rf --verbose /etc/cloudify/ssl
@@ -27,20 +33,24 @@ data:
       rm --verbose /opt/manager/authorization.conf
       rm --verbose /opt/manager/rest-security.conf
       rm --verbose /opt/cloudify-composer/backend/conf/prod.json
+      rm --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
+      rm --verbose /opt/cloudify-stage/conf/db_ca.crt
       rm --verbose /opt/cloudify-stage/conf/manager.json
       
       echo "Making symbolic links for files"
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/admin_token" /opt/mgmtworker/work/admin_token
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/authorization.conf" /opt/manager/authorization.conf
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/rest-security.conf" /opt/manager/rest-security.conf
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/prod.json" /opt/cloudify-composer/backend/conf/prod.json
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/manager.json" /opt/cloudify-stage/conf/manager.json
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/authorization.conf" /opt/manager/authorization.conf
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/rest-security.conf" /opt/manager/rest-security.conf
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/prod.json" /opt/cloudify-composer/backend/conf/prod.json
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
 
       echo "Making symbolic links for directory"
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/ssl" /etc/cloudify/ssl
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/resources" /opt/manager/resources
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/plugins" /opt/mgmtworker/env/plugins
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/userData" /opt/cloudify-stage/dist/userData
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/etc/ssl" /etc/cloudify/ssl
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
     else 
       echo "Copy config"
       rm -f /etc/cloudify/config.yaml

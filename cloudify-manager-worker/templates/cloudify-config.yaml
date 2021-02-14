@@ -36,6 +36,7 @@ data:
       ssl_enabled: true
       ssl_client_verification: true
     postgresql_server:
+      postgres_password: {{ .Values.db.server_password }}
       ca_path: '/etc/cloudify/ssl/ca.pem'
       cert_path: '/etc/cloudify/ssl/external-cert.pem'
       key_path: '/etc/cloudify/ssl/external-key.pem'

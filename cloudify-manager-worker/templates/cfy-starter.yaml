@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: cfy-starter
+data:
+  cfy_starter.sh: |
+    #!/usr/bin/env bash
+    
+    BEFORE_HOOK=/tmp/before_hook_completed
+    AFTER_HOOK=/tmp/after_hook_completed
+
+    if [ -f "$BEFORE_HOOK" ]; then
+      echo 'before_hook already executed!'
+    else 
+      sh /tmp/cloudify/before_hook.sh
+      touch /tmp/before_hook_completed
+    fi
+
+    echo 'Run cloudify manager'
+    /usr/bin/cfy_manager image-starter
+
+    if [ -f "$AFTER_HOOK" ]; then
+      echo 'after_hook already executed!'
+    else 
+      sh /tmp/cloudify/after_hook.sh
+      touch /tmp/after_hook_completed
+    fi
+    
