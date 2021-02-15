@@ -26,7 +26,6 @@ data:
         cp -a --verbose /opt/cloudify-stage/conf/manager.json $CLOUDIFY_DATA_DIR/cloudify-stage
 
         echo "Copy necessary directories to Persistent Volume"
-        cp -a --verbose /etc/cloudify/ssl $CLOUDIFY_DATA_DIR/etc
         cp -a --verbose /opt/manager/resources $CLOUDIFY_DATA_DIR/manager
         cp -a --verbose /opt/mgmtworker/env/plugins $CLOUDIFY_DATA_DIR/mgmtworker
         cp -a --verbose /opt/cloudify-stage/dist/userData $CLOUDIFY_DATA_DIR/cloudify-stage
@@ -34,7 +33,6 @@ data:
         touch "$CLOUDIFY_DATA_DIR/init-completed"
 
         echo "Removed unused directory"
-        rm -rf --verbose /etc/cloudify/ssl
         rm -rf --verbose /opt/manager/resources
         rm -rf --verbose /opt/mgmtworker/env/plugins
         rm -rf --verbose /opt/cloudify-stage/dist/userData
@@ -49,7 +47,6 @@ data:
         rm --verbose /opt/cloudify-stage/conf/manager.json
 
         echo "Making symbolic links for directory"
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/etc/ssl" /etc/cloudify/ssl
         ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
         ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
