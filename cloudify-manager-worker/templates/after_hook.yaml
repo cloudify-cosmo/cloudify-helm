@@ -6,6 +6,7 @@ metadata:
 data:
   after_hook.sh: |
     #!/usr/bin/env bash
+    set -eux
 
     FILE=/mnt/cloudify-data/init-completed
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
