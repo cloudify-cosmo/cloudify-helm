@@ -17,9 +17,9 @@ data:
     rabbitmq:
       username: {{ .Values.queue.username }}
       password: {{ .Values.queue.password }}
-      ca_path: '/tmp/cloudify/ca-cert.pem'
-      cert_path: '/tmp/cloudify/one-cert.pem'
-      key_path: '/tmp/cloudify/one-key.pem'
+      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
+      cert_path: '/mnt/cloudify-data/ssl/tls.crt'
+      key_path: '/mnt/cloudify-data/ssl/tls.key'
       cluster_members:
         rabbit1:
           networks:
@@ -33,31 +33,31 @@ data:
       cloudify_db_name: {{ .Values.db.cloudify_db_name }}
       cloudify_username: {{ .Values.db.cloudify_username }}
       cloudify_password: {{ .Values.db.cloudify_password }}
-      ca_path: '/tmp/cloudify/ca-cert.pem'
+      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
       ssl_enabled: true
       ssl_client_verification: true
     postgresql_server:
       postgres_password: {{ .Values.db.server_password }}
-      ca_path: '/tmp/cloudify/ca-cert.pem'
-      cert_path: '/tmp/cloudify/one-cert.pem'
-      key_path: '/tmp/cloudify/one-key.pem'
+      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
+      cert_path: '/mnt/cloudify-data/ssl/tls.crt'
+      key_path: '/mnt/cloudify-data/ssl/tls.key'
 
     prometheus:
-      ca_path: '/tmp/cloudify/ca-cert.pem'
-      cert_path: '/tmp/cloudify/one-cert.pem'
-      key_path: '/tmp/cloudify/one-key.pem'
+      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
+      cert_path: '/mnt/cloudify-data/ssl/tls.crt'
+      key_path: '/mnt/cloudify-data/ssl/tls.key'
       scrape_interval: 5s
 
     ssl_inputs:
-      postgresql_client_cert_path: /tmp/cloudify/one-cert.pem
-      postgresql_client_key_path: /tmp/cloudify/one-key.pem
-      postgresql_ca_cert_path: /tmp/cloudify/ca-cert.pem
-      ca_cert_path: /tmp/cloudify/ca-cert.pem
-      internal_cert_path: /tmp/cloudify/one-cert.pem
-      internal_key_path: /tmp/cloudify/one-key.pem
-      external_cert_path: /tmp/cloudify/one-cert.pem
-      external_key_path: /tmp/cloudify/one-key.pem
-      external_ca_cert_path: /tmp/cloudify/ca-cert.pem
+      postgresql_client_cert_path: /mnt/cloudify-data/ssl/tls.crt
+      postgresql_client_key_path: /mnt/cloudify-data/ssl/tls.key
+      postgresql_ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+      ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+      internal_cert_path: /mnt/cloudify-data/ssl/tls.crt
+      internal_key_path: /mnt/cloudify-data/ssl/tls.key
+      external_cert_path: /mnt/cloudify-data/ssl/tls.crt
+      external_key_path: /mnt/cloudify-data/ssl/tls.key
+      external_ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
 
     validations:
       skip_validations: true

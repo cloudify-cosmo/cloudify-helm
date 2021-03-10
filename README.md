@@ -52,11 +52,11 @@ helm template ./cloudify-manager-aio
 
 ## SSL certificates must be provided - at least 3 certs:
 
-* ca.pem, to sign other certificates in case we need auto-generation of certificates
+* ca.crt, to sign other certificates in case we need auto-generation of certificates
 
-* one-key.pem, this key used for internal / external / db / queue ssl_inputs*
+* tls.key, this key used for internal / external / db / queue ssl_inputs*
 
-* one-cert.pem, crt used for internal/external/db/queue ssl_inputs
+* tls.crt, crt used for internal/external/db/queue ssl_inputs
 
 
 ## Create certificates using cloudify manager:
@@ -95,7 +95,6 @@ Create k8s secret (rabbitmq-certs) with certificates to be used by helm chart:
 
 ```
 kubectl create secret generic rabbitmq-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt 
-  certKeyFilename: 'tls.key'
 ```
 
 Use created certificates in rabbitmq-values.yaml (values file of bitnami's rabbitmq)

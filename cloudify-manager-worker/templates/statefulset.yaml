@@ -16,41 +16,46 @@ spec:
       labels:
         app: {{ template "cloudify-manager-worker.name" . }}
     spec:
+      initContainers:
+      - name: init-data
+        image: busybox
+        command:
+          - /bin/sh
+          - -cx
+          - |
+            mkdir -p /mnt/cloudify-data/ssl
+            cp /tmp/ssl/* /mnt/cloudify-data/ssl
+        volumeMounts:
+        - name: cfy-worker-certs
+          mountPath: /tmp/ssl
+        - name: cloudify-data
+          mountPath: /mnt/cloudify-data
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pull_policy }}
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - mountPath: /run
           name: run
         - mountPath: /run/lock
           name: runlock
-        - name: cloudify-config
+        - name: cloudify-cfg-volume
           mountPath: /tmp/cloudify/config.yaml
           subPath: config.yaml
-        - name: supervisord-config
+        - name: supervisord-volume
           mountPath: /etc/supervisord.conf
           subPath: supervisord.conf
-        - name: cfy-starter
+        - name: cfy-starter-volume
           mountPath: /tmp/cloudify/cfy_starter.sh
           subPath: cfy_starter.sh
-        - name: before-hook
+        - name: before-hook-volume
           mountPath: /tmp/cloudify/before_hook.sh
           subPath: before_hook.sh
-        - name: after-hook
+        - name: after-hook-volume
           mountPath: /tmp/cloudify/after_hook.sh
           subPath: after_hook.sh
-        - name: one-key
-          mountPath: /tmp/cloudify/one-key.pem
-          subPath: one-key.pem
-        - name: one-cert
-          mountPath: /tmp/cloudify/one-cert.pem
-          subPath: one-cert.pem
-        - name: ca-cert
-          mountPath: /tmp/cloudify/ca-cert.pem
-          subPath: ca-cert.pem
-        - mountPath: /mnt/cloudify-data
-          name: cloudify-data
+        - name: cloudify-data
+          mountPath: /mnt/cloudify-data
         securityContext:
           capabilities:
             add: ["SYS_ADMIN"]
@@ -63,48 +68,33 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: "2Gi"
-      - name: cloudify-config
+      - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
-      - name: supervisord-config
+      - name: supervisord-volume
         configMap:
           name: supervisord-config
-      - name: cfy-starter
+      - name: cfy-starter-volume
         projected:
           defaultMode: 0754
           sources:
           - configMap:
               name: cfy-starter
-      - name: before-hook
+      - name: before-hook-volume
         projected:
           defaultMode: 0754
           sources:
           - configMap:
               name: before-hook
-      - name: after-hook
+      - name: after-hook-volume
         projected:
           defaultMode: 0754
           sources:
           - configMap:
               name: after-hook
-      - name: one-key
-        projected:
-          defaultMode: 0754
-          sources:
-          - configMap:
-              name: one-key
-      - name: one-cert
-        projected:
-          defaultMode: 0754
-          sources:
-          - configMap:
-              name: one-cert
-      - name: ca-cert
-        projected:
-          defaultMode: 0754
-          sources:
-          - configMap:
-              name: ca-cert
+      - name: cfy-worker-certs
+        secret:
+          secretName: cfy-worker-certs
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}

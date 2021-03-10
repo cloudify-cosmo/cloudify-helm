@@ -1,11 +1,11 @@
 nameOverride: ""
 fullnameOverride: ""
 
-namespace: ""
+namespace: "cfy-helm"
 
 image:
-  repository: "263721492972.dkr.ecr.eu-west-1.amazonaws.com/premium-cloudify-manager-worker"
-  tag: "5.2.0"
+  repository: cloudifyplatform/premium-cloudify-manager-worker
+  tag: 5.2.0
   pull_policy: Always
 
 db:
@@ -34,7 +34,8 @@ service:
     port: 53333
 
 nodeSelector:
-  instance-type: spot
+  instance-type: on-demand-medium
+  intent: cfy-manager
 
 volume:
   size: "8Gi"
@@ -45,10 +46,10 @@ ingress:
     kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: cfy-demo.eks.cloudify.co
+    - host: cfy-demo.app.cloudify.co
       paths:
         - path: /
   # tls:
   #   - hosts:
-  #       - cfy-demo.eks.cloudify.co
+  #       - cfy-demo.app.cloudify.co
   #     secretName: cfy-demo-prod
