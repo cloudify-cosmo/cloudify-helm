@@ -39,13 +39,13 @@ data:
         rm -rf --verbose /opt/cloudify-stage/dist/userData
 
         echo "Removed unused files"
-        rm --verbose /opt/mgmtworker/work/admin_token
-        rm --verbose /opt/manager/authorization.conf
-        rm --verbose /opt/manager/rest-security.conf
-        rm --verbose /opt/cloudify-composer/backend/conf/prod.json
-        rm --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
-        rm --verbose /opt/cloudify-stage/conf/db_ca.crt
-        rm --verbose /opt/cloudify-stage/conf/manager.json
+        rm -f --verbose /opt/mgmtworker/work/admin_token
+        rm -f --verbose /opt/manager/authorization.conf
+        rm -f --verbose /opt/manager/rest-security.conf
+        rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
+        rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
+        rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
+        rm -f --verbose /opt/cloudify-stage/conf/manager.json
 
         echo "Making symbolic links for directory"
         ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources

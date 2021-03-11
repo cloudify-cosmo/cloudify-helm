@@ -22,19 +22,19 @@ data:
       rm -f /etc/cloudify/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
 
-      echo "Removed unused directory"
+      echo "Remove unused directory"
       rm -rf --verbose /opt/manager/resources
       rm -rf --verbose /opt/mgmtworker/env/plugins
       rm -rf --verbose /opt/cloudify-stage/dist/userData
 
-      echo "Removed unused files"
-      rm --verbose /opt/mgmtworker/work/admin_token
-      rm --verbose /opt/manager/authorization.conf
-      rm --verbose /opt/manager/rest-security.conf
-      rm --verbose /opt/cloudify-composer/backend/conf/prod.json
-      rm --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
-      rm --verbose /opt/cloudify-stage/conf/db_ca.crt
-      rm --verbose /opt/cloudify-stage/conf/manager.json
+      echo "Remove unused files"
+      rm -f --verbose /opt/mgmtworker/work/admin_token
+      rm -f --verbose /opt/manager/authorization.conf
+      rm -f --verbose /opt/manager/rest-security.conf
+      rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
+      rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
+      rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
+      rm -f --verbose /opt/cloudify-stage/conf/manager.json
       
       echo "Making symbolic links for files"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token

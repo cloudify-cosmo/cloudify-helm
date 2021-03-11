@@ -11,15 +11,15 @@ data:
       hostname: {{ .Values.service.host }}
       cli_local_profile_host_name: {{ .Values.service.host }}
       security:
-        ssl_enabled: true
-        admin_password: admin
+        ssl_enabled: {{ .Values.config.security.ssl_enabled }}
+        admin_password: {{ .Values.config.security.admin_password }}
 
     rabbitmq:
       username: {{ .Values.queue.username }}
       password: {{ .Values.queue.password }}
-      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
-      cert_path: '/mnt/cloudify-data/ssl/tls.crt'
-      key_path: '/mnt/cloudify-data/ssl/tls.key'
+      ca_path: {{ .Values.config.ca_cert_path }}
+      cert_path: {{ .Values.config.tls_cert_path }}
+      key_path: {{ .Values.config.tls_key_path }}
       cluster_members:
         rabbit1:
           networks:
@@ -33,34 +33,37 @@ data:
       cloudify_db_name: {{ .Values.db.cloudify_db_name }}
       cloudify_username: {{ .Values.db.cloudify_username }}
       cloudify_password: {{ .Values.db.cloudify_password }}
-      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
+      ca_path: {{ .Values.config.ca_cert_path }}
       ssl_enabled: true
       ssl_client_verification: true
     postgresql_server:
       postgres_password: {{ .Values.db.server_password }}
-      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
-      cert_path: '/mnt/cloudify-data/ssl/tls.crt'
-      key_path: '/mnt/cloudify-data/ssl/tls.key'
+      ca_path: {{ .Values.config.ca_cert_path }}
+      cert_path: {{ .Values.config.tls_cert_path }}
+      key_path: {{ .Values.config.tls_key_path }}
 
     prometheus:
-      ca_path: '/mnt/cloudify-data/ssl/ca.crt'
-      cert_path: '/mnt/cloudify-data/ssl/tls.crt'
-      key_path: '/mnt/cloudify-data/ssl/tls.key'
+      ca_path: {{ .Values.config.ca_cert_path }}
+      cert_path: {{ .Values.config.tls_cert_path }}
+      key_path: {{ .Values.config.tls_key_path }}
       scrape_interval: 5s
 
     ssl_inputs:
-      postgresql_client_cert_path: /mnt/cloudify-data/ssl/tls.crt
-      postgresql_client_key_path: /mnt/cloudify-data/ssl/tls.key
-      postgresql_ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
-      ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
-      internal_cert_path: /mnt/cloudify-data/ssl/tls.crt
-      internal_key_path: /mnt/cloudify-data/ssl/tls.key
-      external_cert_path: /mnt/cloudify-data/ssl/tls.crt
-      external_key_path: /mnt/cloudify-data/ssl/tls.key
-      external_ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+      postgresql_client_cert_path: {{ .Values.config.tls_cert_path }}
+      postgresql_client_key_path: {{ .Values.config.tls_key_path }}
+      postgresql_ca_cert_path: {{ .Values.config.ca_cert_path }}
+      ca_cert_path: {{ .Values.config.ca_cert_path }}
+      internal_cert_path: {{ .Values.config.tls_cert_path }}
+      internal_key_path: {{ .Values.config.tls_key_path }}
+      external_cert_path: {{ .Values.config.tls_cert_path }}
+      external_key_path: {{ .Values.config.tls_key_path }}
+      external_ca_cert_path: {{ .Values.config.ca_cert_path }}
 
     validations:
       skip_validations: true
+    
+    sanity:
+      skip_sanity: true
 
     services_to_install:
     - manager_service
