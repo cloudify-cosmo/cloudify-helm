@@ -34,6 +34,10 @@ spec:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
         volumeMounts:
         - mountPath: /run
           name: run
@@ -94,7 +98,7 @@ spec:
               name: after-hook
       - name: cfy-worker-certs
         secret:
-          secretName: cfy-worker-certs
+          secretName: {{ .Values.secret.name }}
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}

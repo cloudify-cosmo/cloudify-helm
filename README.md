@@ -56,7 +56,7 @@ helm template ./cloudify-manager-aio
 
 * tls.key, this key used for internal / external / db / queue ssl_inputs*
 
-* tls.crt, crt used for internal/external/db/queue ssl_inputs
+* tls.crt, used for internal/external/db/queue ssl_inputs
 
 
 ## Create certificates using cloudify manager:
@@ -142,13 +142,12 @@ cd cloudify-helm
 kubectl create ns cfy-manager-worker
 ```
 
-First certificated must be replaced in certificates.yaml, you need at least 3 certs( I explained how to generate them above):
+* generate certificates
 
-ca.pem
+* create secrets based on created certs
 
-one-key.pem
+* change values of 
 
-one-cert.pem
 
 ```
 helm install cloudify-manager-worker ./cloudify-manager-worker -n cfy-manager-worker

@@ -18,7 +18,7 @@ db:
   server_password: 'cfy_test_pass'
 
 queue:
-  host: rabbitmq.cfy-helm.svc.cluster.local
+  host: rabbitmq.cfy-helm3.svc.cluster.local
   username: 'cfy_user'
   password: 'cfy_test_pass'
 
@@ -34,30 +34,38 @@ service:
     port: 53333
 
 nodeSelector:
-  instance-type: on-demand-medium
+  instance-type: on-demand-large
   intent: cfy-manager
+
+secret:
+  name: cfy-certs
 
 volume:
   size: "8Gi"
 
+resources:
+  requests:
+    memory: 0.5Gi
+    cpu: 0.5
+
 config:
   security:
-    ssl_enabled: true
+    ssl_enabled: false
     admin_password: admin
   tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
   tls_key_path: /mnt/cloudify-data/ssl/tls.key
   ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
 
 ingress:
-  enabled: false
+  enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: cfy-demo5.app.cloudify.co
+    - host: cfy-demo-app.app.cloudify.co
       paths:
         - path: /
   # tls:
   #   - hosts:
-  #       - cfy-demo10.app.cloudify.co
-  #     secretName: cfy-demo10-prod
+  #       - cfy-demo-app.app.cloudify.co
+  #     secretName: cfy-demo-app
