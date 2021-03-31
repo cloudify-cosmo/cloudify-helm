@@ -1,7 +1,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-namespace: "cfy-helm"
+domain: "cfy-helm.svc.cluster.local"
 
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
@@ -9,7 +9,7 @@ image:
   pull_policy: Always
 
 db:
-  host: postgres-postgresql.cfy-helm.svc.cluster.local
+  host: postgres-postgresql
   cloudify_db_name: 'cloudify_db'
   cloudify_username: 'cloudify'
   cloudify_password: 'cloudify'
@@ -18,12 +18,12 @@ db:
   server_password: 'cfy_test_pass'
 
 queue:
-  host: rabbitmq.cfy-helm3.svc.cluster.local
+  host: rabbitmq
   username: 'cfy_user'
   password: 'cfy_test_pass'
 
 service:
-  host: cloudify-manager-worker.cfy-helm.svc.cluster.local
+  host: cloudify-manager-worker
   type: ClusterIP
   name: cloudify-manager-worker
   http:
@@ -58,13 +58,10 @@ config:
 
 ingress:
   enabled: true
+  host: cfy-demo-app.app.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
-  hosts:
-    - host: cfy-demo-app.app.cloudify.co
-      paths:
-        - path: /
   # tls:
   #   - hosts:
   #       - cfy-demo-app.app.cloudify.co

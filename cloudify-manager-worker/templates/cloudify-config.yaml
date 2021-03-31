@@ -6,10 +6,10 @@ metadata:
 data:
   config.yaml: |
     manager:
-      private_ip: {{ .Values.service.host }}
-      public_ip: {{ .Values.service.host }}
-      hostname: {{ .Values.service.host }}
-      cli_local_profile_host_name: {{ .Values.service.host }}
+      private_ip: {{ .Values.service.host }}.{{.Values.domain}}
+      public_ip: {{ .Values.service.host }}.{{.Values.domain}}
+      hostname: {{ .Values.service.host }}.{{.Values.domain}}
+      cli_local_profile_host_name: {{ .Values.service.host }}.{{.Values.domain}}
       security:
         ssl_enabled: {{ .Values.config.security.ssl_enabled }}
         admin_password: {{ .Values.config.security.admin_password }}
@@ -23,10 +23,10 @@ data:
       cluster_members:
         rabbit1:
           networks:
-            default: {{ .Values.queue.host }}
+            default: {{ .Values.queue.host }}.{{.Values.domain}}
 
     postgresql_client:
-      host: {{ .Values.db.host }}
+      host: {{ .Values.db.host }}.{{ .Values.domain }}
       server_db_name: {{ .Values.db.server_db_name }}
       server_username: {{ .Values.db.server_username }}
       server_password: {{ .Values.db.server_password }}
