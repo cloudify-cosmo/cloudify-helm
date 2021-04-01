@@ -49,6 +49,7 @@ resources:
     cpu: 0.5
 
 config:
+  start_delay: 0
   security:
     ssl_enabled: false
     admin_password: admin

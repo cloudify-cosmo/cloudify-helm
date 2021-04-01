@@ -17,6 +17,9 @@ data:
       touch /tmp/before_hook_completed
     fi
 
+    echo 'Start delay'
+    sleep {{ .Values.config.start_delay }}
+
     echo 'Run cloudify manager'
     /usr/bin/cfy_manager image-starter
 
