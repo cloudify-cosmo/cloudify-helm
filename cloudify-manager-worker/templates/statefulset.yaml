@@ -46,6 +46,11 @@ spec:
         - name: cloudify-cfg-volume
           mountPath: /tmp/cloudify/config.yaml
           subPath: config.yaml
+        {{- if .Values.licence }}
+        - name: cloudify-licence-volume
+          mountPath: /tmp/cloudify/cfy_licence.yaml
+          subPath: cfy_licence.yaml
+        {{- end}}
         - name: supervisord-volume
           mountPath: /etc/supervisord.conf
           subPath: supervisord.conf
@@ -75,6 +80,11 @@ spec:
       - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
+      {{- if .Values.licence }}
+      - name: cloudify-licence-volume
+        configMap:
+          name: {{ .Values.licence.secretName }}
+      {{- end }}
       - name: supervisord-volume
         configMap:
           name: supervisord-config

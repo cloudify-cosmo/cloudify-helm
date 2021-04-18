@@ -13,6 +13,9 @@ data:
       security:
         ssl_enabled: {{ .Values.config.security.ssl_enabled }}
         admin_password: {{ .Values.config.security.admin_password }}
+      {{- if .Values.licence }}
+      cloudify_license_path: /tmp/cloudify/cfy_licence
+      {{- end}}
 
     rabbitmq:
       username: {{ .Values.queue.username }}

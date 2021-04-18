@@ -57,6 +57,9 @@ config:
   tls_key_path: /mnt/cloudify-data/ssl/tls.key
   ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
 
+licence:
+  secretName: cfy-licence
+
 ingress:
   enabled: true
   host: cfy-demo-app.app.cloudify.co
