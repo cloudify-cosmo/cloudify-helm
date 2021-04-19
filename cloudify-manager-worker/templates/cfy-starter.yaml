@@ -29,4 +29,8 @@ data:
       sh /tmp/cloudify/after_hook.sh
       touch /tmp/after_hook_completed
     fi
+
+    {{- if .Values.config.install_plugins }}
+    nohup cfy plugins bundle-upload >> /tmp/cfy_status.txt 2>&1 &
+    {{- end}}
     
