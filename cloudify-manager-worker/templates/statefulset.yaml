@@ -36,6 +36,7 @@ spec:
         imagePullPolicy: IfNotPresent
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           httpGet:
             path: {{ .Values.readinessProbe.path }}
             port: {{ .Values.readinessProbe.port }}

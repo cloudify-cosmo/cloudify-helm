@@ -62,8 +62,9 @@ licence:
 
 readinessProbe:
   enabled: false
-  port: 443
+  port: 80
   path: /console
+  initialDelaySeconds: 10
 
 ingress:
   enabled: true
