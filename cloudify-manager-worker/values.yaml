@@ -60,6 +60,11 @@ config:
 licence:
   secretName: cfy-licence
 
+readinessProbe:
+  enabled: false
+  port: 443
+  path: /console
+
 ingress:
   enabled: true
   host: cfy-demo-app.app.cloudify.co

@@ -2,11 +2,11 @@ apiVersion: v1
 entries:
   cloudify-manager-worker:
   - apiVersion: v2
-    created: "2021-04-18T19:08:20.087428+03:00"
+    created: "2021-04-19T11:52:19.474902+03:00"
     description: Cloudify manager worker
-    digest: 4e1174cfd983ad81c118b4d812a40b4bdc19615fc16332592237e09882c2a57f
+    digest: aa2e9815f87ceae566e64bc4448d8b935ff2bdcafd45437e46bf7d4835533dc6
     name: cloudify-manager-worker
     urls:
-    - https://cloudify-cosmo.github.io/cloudify-helm/cloudify-manager-worker-0.1.5.tgz
-    version: 0.1.5
-generated: "2021-04-18T19:08:20.080751+03:00"
+    - https://cloudify-cosmo.github.io/cloudify-helm/cloudify-manager-worker-0.1.6.tgz
+    version: 0.1.6
+generated: "2021-04-19T11:52:19.471931+03:00"
