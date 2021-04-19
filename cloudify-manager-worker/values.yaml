@@ -50,6 +50,7 @@ resources:
 
 config:
   start_delay: 0
+  cli_local_profile_host_name: localhost
   security:
     ssl_enabled: false
     admin_password: admin

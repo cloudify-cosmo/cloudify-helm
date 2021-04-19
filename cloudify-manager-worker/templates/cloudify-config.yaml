@@ -9,7 +9,7 @@ data:
       private_ip: {{ .Values.service.host }}.{{.Values.domain}}
       public_ip: {{ .Values.service.host }}.{{.Values.domain}}
       hostname: {{ .Values.service.host }}.{{.Values.domain}}
-      cli_local_profile_host_name: {{ .Values.service.host }}.{{.Values.domain}}
+      cli_local_profile_host_name: {{ .Values.config.cli_local_profile_host_name }}
       security:
         ssl_enabled: {{ .Values.config.security.ssl_enabled }}
         admin_password: {{ .Values.config.security.admin_password }}
