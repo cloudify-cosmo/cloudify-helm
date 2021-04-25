@@ -5,7 +5,7 @@ domain: "cfy-helm.svc.cluster.local"
 
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
-  tag: 5.2.0
+  tag: 5.3.0
   pull_policy: Always
 
 db:
