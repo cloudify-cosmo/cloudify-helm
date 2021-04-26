@@ -33,7 +33,7 @@ spec:
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
