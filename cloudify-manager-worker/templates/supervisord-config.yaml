@@ -25,15 +25,11 @@ data:
     startsecs=0
     autorestart=false
     [program:crond]
-    command=/usr/sbin/crond -f -l 0 -d 0
-    autostart=true
-    autorestart=true
-    stdout_logfile=/dev/stdout
-    stdout_logfile_maxbytes=0
-    stderr_logfile=/dev/stderr
-    stderr_logfile_maxbytes=0
+    command=/usr/sbin/crond -n
     autostart=true
     autorestart=true
     startsecs=30
+    stdout_logfile=/var/log/cronout.log
+    stderr_logfile=/var/log/cronerr.log
     [include]
     files=/etc/supervisord.d/*.conf
