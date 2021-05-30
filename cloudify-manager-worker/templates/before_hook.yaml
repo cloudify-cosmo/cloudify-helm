@@ -8,14 +8,14 @@ data:
     #!/usr/bin/env bash
     set -eux
 
-    FILE=/mnt/cloudify-data/init-completed
-    CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
+    FILE=/mnt/{{ .Release.Namespace }}/init-completed
+    CLOUDIFY_DATA_DIR="/mnt/{{ .Release.Namespace }}"
     
-    mkdir -p /mnt/cloudify-data/etc
-    mkdir -p /mnt/cloudify-data/manager
-    mkdir -p /mnt/cloudify-data/mgmtworker
-    mkdir -p /mnt/cloudify-data/cloudify-composer
-    mkdir -p /mnt/cloudify-data/cloudify-stage
+    mkdir -p /mnt/{{ .Release.Namespace }}/etc
+    mkdir -p /mnt/{{ .Release.Namespace }}/manager
+    mkdir -p /mnt/{{ .Release.Namespace }}/mgmtworker
+    mkdir -p /mnt/{{ .Release.Namespace }}/cloudify-composer
+    mkdir -p /mnt/{{ .Release.Namespace }}/cloudify-stage
     
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"

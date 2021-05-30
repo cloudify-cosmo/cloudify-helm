@@ -1,7 +1,7 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
-domain: "cfy-helm.svc.cluster.local"
+domain: "test-helm.svc.cluster.local"
 
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
@@ -34,8 +34,7 @@ service:
     port: 53333
 
 nodeSelector:
-  instance-type: on-demand-large
-  intent: cfy-manager
+  instance-type: spot
 
 secret:
   name: cfy-certs
@@ -55,12 +54,9 @@ config:
   security:
     ssl_enabled: false
     admin_password: admin
-  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
-  tls_key_path: /mnt/cloudify-data/ssl/tls.key
-  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
-
-licence:
-  secretName: cfy-licence
+  tls_cert_path: ssl/tls.crt
+  tls_key_path: ssl/tls.key
+  ca_cert_path: ssl/ca.crt
 
 readinessProbe:
   enabled: false
@@ -70,7 +66,7 @@ readinessProbe:
 
 ingress:
   enabled: true
-  host: cfy-demo-app.app.cloudify.co
+  host: cfy-test.eks.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"

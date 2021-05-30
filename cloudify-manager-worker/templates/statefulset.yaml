@@ -23,13 +23,13 @@ spec:
           - /bin/sh
           - -cx
           - |
-            mkdir -p /mnt/cloudify-data/ssl
-            cp /tmp/ssl/* /mnt/cloudify-data/ssl
+            mkdir -p /mnt/{{ .Release.Namespace }}/ssl
+            cp /tmp/ssl/* /mnt/{{ .Release.Namespace }}/ssl
         volumeMounts:
         - name: cfy-worker-certs
           mountPath: /tmp/ssl
         - name: cloudify-data
-          mountPath: /mnt/cloudify-data
+          mountPath: /mnt/{{ .Release.Namespace }}
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -71,7 +71,7 @@ spec:
           mountPath: /tmp/cloudify/after_hook.sh
           subPath: after_hook.sh
         - name: cloudify-data
-          mountPath: /mnt/cloudify-data
+          mountPath: /mnt/{{ .Release.Namespace }}
         securityContext:
           capabilities:
             add: ["SYS_ADMIN"]

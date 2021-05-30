@@ -8,8 +8,8 @@ data:
     #!/usr/bin/env bash
     set -eux
 
-    FILE=/mnt/cloudify-data/init-completed
-    CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
+    FILE=/mnt/{{ .Release.Namespace }}/init-completed
+    CLOUDIFY_DATA_DIR="/mnt/{{ .Release.Namespace }}"
 
     if [ -f "$FILE" ]; then
       echo "Init flag exists!"
