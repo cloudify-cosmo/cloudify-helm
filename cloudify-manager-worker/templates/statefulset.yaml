@@ -116,15 +116,10 @@ spec:
       - name: cfy-worker-certs
         secret:
           secretName: {{ .Values.secret.name }}
+      - name: cloudify-data
+        persistentVolumeClaim:
+          claimName: cfy-worker-efs
+
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}
-  volumeClaimTemplates:
-  - metadata:
-      name: cloudify-data
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: {{ .Values.volume.size }}
