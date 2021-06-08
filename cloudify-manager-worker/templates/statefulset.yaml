@@ -6,7 +6,7 @@ metadata:
     name: {{ template "cloudify-manager-worker.name" . }}
 {{ include "cloudify-manager-worker.labels" . | indent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.config.replicas }}
   selector:
     matchLabels:
       app: {{ template "cloudify-manager-worker.name" . }}

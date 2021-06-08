@@ -48,7 +48,8 @@ resources:
     cpu: 0.5
 
 config:
-  start_delay: 0
+  replicas: 3
+  start_delay: 25
   install_plugins: false
   cli_local_profile_host_name: localhost
   security:
@@ -59,7 +60,7 @@ config:
   ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
 
 readinessProbe:
-  enabled: false
+  enabled: true
   port: 80
   path: /console
   initialDelaySeconds: 10
