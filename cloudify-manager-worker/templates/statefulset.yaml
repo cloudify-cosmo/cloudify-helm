@@ -36,6 +36,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pull_policy }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
+          successThreshold: 3
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           httpGet:
             path: {{ .Values.readinessProbe.path }}
