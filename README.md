@@ -9,12 +9,17 @@ It's a helm chart for cloudify manager which is:
 * Has no persistent volume to survive restarts/failures.
 * Has all components on board (as part of docker container): Message Broker and DB part of it.
 
-**This is the best and most simple way to make yourself familiar with cloudify.**
+**This is the best and most simple way to make yourself familiar with cloudify, running a Cloudify manager AIO is a matter of minutes**
+
+## Installation with helm
+
+helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
+helm install cloudify-manager-aio cloudify-helm/cloudify-manager-aio
 
 To understand how to install and configure AIO cloudify manager please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
 
 
-# Cloudify manager worker
+# Cloudify manager worker helm chart
 
 ## Description
  
