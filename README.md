@@ -9,6 +9,7 @@ It's a helm chart for cloudify manager which is:
 * Has no persistent volume to survive restarts/failures.
 * Has all components on board (as part of docker container): Message Broker and DB part of it.
 
+**This is the best and most simple way to make yourself familiar with cloudify.**
 
 To understand how to install and configure AIO cloudify manager please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
 

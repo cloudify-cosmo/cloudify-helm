@@ -19,3 +19,16 @@ service:
     port: 443
   internal_rest:
     port: 53333
+
+nodeSelector: {}
+
+resources:
+  requests:
+    memory: 0.5Gi
+    cpu: 0.5
+
+readinessProbe:
+  enabled: true
+  port: 80
+  path: /console
+  initialDelaySeconds: 10

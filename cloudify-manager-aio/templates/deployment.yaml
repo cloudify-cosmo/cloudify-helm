@@ -18,6 +18,17 @@ spec:
       containers:
       - name: {{ template "cloudify-manager-aio.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          httpGet:
+            path: {{ .Values.readinessProbe.path }}
+            port: {{ .Values.readinessProbe.port }}
+        {{- end}}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
         volumeMounts:
         - mountPath: /run
           name: run
@@ -32,3 +43,6 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: "2Gi"
+    {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+    {{- end }}
