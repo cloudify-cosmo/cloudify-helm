@@ -23,16 +23,7 @@ spec:
           name: run
         - mountPath: /run/lock
           name: runlock
-        - mountPath: /sys/fs/cgroup
-          name: cgroup
-          readOnly:  true
-        securityContext:
-          capabilities:
-            add: ["SYS_ADMIN"]
       volumes:
-      - name: cgroup
-        hostPath:
-          path: /sys/fs/cgroup
       - name: run
         emptyDir:
           medium: Memory
