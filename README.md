@@ -3,11 +3,11 @@
 
 ## Description
 
-It's a helm chart for cloudify manager worker which is:
+It's a helm chart for cloudify manager which is:
 
-* Not Highly available
-* Has no persistent volume to survive restarts/failures
-* Has all components on board: Message Broker and DB part of it.
+* Not highly available, has one replica only.
+* Has no persistent volume to survive restarts/failures.
+* Has all components on board (as part of docker container): Message Broker and DB part of it.
 
 
 To understand how to install and configure AIO cloudify manager please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
@@ -17,25 +17,27 @@ To understand how to install and configure AIO cloudify manager please read [Clo
 
 ## Description
  
-It's a helm chart for cloudify manager worker which is:
+It's a helm chart for cloudify manager which is:
 
-* Highly available, can be deployed with multiple replicas ( available only when used EFS(NFS) Volume )
-* Use Persistent Volume to survive restarts/failures
+* Highly available, can be deployed with multiple replicas. ( available only when used EFS(NFS) Volume )
+* Use persistent volume to survive restarts/failures.
 * Use external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 * Use external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
 
-This is how the setup looks after deployed to 'cfy-example' namespace:
+This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
 ![cfy-manager](images/cfy-example.png)
 
 
-## How to create a deployment setup?
+## How to create and deploy such a setup?
 
 1. Deployment of DB (Postgres).
 
 2. Deployment of Message Broker (rabbitMQ).
 
 3. Deployment of Cloudify manager worker.
+
+You need to deploy DB and Message Broker before deploying Cloudify manager worker.
 
 
 To better understand how to install and configure cloudify manager worker setup please read [Cloudify manager worker helm chart](cloudify-manager-worker/README.md)
