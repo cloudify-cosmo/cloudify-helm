@@ -11,12 +11,13 @@ It's a helm chart for cloudify manager which is:
 
 **This is the best and most simple way to make yourself familiar with cloudify, running a Cloudify manager AIO is a matter of minutes**
 
-## Installation with helm
+## Installation
 
 helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
+
 helm install cloudify-manager-aio cloudify-helm/cloudify-manager-aio
 
-To understand how to install and configure AIO cloudify manager please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
+To understand all available options AIO cloudify manager chart has, please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
 
 
 # Cloudify manager worker helm chart
