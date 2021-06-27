@@ -18,7 +18,7 @@ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 helm install cloudify-manager-aio cloudify-helm/cloudify-manager-aio
 
 
-## Configuration Options:
+## Configuration options for values.yaml:
 
 ### Image:
 

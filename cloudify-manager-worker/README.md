@@ -1,67 +1,148 @@
-# Cloudify manager worker
+# Cloudify manager worker helm chart
 
-## Cloudify manager solution for 3 layers includes:
+## Description
+ 
+It's a helm chart for cloudify manager which is:
 
-  * One cloudify manager worker: Pod with Statefulset
+* Highly available, can be deployed with multiple replicas. ( available only when used EFS(NFS) Volume )
+* Use persistent volume to survive restarts/failures.
+* Use external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+* Use external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
 
-  * One external DB, for POC used Bitnami's postgres helm chart
+This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
-  * One external QUEUE, for POC used Bitnami's rabbitmq helm chart
-
-
-## SSL certificates must be provided - at least 3 certs:
-
-* ca.crt, to sign other certificates in case we need auto-generation of certificates
-
-* tls.key, this key used for internal / external / db / queue ssl_inputs*
-
-* tls.crt, used for internal/external/db/queue ssl_inputs
+![cfy-manager](images/cfy-example.png)
 
 
-## Create certificates using cloudify manager:
+## How to create and deploy such a setup?
 
+1. Generate certificate as a secret in k8s.
+
+2. Deployment of DB (Postgres).
+
+3. Deployment of Message Broker (rabbitMQ).
+
+4. Deployment of Cloudify manager worker.
+
+** You need to deploy DB and Message Broker before deploying Cloudify manager worker. **
+
+
+## Generate certificates and add as secret to k8s
+
+### SSL certificate must be provided, to secure communications between cloudify manager and posrgress/rabbitmq
+
+* ca.crt (to sign other certificates)
+
+* tls.key
+
+* tls.crt
+
+### Option 1: Create certificates using cloudify manager docker container
+
+```bash
+$ docker pull cloudifyplatform/community-cloudify-manager-aio:latest
+$ docker run --name cfy_manager_local -d --restart unless-stopped --tmpfs /run --tmpfs /run/lock -p 8000:8000 cloudifyplatform/community-cloudify-manager-aio
+$ docker exec -it created_ID bash
+
+# NAMESPACE to which cloudify-manager deployed, must be changed accordingly
+$ cfy_manager generate-test-cert -s 'cloudify-manager-worker.NAMESPACE.svc.cluster.local,rabbitmq.NAMESPACE.svc.cluster.local,postgres-postgresql.NAMESPACE.svc.cluster.local'
 ```
-cfy_manager generate-test-cert -s 'cloudify-manager-worker.cfy-helm.svc.cluster.local,rabbitmq.cfy-helm.svc.cluster.local,postgres-postgresql.cfy-helm.svc.cluster.local'
+
+Create secret in k8s from certificates:
+
+```bash
+$ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
 ```
+
+
+### Option 2: Use cert-manager component installed to kubernetes cluster
+
+You need to deploy those manifests, which will generate cfy-certs secret eventually, you need to change NAMESPACE to your namespace before.
+You can find this manifest in external folder - cert-issuer.yaml
+
+```yaml
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cfy-ca
+spec:
+  secretName: cfy-ca-tls
+  commonName: NAMESPACE.svc.cluster.local
+  usages:
+    - server auth
+    - client auth
+  isCA: true
+  issuerRef:
+    name: selfsigned-issuer
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: cfy-ca-issuer
+spec:
+  ca:
+    secretName: cfy-ca-tls
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cfy-cert
+spec:
+  secretName: cfy-certs
+  isCA: false
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+  - "postgres-postgresql.NAMESPACE.svc.cluster.local"
+  - "rabbitmq.NAMESPACE.svc.cluster.local"
+  - "cloudify-manager-worker.NAMESPACE.svc.cluster.local"
+  - "postgres-postgresql"
+  - "rabbitmq"
+  - "cloudify-manager-worker"
+  issuerRef:
+    name: cfy-ca-issuer
+```
+
 
 ## Install PostgreSQL(bitnami) to Kubernetes cluster with helm
 
-Create k8s secret (postgresql-certs) with certificates to be used by helm chart:
+You can find example of PostgreSQL values.yaml in external/postgres-values.yaml
 
-```
-kubectl create secret generic postgresql-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt 
-```
-
-Use created certificates in postgress-values.yaml (values file of bitnami's postgress)
+Use certificate we created as k8s secret: 'cfy-certs'
 
 ```
 volumePermissions.enabled=true
 tls:
   enabled: true
   preferServerCiphers: true
-  certificatesSecret: 'postgres-tls-secret'
+  certificatesSecret: 'cfy-certs'
   certFilename: 'tls.crt'
   certKeyFilename: 'tls.key'
 ```
 
+Install postgresql with postgres-values.yaml
+
 ```
-helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/postgres-values.yaml -n cfy-helm
+helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/postgres-values.yaml -n NAMESPACE
 ```
 
 ## Install RabbitMQ(bitnami) to Kubernetes cluster with helm
 
-Create k8s secret (rabbitmq-certs) with certificates to be used by helm chart:
 
-```
-kubectl create secret generic rabbitmq-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt 
-```
-
-Use created certificates in rabbitmq-values.yaml (values file of bitnami's rabbitmq)
+Use certificate we created as k8s secret: 'cfy-certs'
 
 ```
 tls:
     enabled: true
-    existingSecret: rabbit-tls-secret
+    existingSecret: cfy-certs
     failIfNoPeerCert: false
     sslOptionsVerify: verify_peer
     caCertificate: |-    
@@ -70,7 +151,7 @@ tls:
   certKeyFilename: 'tls.key'
 ```
 
-Run management console on 15671 port with SSL:
+Run management console on 15671 port with SSL (cloudify manager talks to management console via SSL):
 
 add to rabbitmq-values.yaml
 
@@ -87,26 +168,69 @@ extraPorts:
     targetPort: 15671
 ```
 
+Install postgresql with rabbitmq-values.yaml
+
 ```
-helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rabbitmq-values.yaml -n cfy-helm
+helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rabbitmq-values.yaml -n NAMESPACE
 ```
 
 ## Install cloudify manager worker
 
 ```
-git clone git@github.com:cloudify-cosmo/cloudify-helm.git
+helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 
-cd cloudify-helm
-
-kubectl create ns cfy-manager-worker
+helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker
 ```
 
-* generate certificates
+## Configuration options of cloudify-manager-worker values.yaml:
 
-* create secrets based on created certs
-
-* change values of 
-
+### Image:
 
 ```
-helm install cloudify-manager-worker ./cloudify-manager-worker -n cfy-manager-worker
+image:
+  repository: "cloudifyplatform/community-cloudify-manager-aio"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+```
+
+### Service:
+
+```
+service:
+  type: LoadBalancer
+  name: cloudify-manager-aio
+  rabbitmq:
+    port: 5671
+  http:
+    port: 80
+  https:
+    port: 443
+  internal_rest:
+    port: 53333
+```
+
+### node selector - select on which nodes cloudify manager AIO may run:
+
+```
+nodeSelector: {}
+# nodeSelector:
+#   nodeType: onDemand 
+```
+
+
+### resources requests and limits:
+```
+resources:
+  requests:
+    memory: 0.5Gi
+    cpu: 0.5
+```
+
+### readiness probe may be enabled/disabled
+```
+readinessProbe:
+  enabled: true
+  port: 80
+  path: /console
+  initialDelaySeconds: 10
+```
