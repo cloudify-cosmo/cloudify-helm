@@ -186,21 +186,42 @@ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker
 
 ### Image:
 
-```
+```yaml
 image:
-  repository: "cloudifyplatform/community-cloudify-manager-aio"
-  tag: "latest"
+  repository: "cloudifyplatform/premium-cloudify-manager-worker"
+  tag: "5.3.0"
   pullPolicy: IfNotPresent
+```
+
+### DB - postgreSQL:
+
+```yaml
+db:
+  host: postgres-postgresql
+  cloudify_db_name: 'cloudify_db'
+  cloudify_username: 'cloudify'
+  cloudify_password: 'cloudify'
+  server_db_name: 'postgres'
+  server_username: 'postgres'
+  server_password: 'cfy_test_pass'
+```
+
+### Message Broker - rabbitmq:
+
+```yaml
+queue:
+  host: rabbitmq
+  username: 'cfy_user'
+  password: 'cfy_test_pass'
 ```
 
 ### Service:
 
-```
+```yaml
 service:
-  type: LoadBalancer
-  name: cloudify-manager-aio
-  rabbitmq:
-    port: 5671
+  host: cloudify-manager-worker
+  type: ClusterIP
+  name: cloudify-manager-worker
   http:
     port: 80
   https:
@@ -211,26 +232,66 @@ service:
 
 ### node selector - select on which nodes cloudify manager AIO may run:
 
-```
+```yaml
 nodeSelector: {}
 # nodeSelector:
 #   nodeType: onDemand 
 ```
 
+### Secret name of certificate
+
+```yaml
+secret:
+  name: cfy-certs
+```
 
 ### resources requests and limits:
-```
+
+```yaml
 resources:
   requests:
     memory: 0.5Gi
     cpu: 0.5
 ```
 
-### readiness probe may be enabled/disabled
+### Pesrsistent volume size for EBS/EFS:
+
+```yaml
+volume:
+  size: "8Gi"
 ```
+
+### readiness probe may be enabled/disabled
+
+```yaml
 readinessProbe:
   enabled: true
   port: 80
   path: /console
   initialDelaySeconds: 10
+```
+
+### license - relevant in case you use premium cloudify manager,not community
+
+You can add license as secret to k8s
+
+```yaml
+licence:
+  secretName: cfy-licence
+```
+
+### Ingress
+
+You may enable ingress-nginx and generate automatically cert if you have ingress-nginx / cert-manager installed.
+
+```yaml
+ingress:
+  enabled: false
+  host: cloudify-manager.app.cloudify.co
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  tls:
+    enabled: false
+    secretName: cfy-secret-name
 ```
