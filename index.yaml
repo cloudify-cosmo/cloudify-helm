@@ -1,12 +1,21 @@
 apiVersion: v1
 entries:
+  cloudify-manager-aio:
+  - apiVersion: v2
+    created: "2021-06-24T18:05:44.662429+03:00"
+    description: Cloudify manager aio
+    digest: 9b3c78ff604a17062f37a7a7f9700b5e3f6cef65de53602ad3b659af6b8fe844
+    name: cloudify-manager-aio
+    urls:
+    - https://cloudify-cosmo.github.io/cloudify-helm/cloudify-manager-aio-0.1.0.tgz
+    version: 0.1.0
   cloudify-manager-worker:
   - apiVersion: v2
-    created: "2021-05-18T12:55:42.733537+03:00"
+    created: "2021-06-24T18:05:44.663216+03:00"
     description: Cloudify manager worker
     digest: 08c50371d6956abd7dbc9abfdb100193a03b6964b35fa497842315e44ad08271
     name: cloudify-manager-worker
     urls:
     - https://cloudify-cosmo.github.io/cloudify-helm/cloudify-manager-worker-0.1.4.tgz
     version: 0.1.4
-generated: "2021-05-18T12:55:42.727149+03:00"
+generated: "2021-06-24T18:05:44.661775+03:00"

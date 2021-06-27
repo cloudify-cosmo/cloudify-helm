@@ -22,4 +22,6 @@
 *.tmproj
 .vscode/
 external/
+caas-policies/
 cert
+scripts/
