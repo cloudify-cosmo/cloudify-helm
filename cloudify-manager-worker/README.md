@@ -280,6 +280,23 @@ licence:
   secretName: cfy-licence
 ```
 
+### Config
+
+You can delay start of cfy manager / install all plugins / disable security (not recommended)...
+
+```yaml
+config:
+  start_delay: 0
+  install_plugins: false
+  cli_local_profile_host_name: localhost
+  security:
+    ssl_enabled: false
+    admin_password: admin
+  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
+  tls_key_path: /mnt/cloudify-data/ssl/tls.key
+  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+```
+
 ### Ingress
 
 You may enable ingress-nginx and generate automatically cert if you have ingress-nginx / cert-manager installed.
