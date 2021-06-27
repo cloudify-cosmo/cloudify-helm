@@ -1,0 +1,48 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cfy-ca
+spec:
+  secretName: cfy-ca-tls
+  commonName: NAMESPACE.svc.cluster.local
+  usages:
+    - server auth
+    - client auth
+  isCA: true
+  issuerRef:
+    name: selfsigned-issuer
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: cfy-ca-issuer
+spec:
+  ca:
+    secretName: cfy-ca-tls
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cfy-cert
+spec:
+  secretName: cfy-certs
+  isCA: false
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+  - "postgres-postgresql.NAMESPACE.svc.cluster.local"
+  - "rabbitmq.NAMESPACE.svc.cluster.local"
+  - "cloudify-manager-worker.NAMESPACE.svc.cluster.local"
+  - "postgres-postgresql"
+  - "rabbitmq"
+  - "cloudify-manager-worker"
+  issuerRef:
+    name: cfy-ca-issuer

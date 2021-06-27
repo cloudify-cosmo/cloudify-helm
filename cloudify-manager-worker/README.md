@@ -11,7 +11,7 @@ It's a helm chart for cloudify manager which is:
 
 This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
-![cfy-manager](images/cfy-example.png)
+![cfy-manager](../images/cfy-example.png)
 
 
 ## How to create and deploy such a setup?
@@ -24,12 +24,12 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 
 4. Deployment of Cloudify manager worker.
 
-** You need to deploy DB and Message Broker before deploying Cloudify manager worker. **
+**You need to deploy DB and Message Broker before deploying Cloudify manager worker**
 
 
 ## Generate certificates and add as secret to k8s
 
-### SSL certificate must be provided, to secure communications between cloudify manager and posrgress/rabbitmq
+**SSL certificate must be provided, to secure communications between cloudify manager and posrgress/rabbitmq**
 
 * ca.crt (to sign other certificates)
 
