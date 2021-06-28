@@ -256,9 +256,22 @@ resources:
 
 ### Pesrsistent volume size for EBS/EFS:
 
+If using multiple replicas (High availability), EFS must be used
+
 ```yaml
 volume:
-  size: "8Gi"
+  storage_class: 'efs'
+  access_mode: 'ReadWriteMany'
+  size: "3Gi"
+```
+
+If using one replicas, you can use EBS (gp2) for example:
+
+```yaml
+volume:
+  storage_class: 'gp2'
+  access_mode: 'ReadWriteOnce'
+  size: "3Gi"
 ```
 
 ### readiness probe may be enabled/disabled
@@ -287,6 +300,8 @@ You can delay start of cfy manager / install all plugins / disable security (not
 ```yaml
 config:
   start_delay: 0
+  # Multiple replicas works only with EFS(NFS) volume
+  replicas: 1
   install_plugins: false
   cli_local_profile_host_name: localhost
   security:

@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cfy-worker-pvc
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.volume.storage_class }}
+spec:
+  accessModes:
+    - {{ .Values.volume.access_mode }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.size }}

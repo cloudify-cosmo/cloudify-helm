@@ -6,7 +6,7 @@ metadata:
     name: {{ template "cloudify-manager-worker.name" . }}
 {{ include "cloudify-manager-worker.labels" . | indent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.config.replicas }}
   selector:
     matchLabels:
       app: {{ template "cloudify-manager-worker.name" . }}
@@ -36,6 +36,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pull_policy }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           httpGet:
             path: {{ .Values.readinessProbe.path }}
@@ -116,15 +117,10 @@ spec:
       - name: cfy-worker-certs
         secret:
           secretName: {{ .Values.secret.name }}
+      - name: cloudify-data
+        persistentVolumeClaim:
+          claimName: cfy-worker-pvc
+
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}
-  volumeClaimTemplates:
-  - metadata:
-      name: cloudify-data
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: {{ .Values.volume.size }}
