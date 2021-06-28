@@ -33,8 +33,7 @@ service:
   internal_rest:
     port: 53333
 
-nodeSelector:
-  instance-type: on-demand-mgt
+nodeSelector: {}
 
 secret:
   name: cfy-certs
@@ -68,6 +67,7 @@ readinessProbe:
   enabled: true
   port: 80
   path: /console
+  successThreshold: 3
   initialDelaySeconds: 10
 
 ingress:
