@@ -7,6 +7,9 @@ data:
   cfy_starter.sh: |
     #!/usr/bin/env bash
     
+    echo 'Start delay'
+    sleep {{ .Values.config.start_delay }}
+
     BEFORE_HOOK=/tmp/before_hook_completed
     AFTER_HOOK=/tmp/after_hook_completed
 
@@ -16,9 +19,6 @@ data:
       sh /tmp/cloudify/before_hook.sh
       touch /tmp/before_hook_completed
     fi
-
-    echo 'Start delay'
-    sleep {{ .Values.config.start_delay }}
 
     echo 'Run cloudify manager'
     /usr/bin/cfy_manager image-starter

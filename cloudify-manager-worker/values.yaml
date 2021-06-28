@@ -1,7 +1,7 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
-domain: "cfy-helm.svc.cluster.local"
+domain: "test-helm.svc.cluster.local"
 
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
@@ -34,14 +34,17 @@ service:
     port: 53333
 
 nodeSelector:
-  instance-type: on-demand-large
-  intent: cfy-manager
+  instance-type: on-demand-mgt
 
 secret:
   name: cfy-certs
 
+# Multiple replicas - EFS only, storage_class: 'aws-efs', access_mode: 'ReadWriteMany'
+# Single replica - EBS, storage_class: 'gp2', access_mode: 'ReadWriteOnce'
 volume:
-  size: "8Gi"
+  storage_class: 'gp2'
+  access_mode: 'ReadWriteOnce'
+  size: "3Gi"
 
 resources:
   requests:
@@ -49,6 +52,8 @@ resources:
     cpu: 0.5
 
 config:
+  # Multiple replicas works only with EFS(NFS) volume
+  replicas: 1
   start_delay: 0
   install_plugins: false
   cli_local_profile_host_name: localhost
@@ -59,18 +64,15 @@ config:
   tls_key_path: /mnt/cloudify-data/ssl/tls.key
   ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
 
-licence:
-  secretName: cfy-licence
-
 readinessProbe:
-  enabled: false
+  enabled: true
   port: 80
   path: /console
   initialDelaySeconds: 10
 
 ingress:
   enabled: true
-  host: cfy-demo-app.app.cloudify.co
+  host: cfy-efs-app.eks.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
