@@ -13,6 +13,12 @@ data:
 
     if [ -f "$FILE" ]; then
       echo "Init flag exists!"
+
+      echo "Update DB schema, in case we during upgrade to newer image"
+      pushd $CLOUDIFY_DATA_DIR/latest/migrations
+        /opt/manager/env/bin/alembic upgrade head
+        CURRENT_DB=$(/opt/manager/env/bin/alembic current)
+      popd
     else 
         cfy_manager stop
 
