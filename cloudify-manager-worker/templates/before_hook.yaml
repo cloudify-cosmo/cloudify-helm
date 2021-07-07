@@ -16,11 +16,16 @@ data:
     mkdir -p /mnt/cloudify-data/mgmtworker
     mkdir -p /mnt/cloudify-data/cloudify-composer
     mkdir -p /mnt/cloudify-data/cloudify-stage
+    mkdir -p /mnt/cloudify-data/latest
     
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
+
+      echo "Save latest migrations to latest folder, in case we need to apply newest DB schema for version upgrade"
+      rm -rf $CLOUDIFY_DATA_DIR/latest/migrations
+      cp -a --verbose  /opt/manager/resources/cloudify/migrations $CLOUDIFY_DATA_DIR/latest
 
       echo "Remove unused directory"
       rm -rf --verbose /opt/manager/resources
@@ -49,6 +54,10 @@ data:
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
+
+      echo "Set proper permissions for stage/composer files"
+      sudo chown composer_user /opt/cloudify-composer/backend/conf/prod.json
+      sudo chown stage_user /opt/cloudify-stage/conf/manager.json
     else 
       echo "Copy config"
       rm -f /etc/cloudify/config.yaml
