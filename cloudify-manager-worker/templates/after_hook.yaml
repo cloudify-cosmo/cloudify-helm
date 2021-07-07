@@ -19,6 +19,8 @@ data:
         /opt/manager/env/bin/alembic upgrade head
         CURRENT_DB=$(/opt/manager/env/bin/alembic current)
       popd
+      rm -rf /opt/manager/resources/cloudify/migrations
+      cp -a --verbose $CLOUDIFY_DATA_DIR/latest/migrations $CLOUDIFY_DATA_DIR/manager/resources/cloudify
     else 
         cfy_manager stop
 
