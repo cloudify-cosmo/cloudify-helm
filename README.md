@@ -26,7 +26,7 @@ To understand all available options AIO cloudify manager chart has, please read 
  
 It's a helm chart for cloudify manager which is:
 
-* Highly available, can be deployed with multiple replicas. ( available only when used EFS(NFS) Volume )
+* Highly available, can be deployed with multiple replicas, available only when used with NFS Volume. ( Tested with EFS of AWS | FIlestore of GCP | Azure File Storage)
 * Use persistent volume to survive restarts/failures.
 * Use external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 * Use external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
@@ -48,3 +48,14 @@ You need to deploy DB and Message Broker before deploying Cloudify manager worke
 
 
 To better understand how to install and configure cloudify manager worker setup please read [Cloudify manager worker helm chart](cloudify-manager-worker/README.md)
+
+# Deployment Examples
+
+## Deployment to Azure of Highly Available Cloudify manager worker
+
+[Cloudify manager worker helm chart deployment to azure](examples/azure/README.md)
+
+
+
+
+
