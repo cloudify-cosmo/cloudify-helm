@@ -12,7 +12,7 @@ az aks create --resource-group aks-demo --name aks-cluster --node-count 3 --enab
 az aks get-credentials --resource-group aks-demo --name aks-cluster
 ```
 
-# Provision of Azure File Storage (NFS) in Azure:
+# Provision of Azure File Storage (NFS supported) in Azure:
 
 ## Register the NFS 4.1 protocol
 
@@ -81,7 +81,7 @@ Great explanation of how to provision FileStorage
 https://www.youtube.com/watch?v=MXXS4n-Tk4o&t=0s&ab_channel=WintellectNOW
 
 ## Deploy nfs provisioner
-You need dynamic 'nfs client provisoner' to dynamically deploy new PV from nfs storage evry time PV needed
+You need dynamic 'nfs client provisoner' to dynamically deploy new PV from nfs storage every time PV needed
 
 ```bash
 helm install nfs-provisioner stable/nfs-client-provisioner --set nfs.server="cfynfsstorage.file.core.windows.net" --set nfs.path="/cfynfsstorage/nfsshare"
