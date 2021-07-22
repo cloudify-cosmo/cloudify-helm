@@ -93,6 +93,13 @@ Validate that new 'storageclass' nfs-client available:
 kubectl get storageclass
 ```
 
+Problems I encountered:
+
+* Check nfsshare you created attached to virtual network through azure portal
+
+* Check 'Secure transfer required' is disabled in configuration
+
+
 ### Alternative is to create PV manually every time:
 
 ```bash

@@ -51,10 +51,11 @@ To better understand how to install and configure cloudify manager worker setup 
 
 # Deployment Examples
 
-## Deployment to Azure of Highly Available Cloudify manager worker
+[Deployment to Azure](examples/azure/README.md)
 
-[Cloudify manager worker helm chart deployment to azure](examples/azure/README.md)
+[Deployment to GCP](examples/gcp/README.md)
 
+[Deployment to AWS](examples/gcp/README.md)
 
 
 
