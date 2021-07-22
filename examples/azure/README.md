@@ -14,6 +14,8 @@ az aks get-credentials --resource-group aks-demo --name aks-cluster
 
 # Provision of Azure File Storage (NFS supported) in Azure:
 
+https://docs.microsoft.com/en-us/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal
+
 ## Register the NFS 4.1 protocol
 
 ```bash
@@ -40,8 +42,6 @@ az feature show \
 ```
 
 ## Creating NFS share
-
-https://docs.microsoft.com/en-us/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal
 
 To create NFS share must be used **Premium Files Storage**
 

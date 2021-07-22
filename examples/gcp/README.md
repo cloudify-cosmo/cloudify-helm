@@ -13,7 +13,19 @@ gcloud container clusters create \
 gcloud container clusters get-credentials gke-cluster
 ```
 
-# Provision of Filestore (NFS) in GCP:
+# Provision of Filestore (NFS supported) in GCP:
+
+https://cloud.google.com/community/tutorials/gke-filestore-dynamic-provisioning
+
+## Enable the required Google APIs
+
+```bash
+gcloud services enable file.googleapis.com
+```
+
+## Create a Filestore volume
+
+### Create a Filestore instance with 1TB of storage capacity
 
 ```bash
 ## --project must be your PROJECT_ID
@@ -23,7 +35,11 @@ gcloud beta filestore instances create nfs-storage \
     --tier=STANDARD \
     --file-share=name="nfsshare",capacity=1TB \
     --network=name=default
+```
 
+### Retrieve the IP address of the Filestore instance
+
+```bash
 FSADDR=$(gcloud beta filestore instances describe cfy-fs \
      --project=gke-demo-320314 \
      --zone=europe-west1-b \
