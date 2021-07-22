@@ -1,0 +1,81 @@
+nameOverride: "cloudify-manager-worker"
+fullnameOverride: "cloudify-manager-worker"
+
+domain: "cfy-demo.svc.cluster.local"
+
+image:
+  repository: cloudifyplatform/premium-cloudify-manager-worker
+  tag: 5.3.0
+  pull_policy: Always
+
+db:
+  host: postgres-postgresql
+  cloudify_db_name: 'cloudify_db'
+  cloudify_username: 'cloudify'
+  cloudify_password: 'cloudify'
+  server_db_name: 'postgres'
+  server_username: 'postgres'
+  server_password: 'cfy_test_pass'
+
+queue:
+  host: rabbitmq
+  username: 'cfy_user'
+  password: 'cfy_test_pass'
+
+service:
+  host: cloudify-manager-worker
+  type: LoadBalancer
+  name: cloudify-manager-worker
+  http:
+    port: 80
+  https:
+    port: 443
+  internal_rest:
+    port: 53333
+
+nodeSelector: {}
+
+secret:
+  name: cfy-certs
+
+# Multiple replicas - EFS only, storage_class: 'aws-efs', access_mode: 'ReadWriteMany'
+# Single replica - EBS, storage_class: 'gp2', access_mode: 'ReadWriteOnce'
+volume:
+  storage_class: 'aws-efs'
+  access_mode: 'ReadWriteMany'
+  size: "15Gi"
+
+resources:
+  requests:
+    memory: 0.1Gi
+    cpu: 0.1
+
+config:
+  # Multiple replicas works only with NFS storage
+  replicas: 2
+  start_delay: 0
+  install_plugins: false
+  cli_local_profile_host_name: localhost
+  security:
+    ssl_enabled: false
+    admin_password: admin
+  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
+  tls_key_path: /mnt/cloudify-data/ssl/tls.key
+  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+
+readinessProbe:
+  enabled: true
+  port: 80
+  path: /console
+  successThreshold: 3
+  initialDelaySeconds: 10
+
+ingress:
+  enabled: false
+  host: cfy-efs-app.eks.cloudify.co
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  tls:
+    enabled: false
+    secretName: cfy-secret-name
