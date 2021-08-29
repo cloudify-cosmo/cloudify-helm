@@ -148,7 +148,6 @@ tls:
     caCertificate: |-    
     serverCertificate: |-
     serverKey: |-
-  certKeyFilename: 'tls.key'
 ```
 
 Run management console on 15671 port with SSL (cloudify manager talks to management console via SSL):
@@ -168,7 +167,7 @@ extraPorts:
     targetPort: 15671
 ```
 
-Install postgresql with rabbitmq-values.yaml
+Install rabbitmq with rabbitmq-values.yaml
 
 ```
 helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rabbitmq-values.yaml -n NAMESPACE
@@ -179,7 +178,7 @@ helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rab
 ```
 helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 
-helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker
+helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
 ```
 
 ## Configuration options of cloudify-manager-worker values.yaml:
@@ -254,7 +253,7 @@ resources:
     cpu: 0.5
 ```
 
-### Pesrsistent volume size for EBS/EFS:
+### Persistent volume size for EBS/EFS:
 
 If using multiple replicas (High availability), EFS must be used
 
@@ -265,7 +264,7 @@ volume:
   size: "3Gi"
 ```
 
-If using one replicas, you can use EBS (gp2) for example:
+If using one replicas, you can use EBS (gp2) for example, **gp2 is default**:
 
 ```yaml
 volume:
