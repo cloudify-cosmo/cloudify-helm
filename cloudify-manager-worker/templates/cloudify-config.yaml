@@ -23,6 +23,7 @@ data:
       ca_path: {{ .Values.config.ca_cert_path }}
       cert_path: {{ .Values.config.tls_cert_path }}
       key_path: {{ .Values.config.tls_key_path }}
+      is_external: true
       cluster_members:
         rabbit1:
           networks:
