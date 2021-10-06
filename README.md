@@ -1,5 +1,5 @@
 
-# Cloudify manager AIO helm chart
+# Cloudify manager AIO helm chart ( Community version )
 
 ## Description
 
@@ -20,7 +20,7 @@ helm install cloudify-manager-aio cloudify-helm/cloudify-manager-aio
 To understand all available options AIO cloudify manager chart has, please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
 
 
-# Cloudify manager worker helm chart
+# Cloudify manager worker helm chart ( Premium version )
 
 ## Description
  

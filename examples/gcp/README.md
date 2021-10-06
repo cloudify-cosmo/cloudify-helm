@@ -1,4 +1,4 @@
-# Deployment to GCP of Highly Available Cloudify manager worker
+# Deployment to GCP of Highly Available Cloudify manager worker (Premium Version)
 
 ## Provision GKE cluster
 
