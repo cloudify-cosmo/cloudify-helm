@@ -1,4 +1,4 @@
-# Deployment to AWS of Highly Available Cloudify manager worker
+# Deployment to AWS of Highly Available Cloudify manager worker (Premium Version)
 
 ## Provision EKS cluster
 

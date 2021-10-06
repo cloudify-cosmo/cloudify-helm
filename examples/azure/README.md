@@ -1,4 +1,4 @@
-# Deployment to Azure of Highly Available Cloudify manager worker
+# Deployment to Azure of Highly Available Cloudify manager worker (Premium Version)
 
 ## Provision AKS cluster
 

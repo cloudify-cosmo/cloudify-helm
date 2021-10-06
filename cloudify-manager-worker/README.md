@@ -1,4 +1,4 @@
-# Cloudify manager worker helm chart
+# Cloudify manager worker helm chart (Premium Version)
 
 ## Description
  
