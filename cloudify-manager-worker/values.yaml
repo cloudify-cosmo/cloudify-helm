@@ -5,7 +5,12 @@ domain: "test-helm.svc.cluster.local"
 
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
-  tag: 5.3.0
+  tag: 6.2.0
+  pull_policy: Always
+
+initContainersImage:
+  repository: busybox
+  tag: latest
   pull_policy: Always
 
 db:
@@ -38,7 +43,10 @@ nodeSelector: {}
 secret:
   name: cfy-certs
 
-# Multiple replicas - EFS only, storage_class: 'aws-efs', access_mode: 'ReadWriteMany'
+# imagePullSecrets:
+#   secretName: dockerhub
+
+# Multiple replicas - NFS like storage only, storage_class: 'aws-efs', access_mode: 'ReadWriteMany'
 # Single replica - EBS, storage_class: 'gp2', access_mode: 'ReadWriteOnce'
 volume:
   storage_class: 'gp2'
@@ -51,7 +59,7 @@ resources:
     cpu: 0.5
 
 config:
-  # Multiple replicas works only with EFS(NFS) volume
+  # Multiple replicas works only with NFS like volume
   replicas: 1
   start_delay: 0
   install_plugins: false
