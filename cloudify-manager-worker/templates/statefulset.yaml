@@ -18,7 +18,8 @@ spec:
     spec:
       initContainers:
       - name: init-data
-        image: busybox
+        image: {{ .Values.initContainersImage.repository }}:{{ .Values.initContainersImage.tag }}
+        imagePullPolicy: {{ .Values.initContainersImage.pull_policy }}
         command:
           - /bin/sh
           - -cx
@@ -123,4 +124,8 @@ spec:
 
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+    {{- end }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.secretName }}
     {{- end }}
