@@ -89,6 +89,9 @@ config:
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
 
+licence: {}
+  # secretName: cfy-licence
+
 readinessProbe:
   enabled: false
   port: 80
