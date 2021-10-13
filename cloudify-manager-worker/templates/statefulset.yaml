@@ -43,10 +43,9 @@ spec:
             path: {{ .Values.readinessProbe.path }}
             port: {{ .Values.readinessProbe.port }}
         {{- end}}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+        {{- if .Values.resources }}
+        resources: {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /run
           name: run
@@ -117,7 +116,7 @@ spec:
               name: after-hook
       - name: cfy-worker-certs
         secret:
-          secretName: {{ .Values.certsSecret.name }}
+          secretName: {{ .Values.tls.secretName }}
       - name: cloudify-data
         persistentVolumeClaim:
           claimName: cfy-worker-pvc

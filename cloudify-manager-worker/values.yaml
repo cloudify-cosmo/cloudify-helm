@@ -54,9 +54,12 @@ service:
 ##
 nodeSelector: {}
 
-# certificates as a secret, to secure communications between cloudify manager and postgress|rabbitmq
-certsSecret:
-  name: cfy-certs
+##
+## TLS configuration
+##
+tls:
+  # certificates as a secret, to secure communications between cloudify manager and postgress|rabbitmq
+  secretName: cfy-certs
 
 # For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
 # Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
@@ -65,10 +68,13 @@ volume:
   accessMode: 'ReadWriteOnce'
   size: "3Gi"
 
-resources:
-  requests:
-    memory: 0.5Gi
-    cpu: 0.5
+resources: {}
+  # requests:
+  #   memory: 0.5Gi
+  #   cpu: 0.5
+  # limits:
+  #   memory: 0.5Gi
+  #   cpu: 0.5
 
 config:
   # Multiple replicas works only with NFS like volume
@@ -84,14 +90,14 @@ config:
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
 
 readinessProbe:
-  enabled: true
+  enabled: false
   port: 80
   path: /console
   successThreshold: 3
   initialDelaySeconds: 10
 
 ingress:
-  enabled: true
+  enabled: false
   host: cfy-efs-app.eks.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx
