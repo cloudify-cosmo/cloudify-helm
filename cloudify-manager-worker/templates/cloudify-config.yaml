@@ -9,10 +9,10 @@ data:
       private_ip: {{ .Values.service.host }}.{{.Values.domain}}
       public_ip: {{ .Values.service.host }}.{{.Values.domain}}
       hostname: {{ .Values.service.host }}.{{.Values.domain}}
-      cli_local_profile_host_name: {{ .Values.config.cli_local_profile_host_name }}
+      cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
       security:
-        ssl_enabled: {{ .Values.config.security.ssl_enabled }}
-        admin_password: {{ .Values.config.security.admin_password }}
+        ssl_enabled: {{ .Values.config.security.sslEnabled }}
+        admin_password: {{ .Values.config.security.adminPassword }}
       {{- if .Values.licence }}
       cloudify_license_path: /tmp/cloudify/cfy_licence.yaml
       {{- end}}
@@ -20,9 +20,9 @@ data:
     rabbitmq:
       username: {{ .Values.queue.username }}
       password: {{ .Values.queue.password }}
-      ca_path: {{ .Values.config.ca_cert_path }}
-      cert_path: {{ .Values.config.tls_cert_path }}
-      key_path: {{ .Values.config.tls_key_path }}
+      ca_path: {{ .Values.config.caCertPath }}
+      cert_path: {{ .Values.config.tlsCertPath }}
+      key_path: {{ .Values.config.tlsKeyPath }}
       is_external: true
       cluster_members:
         rabbit1:
@@ -37,31 +37,31 @@ data:
       cloudify_db_name: {{ .Values.db.cloudifyDBName }}
       cloudify_username: {{ .Values.db.cloudifyUsername }}
       cloudify_password: {{ .Values.db.cloudifyPassword }}
-      ca_path: {{ .Values.config.ca_cert_path }}
+      ca_path: {{ .Values.config.caCertPath }}
       ssl_enabled: true
       ssl_client_verification: true
     postgresql_server:
-      postgres_password: {{ .Values.db.server_password }}
-      ca_path: {{ .Values.config.ca_cert_path }}
-      cert_path: {{ .Values.config.tls_cert_path }}
-      key_path: {{ .Values.config.tls_key_path }}
+      postgres_password: {{ .Values.db.serverPassword }}
+      ca_path: {{ .Values.config.caCertPath }}
+      cert_path: {{ .Values.config.tlsCertPath }}
+      key_path: {{ .Values.config.tlsKeyPath }}
 
     prometheus:
-      ca_path: {{ .Values.config.ca_cert_path }}
-      cert_path: {{ .Values.config.tls_cert_path }}
-      key_path: {{ .Values.config.tls_key_path }}
+      ca_path: {{ .Values.config.caCertPath }}
+      cert_path: {{ .Values.config.tlsCertPath }}
+      key_path: {{ .Values.config.tlsKeyPath }}
       scrape_interval: 5s
 
     ssl_inputs:
-      postgresql_client_cert_path: {{ .Values.config.tls_cert_path }}
-      postgresql_client_key_path: {{ .Values.config.tls_key_path }}
-      postgresql_ca_cert_path: {{ .Values.config.ca_cert_path }}
-      ca_cert_path: {{ .Values.config.ca_cert_path }}
-      internal_cert_path: {{ .Values.config.tls_cert_path }}
-      internal_key_path: {{ .Values.config.tls_key_path }}
-      external_cert_path: {{ .Values.config.tls_cert_path }}
-      external_key_path: {{ .Values.config.tls_key_path }}
-      external_ca_cert_path: {{ .Values.config.ca_cert_path }}
+      postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+      postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+      postgresql_ca_cert_path: {{ .Values.config.caCertPath }}
+      ca_cert_path: {{ .Values.config.caCertPath }}
+      internal_cert_path: {{ .Values.config.tlsCertPath }}
+      internal_key_path: {{ .Values.config.tlsKeyPath }}
+      external_cert_path: {{ .Values.config.tlsCertPath }}
+      external_key_path: {{ .Values.config.tlsKeyPath }}
+      external_ca_cert_path: {{ .Values.config.caCertPath }}
 
     validations:
       skip_validations: true

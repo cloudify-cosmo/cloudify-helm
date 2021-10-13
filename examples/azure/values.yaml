@@ -30,7 +30,7 @@ service:
     port: 80
   https:
     port: 443
-  internal_rest:
+  internalRest:
     port: 53333
 
 nodeSelector: {}
@@ -38,11 +38,11 @@ nodeSelector: {}
 secret:
   name: cfy-certs
 
-# Multiple replicas - EFS only, storage_class: 'aws-efs', access_mode: 'ReadWriteMany'
-# Single replica - EBS, storage_class: 'gp2', access_mode: 'ReadWriteOnce'
+# Multiple replicas - EFS only, storageClass: 'aws-efs', accessMode: 'ReadWriteMany'
+# Single replica - EBS, storageClass: 'gp2', accessMode: 'ReadWriteOnce'
 volume:
-  storage_class: 'nfs-client'
-  access_mode: 'ReadWriteMany'
+  storageClass: 'nfs-client'
+  accessMode: 'ReadWriteMany'
   size: "15Gi"
 
 resources:
@@ -53,15 +53,15 @@ resources:
 config:
   # Multiple replicas works only with NFS storage
   replicas: 2
-  start_delay: 0
-  install_plugins: false
-  cli_local_profile_host_name: localhost
+  startDelay: 0
+  installPlugins: false
+  cliLocalProfileHostName: localhost
   security:
-    ssl_enabled: false
-    admin_password: admin
-  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
-  tls_key_path: /mnt/cloudify-data/ssl/tls.key
-  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+    sslEnabled: false
+    adminPassword: admin
+  tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
+  tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
+  caCertPath: /mnt/cloudify-data/ssl/ca.crt
 
 readinessProbe:
   enabled: true

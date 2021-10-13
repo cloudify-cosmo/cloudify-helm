@@ -98,8 +98,8 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 domain: "cfy-demo.svc.cluster.local"
 
 volume:
-  storage_class: 'aws-efs'
-  access_mode: 'ReadWriteMany'
+  storageClass: 'aws-efs'
+  accessMode: 'ReadWriteMany'
   size: "15Gi"
 
 service:
@@ -110,22 +110,22 @@ service:
     port: 80
   https:
     port: 443
-  internal_rest:
+  internalRest:
     port: 53333
 secret:
   name: cfy-certs
 
 config:
   replicas: 2
-  start_delay: 0
-  install_plugins: false
-  cli_local_profile_host_name: localhost
+  startDelay: 0
+  installPlugins: false
+  cliLocalProfileHostName: localhost
   security:
-    ssl_enabled: false
-    admin_password: admin
-  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
-  tls_key_path: /mnt/cloudify-data/ssl/tls.key
-  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+    sslEnabled: false
+    adminPassword: admin
+  tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
+  tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
+  caCertPath: /mnt/cloudify-data/ssl/ca.crt
 
 ingress:
   enabled: false

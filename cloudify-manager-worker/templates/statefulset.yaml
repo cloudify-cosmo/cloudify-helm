@@ -117,7 +117,7 @@ spec:
               name: after-hook
       - name: cfy-worker-certs
         secret:
-          secretName: {{ .Values.secret.name }}
+          secretName: {{ .Values.certsSecret.name }}
       - name: cloudify-data
         persistentVolumeClaim:
           claimName: cfy-worker-pvc

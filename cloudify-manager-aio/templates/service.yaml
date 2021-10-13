@@ -19,8 +19,8 @@ spec:
       targetPort: {{ .Values.service.rabbitmq.port }}
       protocol: TCP
       name: rabbitmq
-    - port: {{ .Values.service.internal_rest.port }}
-      targetPort: {{ .Values.service.internal_rest.port }}
+    - port: {{ .Values.service.internalRest.port }}
+      targetPort: {{ .Values.service.internalRest.port }}
       protocol: TCP
       name: internal-rest
   selector:

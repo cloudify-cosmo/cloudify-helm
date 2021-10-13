@@ -8,7 +8,7 @@ data:
     #!/usr/bin/env bash
     
     echo 'Start delay'
-    sleep {{ .Values.config.start_delay }}
+    sleep {{ .Values.config.startDelay }}
 
     BEFORE_HOOK=/tmp/before_hook_completed
     AFTER_HOOK=/tmp/after_hook_completed

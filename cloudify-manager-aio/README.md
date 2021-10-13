@@ -41,7 +41,7 @@ service:
     port: 80
   https:
     port: 443
-  internal_rest:
+  internalRest:
     port: 53333
 ```
 

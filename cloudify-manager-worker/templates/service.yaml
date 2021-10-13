@@ -15,8 +15,8 @@ spec:
       targetPort: {{ .Values.service.https.port }}
       protocol: TCP
       name: https
-    - port: {{ .Values.service.internal_rest.port }}
-      targetPort: {{ .Values.service.internal_rest.port }}
+    - port: {{ .Values.service.internalRest.port }}
+      targetPort: {{ .Values.service.internalRest.port }}
       protocol: TCP
       name: internal-rest
   selector:
