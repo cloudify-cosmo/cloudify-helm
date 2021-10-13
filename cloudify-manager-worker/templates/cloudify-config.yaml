@@ -31,12 +31,12 @@ data:
 
     postgresql_client:
       host: {{ .Values.db.host }}.{{ .Values.domain }}
-      server_db_name: {{ .Values.db.server_db_name }}
-      server_username: {{ .Values.db.server_username }}
-      server_password: {{ .Values.db.server_password }}
-      cloudify_db_name: {{ .Values.db.cloudify_db_name }}
-      cloudify_username: {{ .Values.db.cloudify_username }}
-      cloudify_password: {{ .Values.db.cloudify_password }}
+      server_db_name: {{ .Values.db.serverDBName }}
+      server_username: {{ .Values.db.serverUsername }}
+      server_password: {{ .Values.db.serverPassword }}
+      cloudify_db_name: {{ .Values.db.cloudifyDBName }}
+      cloudify_username: {{ .Values.db.cloudifyUsername }}
+      cloudify_password: {{ .Values.db.cloudifyPassword }}
       ca_path: {{ .Values.config.ca_cert_path }}
       ssl_enabled: true
       ssl_client_verification: true

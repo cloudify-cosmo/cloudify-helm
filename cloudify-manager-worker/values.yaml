@@ -6,21 +6,30 @@ domain: "test-helm.svc.cluster.local"
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 6.2.0
-  pull_policy: Always
-
-initContainersImage:
-  repository: busybox
-  tag: latest
-  pull_policy: Always
+  ## Specify a imagePullPolicy
+  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  ##
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  pullSecrets: []
+  #- name: secretName
+  initContainer:
+    repository: busybox
+    tag: latest
+    pullPolicy: Always
 
 db:
   host: postgres-postgresql
-  cloudify_db_name: 'cloudify_db'
-  cloudify_username: 'cloudify'
-  cloudify_password: 'cloudify'
-  server_db_name: 'postgres'
-  server_username: 'postgres'
-  server_password: 'cfy_test_pass'
+  cloudifyDBName: 'cloudify_db'
+  cloudifyUsername: 'cloudify'
+  cloudifyPassword: 'cloudify'
+  serverDBName: 'postgres'
+  serverUsername: 'postgres'
+  serverPassword: 'cfy_test_pass'
 
 queue:
   host: rabbitmq

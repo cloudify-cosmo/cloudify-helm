@@ -197,12 +197,12 @@ image:
 ```yaml
 db:
   host: postgres-postgresql
-  cloudify_db_name: 'cloudify_db'
-  cloudify_username: 'cloudify'
-  cloudify_password: 'cloudify'
-  server_db_name: 'postgres'
-  server_username: 'postgres'
-  server_password: 'cfy_test_pass'
+  cloudifyDBName: 'cloudify_db'
+  cloudifyUsername: 'cloudify'
+  cloudifyPassword: 'cloudify'
+  serverDBName: 'postgres'
+  serverUsername: 'postgres'
+  serverPassword: 'cfy_test_pass'
 ```
 
 ### Message Broker - rabbitmq:

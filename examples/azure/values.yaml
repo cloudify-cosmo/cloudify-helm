@@ -6,16 +6,16 @@ domain: "cfy-demo.svc.cluster.local"
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 5.3.0
-  pull_policy: Always
+  pullPolicy: Always
 
 db:
   host: postgres-postgresql
-  cloudify_db_name: 'cloudify_db'
-  cloudify_username: 'cloudify'
-  cloudify_password: 'cloudify'
-  server_db_name: 'postgres'
-  server_username: 'postgres'
-  server_password: 'cfy_test_pass'
+  cloudifyDBName: 'cloudify_db'
+  cloudifyUsername: 'cloudify'
+  cloudifyPassword: 'cloudify'
+  serverDBName: 'postgres'
+  serverUsername: 'postgres'
+  serverPassword: 'cfy_test_pass'
 
 queue:
   host: rabbitmq

@@ -18,8 +18,8 @@ spec:
     spec:
       initContainers:
       - name: init-data
-        image: {{ .Values.initContainersImage.repository }}:{{ .Values.initContainersImage.tag }}
-        imagePullPolicy: {{ .Values.initContainersImage.pull_policy }}
+        image: {{ .Values.image.initContainer.repository }}:{{ .Values.image.initContainer.tag }}
+        imagePullPolicy: {{ .Values.image.initContainer.pullPolicy }}
         command:
           - /bin/sh
           - -cx
@@ -34,7 +34,7 @@ spec:
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pull_policy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
@@ -125,7 +125,7 @@ spec:
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}
-    {{- if .Values.imagePullSecrets }}
+    {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets.secretName }}
-    {{- end }}
+{{ toYaml .Values.image.pullSecrets | indent 8 }}
+      {{- end }}
