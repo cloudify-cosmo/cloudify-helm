@@ -6,22 +6,33 @@ domain: "test-helm.svc.cluster.local"
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 6.2.0
-  pull_policy: Always
+  ## Specify a imagePullPolicy
+  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  ##
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  pullSecrets: []
+  # - name: secretName
+  initContainer:
+    repository: busybox
+    tag: latest
+    pullPolicy: Always
 
-initContainersImage:
-  repository: busybox
-  tag: latest
-  pull_policy: Always
-
+# external DB
 db:
   host: postgres-postgresql
-  cloudify_db_name: 'cloudify_db'
-  cloudify_username: 'cloudify'
-  cloudify_password: 'cloudify'
-  server_db_name: 'postgres'
-  server_username: 'postgres'
-  server_password: 'cfy_test_pass'
+  cloudifyDBName: 'cloudify_db'
+  cloudifyUsername: 'cloudify'
+  cloudifyPassword: 'cloudify'
+  serverDBName: 'postgres'
+  serverUsername: 'postgres'
+  serverPassword: 'cfy_test_pass'
 
+# external Queue (Message Broker)
 queue:
   host: rabbitmq
   username: 'cfy_user'
@@ -35,51 +46,61 @@ service:
     port: 80
   https:
     port: 443
-  internal_rest:
+  internalRest:
     port: 53333
 
+## Node labels for default backend pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
 nodeSelector: {}
 
-secret:
-  name: cfy-certs
+##
+## TLS configuration
+##
+tls:
+  # certificates as a secret, to secure communications between cloudify manager and postgress|rabbitmq
+  secretName: cfy-certs
 
-# imagePullSecrets:
-#   secretName: dockerhub
-
-# Multiple replicas - NFS like storage only, storage_class: 'aws-efs', access_mode: 'ReadWriteMany'
-# Single replica - EBS, storage_class: 'gp2', access_mode: 'ReadWriteOnce'
+# For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
+# Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
 volume:
-  storage_class: 'gp2'
-  access_mode: 'ReadWriteOnce'
+  storageClass: 'gp2'
+  accessMode: 'ReadWriteOnce'
   size: "3Gi"
 
-resources:
-  requests:
-    memory: 0.5Gi
-    cpu: 0.5
+resources: {}
+  # requests:
+  #   memory: 0.5Gi
+  #   cpu: 0.5
+  # limits:
+  #   memory: 0.5Gi
+  #   cpu: 0.5
 
 config:
   # Multiple replicas works only with NFS like volume
   replicas: 1
-  start_delay: 0
-  install_plugins: false
-  cli_local_profile_host_name: localhost
+  startDelay: 0
+  installPlugins: false
+  cliLocalProfileHostName: localhost
   security:
-    ssl_enabled: false
-    admin_password: admin
-  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
-  tls_key_path: /mnt/cloudify-data/ssl/tls.key
-  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+    sslEnabled: false
+    adminPassword: admin
+  tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
+  tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
+  caCertPath: /mnt/cloudify-data/ssl/ca.crt
+
+licence: {}
+  # secretName: cfy-licence
 
 readinessProbe:
-  enabled: true
+  enabled: false
   port: 80
   path: /console
   successThreshold: 3
   initialDelaySeconds: 10
 
 ingress:
-  enabled: true
+  enabled: false
   host: cfy-efs-app.eks.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx

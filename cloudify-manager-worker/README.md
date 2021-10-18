@@ -197,12 +197,12 @@ image:
 ```yaml
 db:
   host: postgres-postgresql
-  cloudify_db_name: 'cloudify_db'
-  cloudify_username: 'cloudify'
-  cloudify_password: 'cloudify'
-  server_db_name: 'postgres'
-  server_username: 'postgres'
-  server_password: 'cfy_test_pass'
+  cloudifyDBName: 'cloudify_db'
+  cloudifyUsername: 'cloudify'
+  cloudifyPassword: 'cloudify'
+  serverDBName: 'postgres'
+  serverUsername: 'postgres'
+  serverPassword: 'cfy_test_pass'
 ```
 
 ### Message Broker - rabbitmq:
@@ -225,7 +225,7 @@ service:
     port: 80
   https:
     port: 443
-  internal_rest:
+  internalRest:
     port: 53333
 ```
 
@@ -259,8 +259,8 @@ If using multiple replicas (High availability), EFS must be used
 
 ```yaml
 volume:
-  storage_class: 'efs'
-  access_mode: 'ReadWriteMany'
+  storageClass: 'efs'
+  accessMode: 'ReadWriteMany'
   size: "3Gi"
 ```
 
@@ -268,8 +268,8 @@ If using one replicas, you can use EBS (gp2) for example, **gp2 is default**:
 
 ```yaml
 volume:
-  storage_class: 'gp2'
-  access_mode: 'ReadWriteOnce'
+  storageClass: 'gp2'
+  accessMode: 'ReadWriteOnce'
   size: "3Gi"
 ```
 
@@ -298,17 +298,17 @@ You can delay start of cfy manager / install all plugins / disable security (not
 
 ```yaml
 config:
-  start_delay: 0
+  startDelay: 0
   # Multiple replicas works only with EFS(NFS) volume
   replicas: 1
-  install_plugins: false
-  cli_local_profile_host_name: localhost
+  installPlugins: false
+  cliLocalProfileHostName: localhost
   security:
-    ssl_enabled: false
-    admin_password: admin
-  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
-  tls_key_path: /mnt/cloudify-data/ssl/tls.key
-  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
+    sslEnabled: false
+    adminPassword: admin
+  tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
+  tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
+  caCertPath: /mnt/cloudify-data/ssl/ca.crt
 ```
 
 ### Ingress

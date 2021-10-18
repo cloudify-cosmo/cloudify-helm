@@ -18,8 +18,8 @@ spec:
     spec:
       initContainers:
       - name: init-data
-        image: {{ .Values.initContainersImage.repository }}:{{ .Values.initContainersImage.tag }}
-        imagePullPolicy: {{ .Values.initContainersImage.pull_policy }}
+        image: {{ .Values.image.initContainer.repository }}:{{ .Values.image.initContainer.tag }}
+        imagePullPolicy: {{ .Values.image.initContainer.pullPolicy }}
         command:
           - /bin/sh
           - -cx
@@ -34,7 +34,7 @@ spec:
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pull_policy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
@@ -43,10 +43,9 @@ spec:
             path: {{ .Values.readinessProbe.path }}
             port: {{ .Values.readinessProbe.port }}
         {{- end}}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+        {{- if .Values.resources }}
+        resources: {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /run
           name: run
@@ -117,7 +116,7 @@ spec:
               name: after-hook
       - name: cfy-worker-certs
         secret:
-          secretName: {{ .Values.secret.name }}
+          secretName: {{ .Values.tls.secretName }}
       - name: cloudify-data
         persistentVolumeClaim:
           claimName: cfy-worker-pvc
@@ -125,7 +124,7 @@ spec:
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}
-    {{- if .Values.imagePullSecrets }}
+    {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets.secretName }}
-    {{- end }}
+{{ toYaml .Values.image.pullSecrets | indent 8 }}
+      {{- end }}
