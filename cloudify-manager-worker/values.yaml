@@ -91,7 +91,13 @@ config:
 
 licence: {}
   # secretName: cfy-licence
-
+livenessProbe:
+  enabled: false
+  port: 80
+  path: /console
+  successThreshold: 3
+  initialDelaySeconds: 10
+     
 readinessProbe:
   enabled: false
   port: 80

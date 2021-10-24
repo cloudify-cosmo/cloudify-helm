@@ -35,6 +35,14 @@ spec:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+        {{- end}}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
