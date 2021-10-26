@@ -14,13 +14,22 @@ data:
     if [ -f "$FILE" ]; then
       echo "Init flag exists!"
 
-      echo "Update DB schema, in case we during upgrade to newer image"
+      echo "Update DB schema, if new migrations exist for alembic, which are not executed yet"
       pushd $CLOUDIFY_DATA_DIR/latest/migrations
+        CURRENT_DB_BEFORE=$(/opt/manager/env/bin/alembic current)
+        echo "CURRENT_DB BEFORE: $CURRENT_DB_BEFORE"
         /opt/manager/env/bin/alembic upgrade head
-        CURRENT_DB=$(/opt/manager/env/bin/alembic current)
+        CURRENT_DB_AFTER=$(/opt/manager/env/bin/alembic current)
+        echo "CURRENT_DB AFTER: $CURRENT_DB_AFTER"
       popd
       rm -rf /opt/manager/resources/cloudify/migrations
       cp -a --verbose $CLOUDIFY_DATA_DIR/latest/migrations $CLOUDIFY_DATA_DIR/manager/resources/cloudify
+      
+      if [[ "$CURRENT_DB_BEFORE" != "$CURRENT_DB_AFTER" ]] ;then
+        echo "Upgrade of DB Schema discovered! Migraitions executed, restart of application will be in place!"
+        echo "Restart cloudify manager because of Schema update"
+        cfy_manager configure
+      fi
     else 
         cfy_manager stop
 
