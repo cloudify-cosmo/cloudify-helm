@@ -183,11 +183,11 @@ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./
 
 ## Upgrade cloudify manager worker
 
-To upgrade cloudify manager use helm upgrade.
+To upgrade cloudify manager use 'helm upgrade'.
 
 For example to change to newer version (from 5.3.0 to 6.2.0 in this example), 
 
-1. Change image version in values.yaml:
+Change image version in values.yaml:
 
 Before:
 ```yaml
@@ -203,12 +203,13 @@ image:
   tag: 6.2.0
 ```
 
-2. Run 'helm upgrade'
+Run 'helm upgrade'
 
 ```
 helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
 
 ```
+If DB schema was changed in newer version, needed migration will be running first on DB, then application will be restarted during upgrade - be patient, because it may take a couple of minutes.
 
 ## Configuration options of cloudify-manager-worker values.yaml:
 
