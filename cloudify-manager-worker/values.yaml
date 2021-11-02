@@ -1,6 +1,8 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
+domain: "test-helm.svc.cluster.local"
+
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 6.2.0
@@ -105,7 +107,7 @@ readinessProbe:
 
 ingress:
   enabled: false
-  host: test-k8s.eks.cloudify.co
+  host: cfy-efs-app.eks.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
