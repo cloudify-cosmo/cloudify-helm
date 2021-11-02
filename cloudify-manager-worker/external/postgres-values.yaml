@@ -430,6 +430,7 @@ primary:
   ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption
   ##
   nodeSelector: {}
+    # instance-type: on-demand-mgt
 
   affinity: {}
   tolerations: []

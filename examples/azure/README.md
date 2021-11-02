@@ -145,8 +145,6 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 
 ```yaml
 
-domain: "cfy-demo.svc.cluster.local"
-
 volume:
   storageClass: 'nfs-client'
   accessMode: 'ReadWriteMany'

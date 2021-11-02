@@ -6,9 +6,9 @@ metadata:
 data:
   config.yaml: |
     manager:
-      private_ip: {{ .Values.service.host }}.{{.Values.domain}}
-      public_ip: {{ .Values.service.host }}.{{.Values.domain}}
-      hostname: {{ .Values.service.host }}.{{.Values.domain}}
+      private_ip: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
+      public_ip: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
+      hostname: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
       cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
       security:
         ssl_enabled: {{ .Values.config.security.sslEnabled }}
@@ -27,10 +27,10 @@ data:
       cluster_members:
         rabbit1:
           networks:
-            default: {{ .Values.queue.host }}.{{.Values.domain}}
+            default: {{ .Values.queue.host }}.{{.Release.Namespace}}.svc.cluster.local
 
     postgresql_client:
-      host: {{ .Values.db.host }}.{{ .Values.domain }}
+      host: {{ .Values.db.host }}.{{.Release.Namespace}}.svc.cluster.local
       server_db_name: {{ .Values.db.serverDBName }}
       server_username: {{ .Values.db.serverUsername }}
       server_password: {{ .Values.db.serverPassword }}
