@@ -1,8 +1,6 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
-domain: "cfy-demo.svc.cluster.local"
-
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 5.3.0
