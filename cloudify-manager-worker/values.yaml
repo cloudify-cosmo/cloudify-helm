@@ -1,8 +1,6 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
-domain: "test-helm.svc.cluster.local"
-
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 6.2.0
@@ -21,6 +19,7 @@ image:
     repository: busybox
     tag: latest
     pullPolicy: Always
+    resources: {}
 
 # external DB
 db:

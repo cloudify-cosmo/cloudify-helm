@@ -20,6 +20,9 @@ spec:
       - name: init-data
         image: {{ .Values.image.initContainer.repository }}:{{ .Values.image.initContainer.tag }}
         imagePullPolicy: {{ .Values.image.initContainer.pullPolicy }}
+        {{- if .Values.image.initContainer.resources }}
+        resources: {{- toYaml .Values.image.initContainer.resources | nindent 10 }}
+        {{- end }}
         command:
           - /bin/sh
           - -cx
