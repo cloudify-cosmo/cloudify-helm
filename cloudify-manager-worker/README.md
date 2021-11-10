@@ -58,7 +58,7 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 ### Option 2: Use cert-manager component installed to kubernetes cluster
 
 You need to deploy those manifests, which will generate cfy-certs secret eventually, you need to change NAMESPACE to your namespace before.
-You can find this manifest in external folder - cert-issuer.yaml
+You can find this manifest in [external folder](https://github.com/cloudify-cosmo/cloudify-helm/tree/master/cloudify-manager-worker/external) - cert-issuer.yaml
 
 ```yaml
 apiVersion: cert-manager.io/v1alpha2
@@ -114,7 +114,7 @@ spec:
 
 ## Install PostgreSQL(bitnami) to Kubernetes cluster with helm
 
-You can find example of PostgreSQL values.yaml in external/postgres-values.yaml
+You can find example of PostgreSQL values.yaml in [external/postgres-values.yaml](https://github.com/cloudify-cosmo/cloudify-helm/blob/master/cloudify-manager-worker/external/postgres-values.yaml)
 
 Use certificate we created as k8s secret: 'cfy-certs'
 
