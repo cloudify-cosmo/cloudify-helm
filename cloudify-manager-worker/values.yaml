@@ -79,7 +79,7 @@ config:
   # Multiple replicas works only with NFS like volume
   replicas: 1
   startDelay: 0
-  installPlugins: false
+  after_bash: ''
   cliLocalProfileHostName: localhost
   security:
     sslEnabled: false
