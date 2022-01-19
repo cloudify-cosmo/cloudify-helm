@@ -115,7 +115,7 @@ secret:
 
 config:
   replicas: 2
-  startDelay: 0
+  startDelay: 20
   installPlugins: false
   cliLocalProfileHostName: localhost
   security:
@@ -124,6 +124,13 @@ config:
   tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
+
+readinessProbe:
+  enabled: true
+  port: 80
+  path: /console
+  successThreshold: 3
+  initialDelaySeconds: 10
 
 ingress:
   enabled: false
@@ -137,6 +144,7 @@ ingress:
 ```
 
 We using external LoadBalancer, no Ingress Nginx / CertManager installed to cluster in this example.
+** Very important to notice is when you use multiple replicas, 'readinessProbe' must be enabled and startDelay: 20 **
 
 ### Deployment of helm chart
 

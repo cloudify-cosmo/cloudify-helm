@@ -51,7 +51,7 @@ resources:
 config:
   # Multiple replicas works only with NFS storage
   replicas: 2
-  startDelay: 0
+  startDelay: 20
   installPlugins: false
   cliLocalProfileHostName: localhost
   security:
