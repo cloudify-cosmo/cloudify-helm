@@ -84,6 +84,8 @@ spec:
           subPath: after_hook.sh
         - name: cloudify-data
           mountPath: /mnt/cloudify-data
+        - name: okta-cert
+          mountPath: /mnt/cloudify-data/ssl
         securityContext:
           capabilities:
             add: ["SYS_ADMIN"]
@@ -128,9 +130,13 @@ spec:
       - name: cfy-worker-certs
         secret:
           secretName: {{ .Values.tls.secretName }}
+      - name: okta-cert
+        secret:
+          secretName: {{ .Values.okta.secretName }}
       - name: cloudify-data
         persistentVolumeClaim:
           claimName: cfy-worker-pvc
+      
 
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
