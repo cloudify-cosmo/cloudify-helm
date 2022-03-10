@@ -21,7 +21,9 @@ data:
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
+      rm -f /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
+      cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
 
       echo "Save latest migrations to latest folder, in case we need to apply newest DB schema for version upgrade"
       rm -rf $CLOUDIFY_DATA_DIR/latest/migrations
@@ -40,6 +42,7 @@ data:
       rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
       rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
       rm -f --verbose /opt/cloudify-stage/conf/manager.json
+      rm -f --verbose /opt/cloudify-stage/conf/config.json
       
       echo "Making symbolic links for files"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token
@@ -49,6 +52,7 @@ data:
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/config.json" /opt/cloudify-stage/conf/config.json
 
       echo "Making symbolic links for directory"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
@@ -58,9 +62,13 @@ data:
       echo "Set proper permissions for stage/composer files"
       sudo chown composer_user /opt/cloudify-composer/backend/conf/prod.json
       sudo chown stage_user /opt/cloudify-stage/conf/manager.json
+      sudo chown stage_user /opt/cloudify-stage/conf/config.json
     else 
       echo "Copy config"
       rm -f /etc/cloudify/config.yaml
+      rm -f /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
+      cp /tmp/cloudify/config.yaml /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       sudo chown cfyuser /etc/cloudify/config.yaml
+      sudo chown cfyuser /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
     fi
