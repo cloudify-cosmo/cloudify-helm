@@ -180,6 +180,11 @@ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 
 helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
 ```
+## Version Compatibility
+
+To deploy a cloudify manager version 6.3.1 and above - use the latest chart version (0.1.9 and above)
+
+To deploy a cloudify manager version 6.3.0 and below - use chart version 0.1.8
 
 ## Upgrade cloudify manager worker
 

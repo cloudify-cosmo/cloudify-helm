@@ -4,18 +4,7 @@ metadata:
   creationTimestamp: null
   name: supervisord-config
 data:
-  supervisord.conf: |
-    [supervisord]
-    logfile = /var/log/cloudify/supervisord.log
-    loglevel = debug
-    [unix_http_server]
-    file = /var/run/supervisord.sock
-    chmod = 0770
-    chown = cfyuser:cfyuser
-    [supervisorctl]
-    serverurl = unix:///var/run/supervisord.sock
-    [rpcinterface:supervisor]
-    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+  starter.conf: |
     [program:cloudify-starter]
     command=/tmp/cloudify/cfy_starter.sh
     stdout_logfile=/dev/fd/1
@@ -24,12 +13,11 @@ data:
     stderr_logfile_maxbytes=0
     startsecs=0
     autorestart=false
-    [program:crond]
+
+    [program:cron]
     command=/usr/sbin/crond -n
     autostart=true
     autorestart=true
     startsecs=30
-    stdout_logfile=/var/log/cronout.log
-    stderr_logfile=/var/log/cronerr.log
-    [include]
-    files=/etc/supervisord.d/*.conf
+    stderr_logfile=/var/log/cron.err.log
+    stdout_logfile=/var/log/cron.out.log
