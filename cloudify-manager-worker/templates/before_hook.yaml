@@ -23,7 +23,7 @@ data:
       rm -f /etc/cloudify/config.yaml
       rm -f /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
-      cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
+      # cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
 
       echo "Save latest migrations to latest folder, in case we need to apply newest DB schema for version upgrade"
       rm -rf $CLOUDIFY_DATA_DIR/latest/migrations
@@ -66,9 +66,9 @@ data:
     else 
       echo "Copy config"
       rm -f /etc/cloudify/config.yaml
-      rm -f /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
+      # rm -f /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
-      cp /tmp/cloudify/config.yaml /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
+      # cp /tmp/cloudify/config.yaml /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       sudo chown cfyuser /etc/cloudify/config.yaml
-      sudo chown cfyuser /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
+      # sudo chown cfyuser /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
     fi
