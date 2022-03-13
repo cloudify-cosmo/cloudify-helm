@@ -72,7 +72,7 @@ spec:
         {{- end}}
         - name: supervisord-volume
           mountPath: /etc/supervisord.d/starter.conf
-          subPath: supervisord.conf
+          subPath: starter.conf
         - name: cfy-starter-volume
           mountPath: /tmp/cloudify/cfy_starter.sh
           subPath: cfy_starter.sh
