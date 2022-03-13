@@ -21,7 +21,6 @@ data:
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
-      rm -f /opt/cloudify/cfy_manager/lib/python3.6/site-packages/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
 
       echo "Save latest migrations to latest folder, in case we need to apply newest DB schema for version upgrade"
