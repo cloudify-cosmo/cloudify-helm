@@ -71,7 +71,7 @@ spec:
           subPath: cfy_licence.yaml
         {{- end}}
         - name: supervisord-volume
-          mountPath: /etc/supervisord.conf
+          mountPath: /etc/supervisord.d/starter.conf
           subPath: supervisord.conf
         - name: cfy-starter-volume
           mountPath: /tmp/cloudify/cfy_starter.sh
