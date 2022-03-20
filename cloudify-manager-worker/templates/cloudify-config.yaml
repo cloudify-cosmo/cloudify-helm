@@ -63,6 +63,10 @@ data:
       external_key_path: {{ .Values.config.tlsKeyPath }}
       external_ca_cert_path: {{ .Values.config.caCertPath }}
 
+    composer:
+      # If set to true, Cloudify Composer will not be installed
+      skip_installation: false
+
     validations:
       skip_validations: true
     
