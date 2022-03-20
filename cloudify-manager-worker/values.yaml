@@ -88,10 +88,6 @@ config:
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
 
-# For Okta integration
-# okta:
-  # secretName: okta-cert
-
 licence: {}
   # secretName: cfy-licence
 livenessProbe:
