@@ -24,6 +24,11 @@ data:
       popd
       rm -rf /opt/manager/resources/cloudify/migrations
       cp -a --verbose $CLOUDIFY_DATA_DIR/latest/migrations $CLOUDIFY_DATA_DIR/manager/resources/cloudify
+
+      if [ -f "$CLOUDIFY_DATA_DIR/ssl/okta_certificate.pem" ]; then
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/ssl/okta_certificate.pem" /etc/cloudify/ssl/okta_certificate.pem
+        supervisorctl restart cloudify-restservice
+      fi
       
       if [[ "$CURRENT_DB_BEFORE" != "$CURRENT_DB_AFTER" ]] ;then
         echo "Upgrade of DB Schema discovered! Migraitions executed, restart of application will be in place!"
@@ -80,6 +85,7 @@ data:
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/config.json" /opt/cloudify-stage/conf/config.json
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/ssl/okta_certificate.pem" /etc/cloudify/ssl/okta_certificate.pem
 
         cfy_manager start
     fi
