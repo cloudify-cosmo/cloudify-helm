@@ -130,7 +130,7 @@ spec:
           secretName: {{ .Values.tls.secretName }}
       - name: cloudify-data
         persistentVolumeClaim:
-          claimName: cfy-worker-pvc 
+          claimName: cfy-worker-pvc
 
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
