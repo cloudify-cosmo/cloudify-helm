@@ -84,7 +84,7 @@ spec:
           subPath: after_hook.sh
         - name: cloudify-data
           mountPath: /mnt/cloudify-data
-        {{- if .Values.okta }}
+        {{- if .Values.okta.enabled }}
         - name: okta-license-volume
           mountPath: /mnt/cloudify-data/ssl/okta_certificate.pem
           subPath: okta_certificate.pem
@@ -112,7 +112,7 @@ spec:
         configMap:
           name: {{ .Values.licence.secretName }}
       {{- end }}
-      {{- if .Values.okta }}
+      {{- if .Values.okta.enabled }}
       - name: okta-license-volume
         configMap:
           name: {{ .Values.okta.secretName }}
