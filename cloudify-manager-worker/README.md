@@ -326,6 +326,19 @@ You can add license as secret to k8s
 licence:
   secretName: cfy-licence
 ```
+### Okta - relevant in case you want to connect okta-auth by SAML to cloudify manager
+
+This handles most of the Okta configuration on the cloudify manager app.
+You still need to create the app on Okta and create the user group on the manager - Detailed Okta <> Cloudify integration can be found here: https://docs.cloudify.co/latest/working_with/manager/okta_authentication/
+
+```yaml
+okta:
+  secretName: okta-license
+  enabled: true
+  certPath: "/etc/cloudify/ssl/okta_certificate.pem"
+  ssoUrl: "<okta_sso_url>"
+  portalUrl: "<okta_portal_url>"
+```
 
 ### Config
 

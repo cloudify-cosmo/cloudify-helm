@@ -10,6 +10,7 @@ data:
 
     FILE=/mnt/cloudify-data/init-completed
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
+    OKTA=/mnt/cloudify-data/ssl/okta_certificate.pem
     
     mkdir -p /mnt/cloudify-data/etc
     mkdir -p /mnt/cloudify-data/manager
@@ -22,6 +23,11 @@ data:
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
       cp -a --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
+
+      if [ -f "$OKTA" ]; then
+        mkdir -p /etc/cloudify/ssl
+        cp -a --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
+      fi
 
       echo "Save latest migrations to latest folder, in case we need to apply newest DB schema for version upgrade"
       rm -rf $CLOUDIFY_DATA_DIR/latest/migrations
@@ -66,4 +72,10 @@ data:
       rm -f /etc/cloudify/config.yaml
       cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
       sudo chown cfyuser /etc/cloudify/config.yaml
+      if [ -f "$OKTA" ]; then
+        rm -f --verbose /opt/cloudify-stage/conf/config.json
+        cp -a --verbose /tmp/cloudify/config.json /opt/cloudify-stage/conf/config.json
+        mkdir -p /etc/cloudify/ssl
+        cp -a --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
+      fi
     fi
