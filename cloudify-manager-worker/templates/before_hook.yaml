@@ -26,7 +26,7 @@ data:
 
       if [ -f "$OKTA" ]; then
         mkdir -p /etc/cloudify/ssl
-        cp -a --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
+        ln -s --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
       fi
 
       echo "Save latest migrations to latest folder, in case we need to apply newest DB schema for version upgrade"
@@ -76,6 +76,6 @@ data:
         rm -f --verbose /opt/cloudify-stage/conf/config.json
         cp -a --verbose /tmp/cloudify/config.json /opt/cloudify-stage/conf/config.json
         mkdir -p /etc/cloudify/ssl
-        cp -a --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
+        ln -s --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
       fi
     fi
