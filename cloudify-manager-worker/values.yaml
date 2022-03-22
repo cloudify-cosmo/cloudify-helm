@@ -88,6 +88,13 @@ config:
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
 
+okta: {}
+  # secretName: okta-license
+  # enabled: true
+  # certPath: "/etc/cloudify/ssl/okta_certificate.pem"
+  # ssoUrl: "<okta_sso_url>"
+  # portalUrl: "<okta_portal_url>" 
+
 licence: {}
   # secretName: cfy-licence
 livenessProbe:
