@@ -331,7 +331,7 @@ licence:
 This handles most of the Okta configuration on the cloudify manager app.
 You still need to create the app on Okta and create the user group on the manager - Detailed Okta <> Cloudify integration can be found here: https://docs.cloudify.co/latest/working_with/manager/okta_authentication/
 
-First, the okta-license secret, containing the your Okta certificate should be created
+The okta-license secret, containing the your Okta certificate should be applied
 
 ```yaml
 apiVersion: v1
