@@ -40,19 +40,25 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
-          successThreshold: {{ .Values.livenessProbe.successThreshold }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           httpGet:
             path: {{ .Values.livenessProbe.path }}
             port: {{ .Values.livenessProbe.port }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
         {{- end}}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
-          successThreshold: {{ .Values.readinessProbe.successThreshold }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           httpGet:
             path: {{ .Values.readinessProbe.path }}
             port: {{ .Values.readinessProbe.port }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
         {{- end}}
         {{- if .Values.resources }}
         resources: {{- toYaml .Values.resources | nindent 10 }}
