@@ -87,6 +87,7 @@ config:
   tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
+  workerCount: 4 # suggested worker count for 1vcpu manager, add more if using a stronger host
 
 okta: {}
   # secretName: okta-license
