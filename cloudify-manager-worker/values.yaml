@@ -87,6 +87,7 @@ config:
   tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
+  workerCount: 4 # suggested worker count for 1vcpu manager, add more if using a stronger host
 
 okta: {}
   # secretName: okta-license
@@ -97,19 +98,30 @@ okta: {}
 
 licence: {}
   # secretName: cfy-licence
+
 livenessProbe:
+# Use this probe to configure liveness monitoring
   enabled: false
-  port: 80
-  path: /console
-  successThreshold: 3
-  initialDelaySeconds: 10
+  httpGet:
+    path: /api/v3.1/ok
+    port: 80
+  timeoutSeconds: 15
+  successThreshold: 1
+  periodSeconds: 30
+  failureThreshold: 8
+  initialDelaySeconds: 600
      
 readinessProbe:
+# Use this probe to configure readiness monitoring
   enabled: false
-  port: 80
-  path: /console
-  successThreshold: 3
-  initialDelaySeconds: 10
+  httpGet:
+    path: /console
+    port: 80
+  timeoutSeconds: 5
+  successThreshold: 1
+  periodSeconds: 10
+  failureThreshold: 5
+  initialDelaySeconds: 200
 
 ingress:
   enabled: false
