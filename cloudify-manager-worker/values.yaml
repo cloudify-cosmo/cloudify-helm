@@ -88,13 +88,14 @@ config:
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
   workerCount: 4 # suggested worker count for 1vcpu manager, add more if using a stronger host
+  mgmtWorkerCount: 8 # Maximum number of worker processes started by the management worker.
 
-okta: {}
-  # secretName: okta-license
-  # enabled: true
-  # certPath: "/etc/cloudify/ssl/okta_certificate.pem"
-  # ssoUrl: "<okta_sso_url>"
-  # portalUrl: "<okta_portal_url>" 
+okta:
+  secretName: okta-license
+  enabled: false
+  certPath: ""
+  ssoUrl: ""
+  portalUrl: ""
 
 licence: {}
   # secretName: cfy-licence

@@ -338,7 +338,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: stage-config
+  name: okta-license
 data:
   okta_certificate.pem: |
     -----BEGIN CERTIFICATE-----

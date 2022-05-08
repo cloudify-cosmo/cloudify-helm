@@ -71,6 +71,9 @@ data:
       gunicorn:
         worker_count: {{ .Values.config.workerCount }}
 
+    mgmtworker:
+      max_workers: {{ .Values.config.mgmtWorkerCount }}
+
     validations:
       skip_validations: true
     
