@@ -11,7 +11,7 @@ data:
 
       "proxy": {
           "timeouts": {
-              "get": 10000,
+              "get": 30000,
               "post": 30000,
               "put": 30000,
               "delete": 10000
@@ -29,7 +29,8 @@ data:
           "ignoreFolders": ["common"],
           "tempDir": "cloudifyWidgets",
           "requiredFiles": ["widget.js", "widget.png"],
-          "backendFilename": "backend.js"
+          "backendFilename": "backend.js",
+          "backendFilenameExtensions": ["ts", "js"]
       },
       "ssl": {
           "ca": "/etc/cloudify/ssl/cloudify_internal_ca_cert.pem"

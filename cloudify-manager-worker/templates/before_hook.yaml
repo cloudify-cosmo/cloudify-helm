@@ -72,9 +72,9 @@ data:
       rm -f /etc/cloudify/config.yaml
       cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
       sudo chown cfyuser /etc/cloudify/config.yaml
+      rm -f --verbose /opt/cloudify-stage/conf/config.json
+      cp -a --verbose /tmp/cloudify/config.json /opt/cloudify-stage/conf/config.json
       if [ -f "$OKTA" ]; then
-        rm -f --verbose /opt/cloudify-stage/conf/config.json
-        cp -a --verbose /tmp/cloudify/config.json /opt/cloudify-stage/conf/config.json
         mkdir -p /etc/cloudify/ssl
         ln -s --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
       fi

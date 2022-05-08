@@ -94,10 +94,10 @@ spec:
         - name: okta-license-volume
           mountPath: /mnt/cloudify-data/ssl/okta_certificate.pem
           subPath: okta_certificate.pem
-        - name: okta-config-volume
+        {{- end }}
+        - name: stage-config-volume
           mountPath: /tmp/cloudify/config.json
           subPath: config.json
-        {{- end}}
         securityContext:
           capabilities:
             add: ["SYS_ADMIN"]
@@ -122,10 +122,10 @@ spec:
       - name: okta-license-volume
         configMap:
           name: {{ .Values.okta.secretName }}
-      - name: okta-config-volume
+      {{- end }}
+      - name: stage-config-volume
         configMap:
           name: stage-config
-      {{- end }}
       - name: supervisord-volume
         configMap:
           name: supervisord-config
