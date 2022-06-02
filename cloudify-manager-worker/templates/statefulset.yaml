@@ -98,9 +98,6 @@ spec:
         - name: stage-config-volume
           mountPath: /tmp/cloudify/config.json
           subPath: config.json
-        securityContext:
-          capabilities:
-            add: ["SYS_ADMIN"]
       volumes:
       - name: run
         emptyDir:
