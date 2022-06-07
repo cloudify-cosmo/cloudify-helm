@@ -11,14 +11,14 @@ data:
     FILE=/mnt/cloudify-data/init-completed
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
     OKTA=/mnt/cloudify-data/ssl/okta_certificate.pem
-    
+
     mkdir -p /mnt/cloudify-data/etc
     mkdir -p /mnt/cloudify-data/manager
     mkdir -p /mnt/cloudify-data/mgmtworker
     mkdir -p /mnt/cloudify-data/cloudify-composer
     mkdir -p /mnt/cloudify-data/cloudify-stage
     mkdir -p /mnt/cloudify-data/latest
-    
+
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
@@ -47,7 +47,7 @@ data:
       rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
       rm -f --verbose /opt/cloudify-stage/conf/manager.json
       rm -f --verbose /opt/cloudify-stage/conf/config.json
-      
+
       echo "Making symbolic links for files"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/authorization.conf" /opt/manager/authorization.conf
@@ -64,14 +64,14 @@ data:
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
 
       echo "Set proper permissions for stage/composer files"
-      sudo chown composer_user /opt/cloudify-composer/backend/conf/prod.json
-      sudo chown stage_user /opt/cloudify-stage/conf/manager.json
-      sudo chown stage_user /opt/cloudify-stage/conf/config.json
-    else 
+      chown composer_user /opt/cloudify-composer/backend/conf/prod.json
+      chown stage_user /opt/cloudify-stage/conf/manager.json
+      chown stage_user /opt/cloudify-stage/conf/config.json
+    else
       echo "Copy config"
       rm -f /etc/cloudify/config.yaml
       cp /tmp/cloudify/config.yaml /etc/cloudify/config.yaml
-      sudo chown cfyuser /etc/cloudify/config.yaml
+      chown cfyuser /etc/cloudify/config.yaml
       rm -f --verbose /opt/cloudify-stage/conf/config.json
       cp -a --verbose /tmp/cloudify/config.json /opt/cloudify-stage/conf/config.json
       if [ -f "$OKTA" ]; then
