@@ -198,6 +198,13 @@ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 
 helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
 ```
+
+In case you would like to expose the service to the world please run
+
+```
+helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --set service.type=LoadBalancer -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
+```
+
 ## Version Compatibility
 
 To deploy a cloudify manager version 6.3.1 and above - use the latest chart version (0.1.9 and above)
