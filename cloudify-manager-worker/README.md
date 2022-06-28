@@ -115,7 +115,8 @@ spec:
 
 Create license.properties file - the example content:
 
- ``license:
+ ``yaml
+ license:
    capabilities: null
    cloudify_version: null
    customer_id: INT-Internal-111111112
