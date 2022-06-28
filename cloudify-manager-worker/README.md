@@ -124,8 +124,9 @@ Create license.properties file - the example content:
    license_edition: Premium
    trial: false
  signature: !!binary |
-   <LICENSE_KEY>```
-
+   <LICENSE_KEY>
+ ```
+ 
 Run create config map command
 `kubectl create configmap cfy-licence --from-file=license.properties -n NAMESPACE`
 
