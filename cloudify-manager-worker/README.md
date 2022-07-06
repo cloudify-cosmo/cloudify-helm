@@ -113,22 +113,29 @@ spec:
 
 ## Create configmp with premium license
 
-Create license.properties file - the example content:
+Create license.yaml file - the example content:
 
  ```yaml
- license:
-   capabilities: null
-   cloudify_version: null
-   customer_id: INT-Internal-111111112
-   expiration_date: 12/31/2022
-   license_edition: Premium
-   trial: false
- signature: !!binary |
-   <LICENSE_KEY>
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cfy-licence
+  namespace: <NAMESPACE>
+data:
+  cfy_licence.yaml: |
+    license:
+      capabilities: null
+      cloudify_version: null
+      customer_id: <CUSTOMER_ID>
+      expiration_date: 12/31/2021
+      license_edition: Premium
+      trial: false
+    signature: !!binary |
+      <LICENSE_KEY>
  ```
  
 Run create config map command
-`kubectl create configmap cfy-licence --from-file=license.properties -n NAMESPACE`
+`kubectl apply -f license.yaml`
 
 ## Install PostgreSQL(bitnami) to Kubernetes cluster with helm
 
