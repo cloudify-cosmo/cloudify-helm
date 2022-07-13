@@ -14,6 +14,7 @@ It's a helm chart for cloudify manager which is:
 ## Installation
 ```bash
 helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
+
 helm install cloudify-manager-aio cloudify-helm/cloudify-manager-aio
 ```
 To understand all available options AIO cloudify manager chart has, please read [Cloudify AIO Helm chart](cloudify-manager-aio/README.md)
