@@ -7,7 +7,7 @@ It's a helm chart for cloudify manager which:
 * Is highly available, can be deployed with multiple replicas. ( available only when used NFS like Storage file system )
 * Uses persistent volume to survive restarts/failures.
 * Uses external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
-* Uses external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
+* Uses external Message Brokers (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
 
 This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
