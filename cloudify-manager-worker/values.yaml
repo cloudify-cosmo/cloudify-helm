@@ -97,8 +97,8 @@ okta:
   ssoUrl: ""
   portalUrl: ""
 
-licence: {}
-  # secretName: cfy-licence
+license: {}
+  # secretName: cfy-license
 
 livenessProbe:
 # Use this probe to configure liveness monitoring

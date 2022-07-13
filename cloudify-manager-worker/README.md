@@ -1,18 +1,32 @@
-# Cloudify manager worker helm chart (Premium Version)
+---
+layout: bt_wiki
+title: Deploying a Cloudify Manager Worker to Kubernetes
+description: Deploy a Cloudify Manager Worker to Kubernetes with a helm chart.
+category: Installation
+draft: false
+weight: 100
+---
+# Cloudify manager worker helm chart ( Premium Version )
 
 ## Description
  
-It's a helm chart for cloudify manager which is:
+It's a helm chart for cloudify manager which:
 
-* Highly available, can be deployed with multiple replicas. ( available only when used EFS(NFS) Volume )
-* Use persistent volume to survive restarts/failures.
-* Use external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
-* Use external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
+* Is highly available, can be deployed with multiple replicas. ( available only when used NFS like Storage file system )
+* Uses persistent volume to survive restarts/failures.
+* Uses external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+* Uses external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
 
 This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
-![cfy-manager](../images/cfy-example.png)
+![cfy-manager](/images/helm/cfy-example.png)
 
+## Prerequisites
+* Docker installed
+* Kubectl installed
+* Helm installed
+* Running K8S cluster
+* Cloudify Premium valid license (for Premium version) 
 
 ## How to create and deploy such a setup?
 
@@ -23,6 +37,8 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 3. Deployment of Message Broker (rabbitMQ).
 
 4. Deployment of Cloudify manager worker.
+
+5. (Optional) Extra configuration options
 
 **You need to deploy DB and Message Broker before deploying Cloudify manager worker**
 
@@ -37,28 +53,42 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 
 * tls.crt
 
-### Option 1: Create certificates using cloudify manager docker container
+### Option 1: Create certificates using the community cloudify manager docker container
 
 ```bash
 $ docker pull cloudifyplatform/community-cloudify-manager-aio:latest
-$ docker run --name cfy_manager_local -d --restart unless-stopped --tmpfs /run --tmpfs /run/lock -p 8000:8000 cloudifyplatform/community-cloudify-manager-aio
-$ docker exec -it created_ID bash
+$ docker run --name cfy_manager_local -d --restart unless-stopped --tmpfs /run --tmpfs /run/lock cloudifyplatform/community-cloudify-manager-aio
+```
+Exec to the manager and generate certificates
+```bash
+$ docker exec -it cfy_manager_local bash
 
 # NAMESPACE to which cloudify-manager deployed, must be changed accordingly
 $ cfy_manager generate-test-cert -s 'cloudify-manager-worker.NAMESPACE.svc.cluster.local,rabbitmq.NAMESPACE.svc.cluster.local,postgres-postgresql.NAMESPACE.svc.cluster.local'
+```
+You can change the name of the created certificates (inside the container):
+```bash
+$ cd /root/.cloudify-test-ca
+$ mv cloudify-manager-worker.helm-update.svc.cluster.local.crt tls.crt
+$ mv cloudify-manager-worker.helm-update.svc.cluster.local.key ./tls.key
+```
+
+Exit the container and copy the certificates from the container to your working environment:
+```bash
+$ docker cp cfy_manager_local:/root/.cloudify-test-ca/. ./
 ```
 
 Create secret in k8s from certificates:
 
 ```bash
-$ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
+$ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt -n NAMESPACE
 ```
 
 
 ### Option 2: Use cert-manager component installed to kubernetes cluster
 
 You need to deploy those manifests, which will generate cfy-certs secret eventually, you need to change NAMESPACE to your namespace before.
-You can find this manifest in [external folder](https://github.com/cloudify-cosmo/cloudify-helm/tree/master/cloudify-manager-worker/external) - cert-issuer.yaml
+You can find this manifest in external folder - cert-issuer.yaml
 
 ```yaml
 apiVersion: cert-manager.io/v1alpha2
@@ -110,40 +140,28 @@ spec:
   issuerRef:
     name: cfy-ca-issuer
 ```
+Create a local copy of the cert-issuer.yaml and apply it to the namespace:
+```bash
+$ kubectl apply -f ./cert-issuer.yaml -n NAMESPACE
+```
 
-## Create configmp with premium license
-
-Create license.yaml file - the example content:
-
- ```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cfy-licence
-  namespace: <NAMESPACE>
-data:
-  cfy_licence.yaml: |
-    license:
-      capabilities: null
-      cloudify_version: null
-      customer_id: <CUSTOMER_ID>
-      expiration_date: 12/31/2021
-      license_edition: Premium
-      trial: false
-    signature: !!binary |
-      <LICENSE_KEY>
- ```
- 
-Run create config map command
-`kubectl apply -f license.yaml`
-
+## Clone cloudify-helm repo
+This step is necessary because the following steps will require files from this directory
+* In case you don't have Git installed - https://github.com/git-guides/install-git
+```bash
+$ git clone https://github.com/cloudify-cosmo/cloudify-helm.git && cd cloudify-helm
+```
 ## Install PostgreSQL(bitnami) to Kubernetes cluster with helm
+**First we need to add the Bitnami helm repository - for PostgreSQL and RabbitMQ charts**
+```bash
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+```
 
-You can find example of PostgreSQL values.yaml in [external/postgres-values.yaml](https://github.com/cloudify-cosmo/cloudify-helm/blob/master/cloudify-manager-worker/external/postgres-values.yaml)
+You can find example of PostgreSQL values.yaml in external/postgres-values.yaml
 
 Use certificate we created as k8s secret: 'cfy-certs'
 
-```
+```yaml
 volumePermissions.enabled=true
 tls:
   enabled: true
@@ -153,10 +171,10 @@ tls:
   certKeyFilename: 'tls.key'
 ```
 
-Install postgresql with postgres-values.yaml
+Install postgresql with postgres-values.yaml with pinned version
 
-```
-helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/postgres-values.yaml -n NAMESPACE
+```bash
+$ helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/postgres-values.yaml --version 10.15.0 -n NAMESPACE
 ```
 
 ## Install RabbitMQ(bitnami) to Kubernetes cluster with helm
@@ -164,7 +182,7 @@ helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/p
 
 Use certificate we created as k8s secret: 'cfy-certs'
 
-```
+```yaml
 tls:
     enabled: true
     existingSecret: cfy-certs
@@ -179,7 +197,7 @@ Run management console on 15671 port with SSL (cloudify manager talks to managem
 
 add to rabbitmq-values.yaml
 
-```
+```yaml
 configuration: |-
   management.ssl.port       = 15671
   management.ssl.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
@@ -192,37 +210,158 @@ extraPorts:
     targetPort: 15671
 ```
 
-Install rabbitmq with rabbitmq-values.yaml
+Install rabbitmq with rabbitmq-values.yaml with pinned version
 
-```
-helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rabbitmq-values.yaml -n NAMESPACE
+```bash
+$ helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rabbitmq-values.yaml --version 8.29.0 -n NAMESPACE
 ```
 
 ## Install cloudify manager worker
 
+### Create configMap with premium license - required if using Cloudify premium version
+
+Create license.yaml file and populate it with license data
+* license data must be named cfy_license.yaml to match statefulSet
+
+ ```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cfy-license
+  namespace: <NAMESPACE>
+data:
+  cfy_license.yaml: |
+    license:
+      capabilities: null
+      cloudify_version: null
+      customer_id: <CUSTOMER_ID>
+      expiration_date: 12/31/2021
+      license_edition: Premium
+      trial: false
+    signature: !!binary |
+      <LICENSE_KEY>
+ ```
+Enable license in values file
+* License name (metadata.name) must match the secretName in the values file
+```yaml
+license:
+  secretName: cfy-license
 ```
-helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
-
-helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
+Apply created config map:
+```bash
+$ kubectl apply -f license.yaml
 ```
-
-In case you would like to expose the service to the world please run
-
+### Add the cloudify-helm repo
+Add the cloudify-helm repo or upgrade it
+```bash
+$ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 ```
-helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --set service.type=LoadBalancer -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
+or
+```bash
+$ helm repo update cloudify-helm
 ```
+**If you want to customize the values it's recommended to do so before installing the chart** - [see configuration options below](#configuration-options-of-cloudify-manager-worker-valuesyaml), and either way make sure to review the values file.
 
-## Version Compatibility
+### (optional) Ensure UI access to the manager upon installation
+### **[OPTION 1]**
+Use ingress-controller (e.g. NGINX Ingress Controller - https://kubernetes.github.io/ingress-nginx/deploy/)
 
-To deploy a cloudify manager version 6.3.1 and above - use the latest chart version (0.1.9 and above)
+**HTTP**
+* Modify Ingress section accordingly (see example):
+  ```yaml
+  ingress:
+    enabled: true
+    host: cloudify-manager.DOMAIN
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-body-size: 50m # use this annotation to allow upload of resources up to 50mb (e.g. plugins)
+      # cert-manager.io/cluster-issuer: "letsencrypt-prod" # use this annotation to utilize an installed cert-manager
+    tls:
+      enabled: false
+      secretName: cfy-secret-name
+  ```
+**HTTPS - Pre-applied SSL Cert**
+* Create SSL secret with tls certificate
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: cfy-secret-name
+    namespace: NAMESPACE
+  data:
+    tls.crt: SSL_TLS_CRT
+    tls.key: SSL_TLS_KEY
+  type: kubernetes.io/tls
+  ```
+* Modify Ingress section accordingly (see example):
+  ```yaml
+  ingress:
+    enabled: true
+    host: cloudify-manager.DOMAIN
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-body-size: 50m # use this annotation to allow upload of resources up to 50mb (e.g. plugins)
+      # cert-manager.io/cluster-issuer: "letsencrypt-prod" # use this annotation to utilize an installed cert-manager
+    tls:
+      enabled: true
+      secretName: cfy-secret-name
+  ```
+**HTTPS - Certificate Manager**
+* Use certificate manager (e.g. Let's Encrypt via cert-manager - https://cert-manager.io/docs/)
+* Modify Ingress section accordingly (see example):
+  ```yaml
+  ingress:
+    enabled: true
+    host: cloudify-manager.DOMAIN
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-body-size: 50m # use this annotation to allow upload of resources up to 50mb (e.g. plugins)
+      cert-manager.io/cluster-issuer: "<cluster-issuer-name>" # use this annotation to utilize an installed cert-manager
+    tls:
+      enabled: true
+      secretName: cfy-secret-name
+**HTTP/HTTPS options will expose Cloudify Manager UI on a URL matching the `host` value**
 
-To deploy a cloudify manager version 6.3.0 and below - use chart version 0.1.8
+### **[OPTION 2]**
+Skip Ingress and expose the Cloudify Manager service using LoadBalancer
 
-## Upgrade cloudify manager worker
+**HTTP**
+
+For this method you need to edit the Service section to use the right type:
+```yaml
+service:
+  host: cloudify-manager-worker
+  type: LoadBalancer
+  name: cloudify-manager-worker
+  http:
+    port: 80
+  https:
+    port: 443
+  internal_rest:
+    port: 53333
+```
+That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer)
+**To get the hostname of the load balancer run:**
+```bash
+kubectl describe svc/cloudify-manager-worker -n NAMESPACE | grep Ingress
+```
+**The value of the ingress will be the UI URL of the Cloudify Manager.**
+
+**HTTPS**
+* To secure the site with SSL you can update the load balancer configuration to utilize an SSL Certificate
+* To have a fixed URL, you can utilize a DNS service to route the LB URL (hostname) to the URL you want
+
+### After values are verified, install the manager worker chart
+```bash
+$ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
+```
+## Configuration options of cloudify-manager-worker values.yaml
+Edit the values file in `./cloudify-manager-worker/values.yaml` according to your preferences:
+### Upgrade cloudify manager worker
 
 To upgrade cloudify manager use 'helm upgrade'.
 
-For example to change to newer version (from 5.3.0 to 6.2.0 in this example), 
+For example to change to newer version (e.g. from 6.2.0 to 6.3.0 in this example), 
 
 Change image version in values.yaml:
 
@@ -230,32 +369,29 @@ Before:
 ```yaml
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
-  tag: 5.3.0
+  tag: 6.2.0
 ```
 
 After:
 ```yaml
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
-  tag: 6.2.0
+  tag: 6.3.0
 ```
 
 Run 'helm upgrade'
 
-```
-helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
-
+```bash
+$ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
 ```
 If DB schema was changed in newer version, needed migration will be running first on DB, then application will be restarted during upgrade - be patient, because it may take a couple of minutes.
-
-## Configuration options of cloudify-manager-worker values.yaml:
 
 ### Image:
 
 ```yaml
 image:
   repository: "cloudifyplatform/premium-cloudify-manager-worker"
-  tag: "5.3.0"
+  tag: "6.3.0"
   pullPolicy: IfNotPresent
 ```
 
@@ -264,12 +400,12 @@ image:
 ```yaml
 db:
   host: postgres-postgresql
-  cloudifyDBName: 'cloudify_db'
-  cloudifyUsername: 'cloudify'
-  cloudifyPassword: 'cloudify'
-  serverDBName: 'postgres'
-  serverUsername: 'postgres'
-  serverPassword: 'cfy_test_pass'
+  cloudify_db_name: 'cloudify_db'
+  cloudify_username: 'cloudify'
+  cloudify_password: 'cloudify'
+  server_db_name: 'postgres'
+  server_username: 'postgres'
+  server_password: 'cfy_test_pass'
 ```
 
 ### Message Broker - rabbitmq:
@@ -282,6 +418,7 @@ queue:
 ```
 
 ### Service:
+[See customization example above](#option-2)
 
 ```yaml
 service:
@@ -292,11 +429,11 @@ service:
     port: 80
   https:
     port: 443
-  internalRest:
+  internal_rest:
     port: 53333
 ```
 
-### node selector - select on which nodes cloudify manager AIO may run:
+### node selector - select on which nodes cloudify manager may run:
 
 ```yaml
 nodeSelector: {}
@@ -322,12 +459,12 @@ resources:
 
 ### Persistent volume size for EBS/EFS:
 
-If using multiple replicas (High availability), EFS must be used
+If using multiple replicas (High availability), NFS like Storage like EFS must be used
 
 ```yaml
 volume:
-  storageClass: 'efs'
-  accessMode: 'ReadWriteMany'
+  storage_class: 'efs'
+  access_mode: 'ReadWriteMany'
   size: "3Gi"
 ```
 
@@ -335,8 +472,8 @@ If using one replicas, you can use EBS (gp2) for example, **gp2 is default**:
 
 ```yaml
 volume:
-  storageClass: 'gp2'
-  accessMode: 'ReadWriteOnce'
+  storage_class: 'gp2'
+  access_mode: 'ReadWriteOnce'
   size: "3Gi"
 ```
 
@@ -350,66 +487,28 @@ readinessProbe:
   initialDelaySeconds: 10
 ```
 
-### license - relevant in case you use premium cloudify manager,not community
-
-You can add license as secret to k8s
-
-```yaml
-licence:
-  secretName: cfy-licence
-```
-### Okta - relevant in case you want to connect okta-auth by SAML to cloudify manager
-
-This handles most of the Okta configuration on the cloudify manager app.
-You still need to create the app on Okta and create the user group on the manager - Detailed Okta <> Cloudify integration can be found here: https://docs.cloudify.co/latest/working_with/manager/okta_authentication/
-
-The okta-license secret, containing the your Okta certificate should be applied
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: okta-license
-data:
-  okta_certificate.pem: |
-    -----BEGIN CERTIFICATE-----
-    <<certificate content>>
-    -----END CERTIFICATE-----
-```
-Fill the values according to your okta app
-
-```yaml
-okta:
-  secretName: okta-license
-  enabled: true
-  certPath: "/etc/cloudify/ssl/okta_certificate.pem"
-  ssoUrl: "<okta_sso_url>"
-  portalUrl: "<okta_portal_url>"
-```
-
 ### Config
 
 You can delay start of cfy manager / install all plugins / disable security (not recommended)...
 
 ```yaml
 config:
-  startDelay: 0
+  start_delay: 0
   # Multiple replicas works only with EFS(NFS) volume
   replicas: 1
-  installPlugins: false
-  cliLocalProfileHostName: localhost
+  install_plugins: false
+  cli_local_profile_host_name: localhost
   security:
-    sslEnabled: false
-    adminPassword: admin
-  tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
-  tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
-  caCertPath: /mnt/cloudify-data/ssl/ca.crt
+    ssl_enabled: false
+    admin_password: admin
+  tls_cert_path: /mnt/cloudify-data/ssl/tls.crt
+  tls_key_path: /mnt/cloudify-data/ssl/tls.key
+  ca_cert_path: /mnt/cloudify-data/ssl/ca.crt
 ```
 
 ### Ingress
 
-You may enable ingress-nginx and generate automatically cert if you have ingress-nginx / cert-manager installed.
+You may enable ingress-nginx and generate automatically cert if you have ingress-nginx / cert-manager installed (e.g. using nginx with existing ssl secret) - [See above for more details](#option-1)
 
 ```yaml
 ingress:
@@ -417,7 +516,8 @@ ingress:
   host: cloudify-manager.app.cloudify.co
   annotations:
     kubernetes.io/ingress.class: nginx
-    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m # use this annotation to allow upload of resources up to 50mb (e.g. plugins)
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod" # use this annotation to utilize an installed cert-manager
   tls:
     enabled: false
     secretName: cfy-secret-name

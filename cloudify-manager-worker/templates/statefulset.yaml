@@ -71,10 +71,10 @@ spec:
         - name: cloudify-cfg-volume
           mountPath: /tmp/cloudify/config.yaml
           subPath: config.yaml
-        {{- if .Values.licence }}
-        - name: cloudify-licence-volume
-          mountPath: /tmp/cloudify/cfy_licence.yaml
-          subPath: cfy_licence.yaml
+        {{- if .Values.license }}
+        - name: cloudify-license-volume
+          mountPath: /tmp/cloudify/cfy_license.yaml
+          subPath: cfy_license.yaml
         {{- end}}
         - name: supervisord-volume
           mountPath: /etc/supervisord.d/starter.conf
@@ -110,10 +110,10 @@ spec:
       - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
-      {{- if .Values.licence }}
-      - name: cloudify-licence-volume
+      {{- if .Values.license }}
+      - name: cloudify-license-volume
         configMap:
-          name: {{ .Values.licence.secretName }}
+          name: {{ .Values.license.secretName }}
       {{- end }}
       {{- if .Values.okta.enabled }}
       - name: okta-license-volume
