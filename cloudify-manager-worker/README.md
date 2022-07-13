@@ -11,7 +11,7 @@ It's a helm chart for cloudify manager which:
 
 This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
-![cfy-manager](/images/helm/cfy-example.png)
+![cfy-manager](../images/cfy-example.png)
 
 ## Prerequisites
 * Docker installed
