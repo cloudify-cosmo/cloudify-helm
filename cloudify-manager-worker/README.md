@@ -335,7 +335,7 @@ service:
 That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer)
 **To get the hostname of the load balancer run:**
 ```bash
-kubectl describe svc/cloudify-manager-worker -n NAMESPACE | grep Ingress
+$ kubectl describe svc/cloudify-manager-worker -n NAMESPACE | grep Ingress
 ```
 **The value of the ingress will be the UI URL of the Cloudify Manager.**
 
