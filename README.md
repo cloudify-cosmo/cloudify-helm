@@ -1,4 +1,3 @@
-
 # Cloudify manager AIO helm chart ( Community version )
 
 ## Description
