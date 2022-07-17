@@ -17,7 +17,10 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 * Docker installed
 * Kubectl installed
 * Helm installed
-* Running Kubernetes cluster
+* Running Kubernetes cluster (View differences between cloud providers)
+  * [EKS on AWS](./../examples/aws/README.md)
+  * [AKS on Azure](./../examples/azure/README.md)
+  * [GKE on GCP](./../examples/gcp/README.md)
 * Sufficient Kubernetes node [Minimum Requirements](https://docs.cloudify.co/latest/install_maintain/installation/prerequisites/)
 * Cloudify Premium valid license (for Premium version) 
 
@@ -452,7 +455,8 @@ resources:
 
 ### Persistent volume size for EBS/EFS:
 
-If using multiple replicas (High availability), NFS like Storage like EFS must be used
+If using multiple replicas (High availability), NFS like Storage like EFS must be used.
+For more details see links to different cloud providers [here](#prerequisites)
 
 ```yaml
 volume:
