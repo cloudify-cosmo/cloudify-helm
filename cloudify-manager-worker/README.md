@@ -575,3 +575,5 @@ To clean the supporting files:
 $ kubectl delete secret cfy-certs -n NAMESPACE
 $ kubectl delete configmap cfy-license -n NAMESPACE
 ```
+
+[Jump to Top](#cloudify-manager-worker-helm-chart--premium-version)
