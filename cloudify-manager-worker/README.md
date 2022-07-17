@@ -26,15 +26,21 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 
 ## How to create and deploy such a setup?
 
-1. Generate certificate as a secret in k8s.
+1. [Generate certificate as a secret in k8s.](#generate-certificates-and-add-as-secret-to-k8s)
 
-2. Deployment of DB (Postgres).
+2. [Deployment of DB (Postgres).](#install-postgresqlbitnami-to-kubernetes-cluster-with-helm)
 
-3. Deployment of Message Broker (rabbitMQ).
+3. [Deployment of Message Broker (rabbitMQ).](#install-rabbitmqbitnami-to-kubernetes-cluster-with-helm)
 
-4. Deployment of Cloudify manager worker.
+4. [Deployment of Cloudify manager worker.](#install-cloudify-manager-worker)
 
-5. (Optional) Extra configuration options
+5. [(Optional) Ensure UI access to the manager upon installation](#optional-ensure-ui-access-to-the-manager-upon-installation)
+
+6. [(Optional) Extra configuration options](#configuration-options-of-cloudify-manager-worker-valuesyaml)
+
+7. [Troubleshooting](#troubleshoot)
+
+8. [Uninstallation of helm charts](#uninstallation)
 
 **You need to deploy DB and Message Broker before deploying Cloudify manager worker**
 
@@ -217,7 +223,7 @@ $ helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/r
 ### Create configMap with premium license - required if using Cloudify premium version
 
 Create license.yaml file and populate it with license data
-* license data must be named cfy_license.yaml to match statefulSet
+* American/British English conventions accepted, but must be alligned across all 'license/licence' strings (values/configMaps)
 
  ```yaml
 apiVersion: v1
@@ -248,7 +254,7 @@ Apply created config map:
 $ kubectl apply -f license.yaml
 ```
 ### Add the cloudify-helm repo
-Add the cloudify-helm repo or upgrade it
+Add the cloudify-helm chart repo or upgrade it
 ```bash
 $ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 ```
@@ -518,4 +524,54 @@ ingress:
   tls:
     enabled: false
     secretName: cfy-secret-name
+```
+
+## Troubleshoot
+
+Some common use cases:
+
+### License is not uploaded correctly upon installation
+
+This might happen if the English convention of licence/license is not alligned across the values (name of the value and its value), or across the license/licence configMap.
+
+
+Also, the [StatefulSet](./templates/statefulset.yaml) accepts a license/licence [configMap](#create-configmap-with-premium-license---required-if-using-cloudify-premium-version) with the `data` value of this syntax `cfy_license.yaml` (according to the chosen English convention)
+
+After ensuring the above, try to reinstall the worker chart
+
+- Workaround for this issue would be to manually upload the license after the manager installation through the UI after logging in or via the [CLI](https://docs.cloudify.co/latest/cli/maint_cli/license/).
+
+### Cloudify Manager installation succeded but I can't reach the UI
+
+Please see [above](#optional-ensure-ui-access-to-the-manager-upon-installation)
+
+If you already installed the chart, update the values accordingly and run:
+
+```bash
+$ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f <path-to-values.yaml-file> -n NAMESPACE
+```
+
+### I had to reinstall the worker chart and now it fails on installation
+
+This might happen due to inter-communications between the components in the different pods, a work around for that would be to delete the postgresql (has a PersistentVolume) and the rabbitmq pods, which will trigger a restart for them.
+```bash
+$ kubectl delete pod postgres-postgresql-0 -n NAMESPACE
+$ kubectl delete pod rabbitmq-0 -n NAMESPACE
+```
+Then try reinstalling the worker chart.
+
+### Can't find the help you need here?
+Feel free to open an [issue](https://github.com/cloudify-cosmo/cloudify-helm/issues) in the helm chart GitHub page, or [contact us](https://cloudify.co/contact/) through our website.
+
+## Uninstallation
+
+As the whole setup is built from mainly 3 helm charts, you simply need to uninstall them.
+```bash
+$ helm uninstall cloudify-manager-worker postgres rabbitmq -n NAMESPACE
+```
+
+To clean the supporting files:
+```bash
+$ kubectl delete secret cfy-certs -n NAMESPACE
+$ kubectl delete configmap cfy-license -n NAMESPACE
 ```
