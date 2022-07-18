@@ -97,7 +97,7 @@ okta:
   ssoUrl: ""
   portalUrl: ""
 
-license: {}
+license: {} # license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information)
   # secretName: cfy-license
 
 livenessProbe:
