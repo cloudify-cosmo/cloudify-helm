@@ -13,8 +13,8 @@ data:
       security:
         ssl_enabled: {{ .Values.config.security.sslEnabled }}
         admin_password: {{ .Values.config.security.adminPassword }}
-      {{- if .Values.licence }}
-      cloudify_license_path: /tmp/cloudify/cfy_licence.yaml
+      {{- if .Values.license }}
+      cloudify_license_path: /tmp/cloudify/cfy_license.yaml
       {{- end}}
 
     rabbitmq:

@@ -30,7 +30,6 @@ $  aws efs create-file-system \
 -\-region us-west-2 \
 -\-tags Key=Name,Value="Test File System" \
 -\-profile adminuser
-
 ```
 
 ## Deploy EFS provisoner
@@ -88,13 +87,11 @@ $ cfy_manager generate-test-cert -s 'cloudify-manager-worker.cfy-demo.svc.cluste
 
 ## save certs in tls.crt|tls.key|ca.crt
 $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
-
 ```
 
 ### Values.yaml
 
 ```yaml
-
 volume:
   storageClass: 'aws-efs'
   accessMode: 'ReadWriteMany'
