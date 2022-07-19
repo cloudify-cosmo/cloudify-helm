@@ -71,11 +71,7 @@ spec:
         - name: cloudify-cfg-volume
           mountPath: /tmp/cloudify/config.yaml
           subPath: config.yaml
-        {{- if .Values.license }}
-        - name: cloudify-license-volume
-          mountPath: /tmp/cloudify/cfy_license.yaml
-          subPath: cfy_license.yaml
-        {{- else if .Values.licence }}
+        {{- if .Values.licence }}
         - name: cloudify-licence-volume
           mountPath: /tmp/cloudify/cfy_licence.yaml
           subPath: cfy_licence.yaml
@@ -114,11 +110,7 @@ spec:
       - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
-      {{- if .Values.license }}
-      - name: cloudify-license-volume
-        configMap:
-          name: {{ .Values.license.secretName }}
-      {{- else if .Values.licence }} # add option to accept legacy 'licence' instead of 'license'
+      {{- if .Values.licence }}
       - name: cloudify-licence-volume
         configMap:
           name: {{ .Values.licence.secretName }}
