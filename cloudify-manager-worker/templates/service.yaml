@@ -19,5 +19,11 @@ spec:
       targetPort: {{ .Values.service.internalRest.port }}
       protocol: TCP
       name: internal-rest
+    {{- if .Values.service.extraPort }}
+    {{- range .Values.service.extraPorts }}
+    - {{ . }}
+    {{- end}}
+    {{- end}}
+    
   selector:
     app: {{ template "cloudify-manager-worker.name" . }}

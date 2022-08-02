@@ -13,8 +13,11 @@ spec:
   serviceName: {{ .Values.service.name }}
   template:
     metadata:
-      labels:
+      labels: 
         app: {{ template "cloudify-manager-worker.name" . }}
+        {{- if .Values.config.labels }}
+        {{- toYaml .Values.config.labels | nindent 8 }}
+        {{-end }}
     spec:
       initContainers:
       - name: init-data
