@@ -31,6 +31,7 @@ image:
 ```
 
 ### Service:
+* for more information and options see [the worker docs](../cloudify-manager-worker/README.md#option-2)
 
 ```yaml
 service:

@@ -47,6 +47,12 @@ service:
     port: 443
   internalRest:
     port: 53333
+  ## If you need to open additional ports for the manager, uncomment extraPorts and define your port parameters - More than one can be added (below is an example)
+  extraPorts: {}
+  # - name: examplePort
+  #   port: 33221
+  #   protocol: TCP
+  #   targetPort: 33221
 
 ## Node labels for default backend pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -78,6 +84,9 @@ resources: {}
 config:
   # Multiple replicas works only with NFS like volume
   replicas: 1
+  labels: {}
+#   Add labels to Manager-worker container (see example below)
+#   example-label: "cloudify-example"
   startDelay: 0
   after_bash: ''
   cliLocalProfileHostName: localhost
