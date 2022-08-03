@@ -19,9 +19,12 @@ spec:
       targetPort: {{ .Values.service.internalRest.port }}
       protocol: TCP
       name: internal-rest
-    {{- if .Values.service.extraPort }}
-    {{- range .Values.service.extraPorts }}
-    - {{ . }}
+    {{- if .Values.service.extraPorts }}
+    {{- range $index, $rule := .Values.service.extraPorts }}
+    - name: {{ $rule.name }}
+      port: {{ $rule.port }}
+      protocol: {{ $rule.protocol }}
+      targetPort: {{ $rule.targetPort }}
     {{- end}}
     {{- end}}
     
