@@ -51,7 +51,7 @@ spec:
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-        {{- end}}
+        {{- end }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
@@ -62,7 +62,7 @@ spec:
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-        {{- end}}
+        {{- end }}
         {{- if .Values.resources }}
         resources: {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
@@ -82,7 +82,7 @@ spec:
         - name: cloudify-licence-volume
           mountPath: /tmp/cloudify/cfy_licence.yaml
           subPath: cfy_licence.yaml
-        {{- end}}
+        {{- end }}
         - name: supervisord-volume
           mountPath: /etc/supervisord.d/starter.conf
           subPath: starter.conf

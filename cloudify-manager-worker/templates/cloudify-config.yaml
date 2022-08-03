@@ -15,7 +15,7 @@ data:
         admin_password: {{ .Values.config.security.adminPassword }}
       {{- if .Values.license }}
       cloudify_license_path: /tmp/cloudify/cfy_license.yaml
-      {{- end}}
+      {{- end }}
 
     rabbitmq:
       username: {{ .Values.queue.username }}
