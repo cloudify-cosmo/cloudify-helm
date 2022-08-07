@@ -102,9 +102,9 @@ spec:
           mountPath: /mnt/cloudify-data/ssl/okta_certificate.pem
           subPath: okta_certificate.pem
         {{- end }}
-        - name: stage-config-volume
-          mountPath: /tmp/cloudify/config.json
-          subPath: config.json
+        - name: stage-user-config-volume
+          mountPath: /tmp/cloudify/userConfig.json
+          subPath: userConfig.json
       volumes:
       - name: run
         emptyDir:
@@ -131,9 +131,9 @@ spec:
         configMap:
           name: {{ .Values.okta.secretName }}
       {{- end }}
-      - name: stage-config-volume
+      - name: stage-user-config-volume
         configMap:
-          name: stage-config
+          name: user-config
       - name: supervisord-volume
         configMap:
           name: supervisord-config
