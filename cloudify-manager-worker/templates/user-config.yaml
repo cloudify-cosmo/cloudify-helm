@@ -1,10 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
-  name: userConfig
+  name: user-config
 data:
-  userConfig.json: |
+  user-config.json: |
   {
     "maps": {
       "tilesUrlTemplate": "https://tiles.stadiamaps.com/tiles/osm_bright/${z}/${x}/${y}${r}.png?api_key=${accessToken}",
@@ -18,7 +17,7 @@ data:
         "delete": 10000
       }
     },
-    "saml":{
+    "saml": {
       "enabled": {{ .Values.okta.enabled }},
       "certPath": "{{ .Values.okta.certPath }}",
       "ssoUrl": "{{ .Values.okta.ssoUrl }}",
