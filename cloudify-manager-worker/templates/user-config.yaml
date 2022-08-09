@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+data:
+  userConfig.json: |
+    {
+      "maps": {
+        "tilesUrlTemplate": "https://tiles.stadiamaps.com/tiles/osm_bright/${z}/${x}/${y}${r}.png?api_key=${accessToken}",
+        "attribution": "&copy; <a href=\"https://stadiamaps.com/\">Stadia Maps</a>, &copy; <a href=\"https://openmaptiles.org/\">OpenMapTiles</a> &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors"
+      },
+      "proxy": {
+        "timeouts": {
+          "get": 30000,
+          "post": 30000,
+          "put": 30000,
+          "delete": 10000
+        }
+      },
+      "saml": {
+        "enabled": {{ .Values.okta.enabled }},
+        "certPath": "{{ .Values.okta.certPath }}",
+        "ssoUrl": "{{ .Values.okta.ssoUrl }}",
+        "portalUrl": "{{ .Values.okta.portalUrl }}"
+      },
+      "whiteLabel": {
+        "logoUrl": "",
+        "mainColor": "#0077FC",
+
+        "headerTextColor": "white",
+        "showVersionDetails": true,
+        "showFirstLoginHint": true,
+
+        "loginPageHeaderColor": "white",
+        "loginPageTextColor": "white",
+
+        "sidebarColor": "#050229",
+        "sidebarTextColor" : "white",
+        "sidebarHoverActiveColor": "#1e1a3d",
+        "sidebarHoverActiveTextColor": "#65adff",
+
+        "customCssPath": ""
+      },
+      "widgets": {
+        "allowedModules": ["lodash", "body", "elkjs"]
+      }
+    }
