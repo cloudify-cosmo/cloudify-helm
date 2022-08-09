@@ -107,7 +107,7 @@ spec:
           subPath: userConfig.json
         {{- if .Values.db.useExternalDB }}
         - name: cfy-pgsql-cert
-          mountPath: /mnt/cloudify-data/ssl/postgres.crt
+          mountPath: {{ .Values.config.postgresqlCaPath }}
           subPath: postgres.crt
         {{- end }}
       volumes:
