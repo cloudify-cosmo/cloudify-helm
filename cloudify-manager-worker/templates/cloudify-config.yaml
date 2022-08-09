@@ -29,21 +29,33 @@ data:
             default: {{ .Values.queue.host }}.{{.Release.Namespace}}.svc.cluster.local
 
     postgresql_client:
+      {{- if .Values.db.useExternalDB }}
+      host: {{ .Values.db.host }}
+      {{- else }}
       host: {{ .Values.db.host }}.{{.Release.Namespace}}.svc.cluster.local
+      {{- end }}
       server_db_name: {{ .Values.db.serverDBName }}
       server_username: {{ .Values.db.serverUsername }}
       server_password: {{ .Values.db.serverPassword }}
       cloudify_db_name: {{ .Values.db.cloudifyDBName }}
       cloudify_username: {{ .Values.db.cloudifyUsername }}
       cloudify_password: {{ .Values.db.cloudifyPassword }}
+      {{- if .Values.db.useExternalDB }}
+      ca_path: {{ .Values.config.postgresqlCaPath }}
+      {{- else }}
       ca_path: {{ .Values.config.caCertPath }}
+      {{- end }}
       ssl_enabled: true
       ssl_client_verification: true
     postgresql_server:
       postgres_password: {{ .Values.db.serverPassword }}
+      {{- if .Values.db.useExternalDB }}
+      ca_path: {{ .Values.config.postgresqlCaPath }}
+      {{- else }}
       ca_path: {{ .Values.config.caCertPath }}
       cert_path: {{ .Values.config.tlsCertPath }}
       key_path: {{ .Values.config.tlsKeyPath }}
+      {{- end }}
 
     prometheus:
       ca_path: {{ .Values.config.caCertPath }}
@@ -54,7 +66,11 @@ data:
     ssl_inputs:
       postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
       postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+      {{- if .Values.db.useExternalDB }}
+      postgresql_ca_cert_path: {{ .Values.config.postgresqlCaPath }}
+      {{- else }}
       postgresql_ca_cert_path: {{ .Values.config.caCertPath }}
+      {{- end }}
       ca_cert_path: {{ .Values.config.caCertPath }}
       internal_cert_path: {{ .Values.config.tlsCertPath }}
       internal_key_path: {{ .Values.config.tlsKeyPath }}

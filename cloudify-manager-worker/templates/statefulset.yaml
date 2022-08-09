@@ -105,6 +105,11 @@ spec:
         - name: stage-user-config-volume
           mountPath: /tmp/cloudify/userConfig.json
           subPath: userConfig.json
+        {{- if .Values.db.useExternalDB }}
+        - name: cfy-pgsql-cert
+          mountPath: /mnt/cloudify-data/ssl/postgres.crt
+          subPath: postgres.crt
+        {{- end }}
       volumes:
       - name: run
         emptyDir:
@@ -161,6 +166,11 @@ spec:
       - name: cloudify-data
         persistentVolumeClaim:
           claimName: cfy-worker-pvc
+      {{- if .Values.db.useExternalDB }}
+      - name: cfy-pgsql-cert
+        secret:
+          secretName: {{ .Values.tls.pgsqlCertSecretName }}
+      {{- end }}
 
     {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}

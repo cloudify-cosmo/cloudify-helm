@@ -23,6 +23,7 @@ image:
 
 # external DB
 db:
+  useExternalDB: false # when switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section and config.postgresqlCaPath
   host: postgres-postgresql
   cloudifyDBName: 'cloudify_db'
   cloudifyUsername: 'cloudify'
@@ -65,6 +66,7 @@ nodeSelector: {}
 tls:
   # certificates as a secret, to secure communications between cloudify manager and postgress|rabbitmq
   secretName: cfy-certs
+  pgsqlCertSecretName: pgsql-external-cert #required for external postgresql database only
 
 # For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
 # Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
@@ -96,6 +98,7 @@ config:
   tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
+  postgresqlCaPath: /mnt/cloudify-data/ssl/postgres.crt # only required if you're using an external pgsql db
   workerCount: 4 # suggested worker count for 1vcpu manager, add more if using a stronger host
   mgmtWorkerCount: 8 # Maximum number of worker processes started by the management worker.
 
