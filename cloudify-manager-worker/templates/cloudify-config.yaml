@@ -16,6 +16,9 @@ data:
       cloudify_license_path: /tmp/cloudify/cfy_license.yaml
       {{- end }}
 
+    cli:
+      local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
+
     rabbitmq:
       username: {{ .Values.queue.username }}
       password: {{ .Values.queue.password }}

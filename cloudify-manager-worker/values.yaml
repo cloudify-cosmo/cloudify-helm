@@ -98,9 +98,12 @@ config:
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
   workerCount: 4 # suggested worker count for 1vcpu manager, add more if using a stronger host
   mgmtWorkerCount: 8 # Maximum number of worker processes started by the management worker.
+  userConfig:
+    # used to control specific Stage configurations
+    loginHint: true # true by default, change to false to remove the initial login password hint
 
 okta:
-  secretName: okta-license
+  secretName: okta-license # if enabled, upload a secret containing the okta certificate.
   enabled: false
   certPath: ""
   ssoUrl: ""

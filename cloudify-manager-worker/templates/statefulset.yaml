@@ -128,8 +128,8 @@ spec:
       {{- end }}
       {{- if .Values.okta.enabled }}
       - name: okta-license-volume
-        configMap:
-          name: {{ .Values.okta.secretName }}
+        secret:
+          secretName: {{ .Values.okta.secretName }}
       {{- end }}
       - name: stage-user-config-volume
         configMap:
