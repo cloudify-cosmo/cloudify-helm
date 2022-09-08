@@ -29,7 +29,7 @@ data:
 
         "headerTextColor": "white",
         "showVersionDetails": true,
-        "showFirstLoginHint": true,
+        "showFirstLoginHint": {{ .Values.config.userConfig.loginHint }},
 
         "loginPageHeaderColor": "white",
         "loginPageTextColor": "white",
