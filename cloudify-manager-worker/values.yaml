@@ -17,7 +17,7 @@ image:
   # - name: secretName
   initContainer:
     repository: busybox
-    tag: latest
+    tag: stable
     pullPolicy: Always
     resources: {}
 
@@ -25,18 +25,18 @@ image:
 db:
   useExternalDB: false # when switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section and config.postgresqlCaPath
   host: postgres-postgresql
-  cloudifyDBName: 'cloudify_db'
-  cloudifyUsername: 'cloudify'
-  cloudifyPassword: 'cloudify'
-  serverDBName: 'postgres'
-  serverUsername: 'postgres'
-  serverPassword: 'cfy_test_pass'
+  cloudifyDBName: "cloudify_db"
+  cloudifyUsername: "cloudify"
+  cloudifyPassword: "cloudify"
+  serverDBName: "postgres"
+  serverUsername: "postgres"
+  serverPassword: "cfy_test_pass"
 
 # external Queue (Message Broker)
 queue:
   host: rabbitmq
-  username: 'cfy_user'
-  password: 'cfy_test_pass'
+  username: "cfy_user"
+  password: "cfy_test_pass"
 
 service:
   host: cloudify-manager-worker
@@ -71,11 +71,12 @@ tls:
 # For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
 # Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
 volume:
-  storageClass: 'gp2'
-  accessMode: 'ReadWriteOnce'
+  storageClass: "gp2"
+  accessMode: "ReadWriteOnce"
   size: "3Gi"
 
-resources: {}
+resources:
+  {}
   # requests:
   #   memory: 0.5Gi
   #   cpu: 0.5
@@ -87,10 +88,10 @@ config:
   # Multiple replicas works only with NFS like volume
   replicas: 1
   labels: {}
-#   Add labels to Manager-worker container (see example below)
-#   example-label: "cloudify-example"
+  #   Add labels to Manager-worker container (see example below)
+  #   example-label: "cloudify-example"
   startDelay: 0
-  after_bash: ''
+  after_bash: ""
   cliLocalProfileHostName: localhost
   security:
     sslEnabled: false
@@ -112,11 +113,12 @@ okta:
   ssoUrl: ""
   portalUrl: ""
 
-license: {} # license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information)
+license:
+  {} # license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information)
   # secretName: cfy-license
 
 livenessProbe:
-# Use this probe to configure liveness monitoring
+  # Use this probe to configure liveness monitoring
   enabled: false
   httpGet:
     path: /api/v3.1/ok
@@ -126,9 +128,9 @@ livenessProbe:
   periodSeconds: 30
   failureThreshold: 8
   initialDelaySeconds: 600
-     
+
 readinessProbe:
-# Use this probe to configure readiness monitoring
+  # Use this probe to configure readiness monitoring
   enabled: false
   httpGet:
     path: /console
