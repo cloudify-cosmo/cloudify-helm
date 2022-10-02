@@ -1,7 +1,8 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
-# Parameters group for Docker images
+# -- Parameters group for Docker images
+# @default -- object
 image:
   # -- Docker image repository
   repository: cloudifyplatform/premium-cloudify-manager-worker
@@ -23,6 +24,7 @@ image:
     resources: {}
 
 # -- Parameters group for connection to PostgreSQL database
+# @default -- object
 db:
   # -- When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section
   useExternalDB: false
@@ -44,6 +46,7 @@ db:
   serverPassword: "cfy_test_pass"
 
 # -- Parameters group for connection to RabbitMQ (Message Broker)
+# @default -- object
 queue:
   # -- RabbitMQ connection host (without k8s domain)
   host: rabbitmq
@@ -53,6 +56,7 @@ queue:
   password: "cfy_test_pass"
 
 # -- Parameters group for k8s service
+# @default -- object
 service:
   # -- k8s service host
   host: cloudify-manager-worker
@@ -82,6 +86,7 @@ service:
 nodeSelector: {}
 
 ## -- Parameters group for TLS/SSL configuration.
+# @default -- object
 tls:
   # -- k8s secret name with certificates to secure communications between cloudify manager and postgresql|rabbitmq deployed inside the same k8s cluster.
   secretName: cfy-certs
@@ -97,9 +102,13 @@ tls:
 # -- Parameters group for data storage volume
 # For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
 # Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
+# @default -- object
 volume:
+  # -- volume storage class
   storageClass: "gp2"
+  # -- volume access mode
   accessMode: "ReadWriteOnce"
+  # -- volume size
   size: "3Gi"
 
 # -- Parameters group for resources requests and limits
@@ -217,12 +226,19 @@ ingress:
   enabled: false
   # -- Hostname for ingress connection
   host: cfy-efs-app.eks.cloudify.co
-  # -- Ingress annotation
+  # -- Ingress annotation object
+  # @default -- object
   annotations:
+    # -- Ingress class
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m # use this annotation to allow upload of resources up to 50mb (e.g. plugins)
+    # -- Ingress proxy body size.
+    # Use this annotation to allow upload of resources up to 50mb (e.g. plugins).
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
   # -- Ingress TLS parameters
+  # @default -- object
   tls:
+    # -- Enabled TLS connections for Ingress
     enabled: false
+    # -- k8s secret name with TLS certificates for ingress
     secretName: cfy-secret-name

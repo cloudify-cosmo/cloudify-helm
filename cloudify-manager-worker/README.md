@@ -412,7 +412,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | config.tlsKeyPath | string | `"/mnt/cloudify-data/ssl/tls.key"` | Path to TLS certificate key. |
 | config.userConfig.loginHint | bool | `true` | Enable initial login password hint. |
 | config.workerCount | int | `4` | Cloudify Manager worker count. Suggested worker count for 1vcpu manager, add more if using a stronger host |
-| db | object | `{"cloudifyDBName":"cloudify_db","cloudifyPassword":"cloudify","cloudifyUsername":"cloudify","host":"postgres-postgresql","postgresqlSslClientVerification":true,"serverDBName":"postgres","serverPassword":"cfy_test_pass","serverUsername":"postgres","useExternalDB":false}` | Parameters group for connection to PostgreSQL database |
+| db | object | object | Parameters group for connection to PostgreSQL database |
 | db.cloudifyDBName | string | `"cloudify_db"` | Database name for store Cloudify Manager data |
 | db.cloudifyPassword | string | `"cloudify"` | Password for DB connection |
 | db.cloudifyUsername | string | `"cloudify"` | Username for DB connection |
@@ -423,6 +423,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | db.serverUsername | string | `"postgres"` | Username for initial DB connection |
 | db.useExternalDB | bool | `false` | When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section |
 | fullnameOverride | string | `"cloudify-manager-worker"` |  |
+| image | object | object | Parameters group for Docker images |
 | image.initContainer.pullPolicy | string | `"Always"` | imagePullPolicy for init container |
 | image.initContainer.repository | string | `"busybox"` | Docker image repository for init container |
 | image.initContainer.resources | object | `{}` | resources requests and limits for init container |
@@ -432,10 +433,14 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | image.repository | string | `"cloudifyplatform/premium-cloudify-manager-worker"` | Docker image repository |
 | image.tag | string | `"6.3.2"` | Docker image tag |
 | ingress | object | object | Parameters group for ingress (managed external access to service) |
-| ingress.annotations | object | `{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/proxy-body-size":"50m"}` | Ingress annotation |
+| ingress.annotations | object | object | Ingress annotation object |
+| ingress.annotations."kubernetes.io/ingress.class" | string | `"nginx"` | Ingress class |
+| ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size" | string | `"50m"` | Ingress proxy body size. Use this annotation to allow upload of resources up to 50mb (e.g. plugins). |
 | ingress.enabled | bool | `false` | Enable ingress |
 | ingress.host | string | `"cfy-efs-app.eks.cloudify.co"` | Hostname for ingress connection |
-| ingress.tls | object | `{"enabled":false,"secretName":"cfy-secret-name"}` | Ingress TLS parameters |
+| ingress.tls | object | object | Ingress TLS parameters |
+| ingress.tls.enabled | bool | `false` | Enabled TLS connections for Ingress |
+| ingress.tls.secretName | string | `"cfy-secret-name"` | k8s secret name with TLS certificates for ingress |
 | license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information) |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
 | livenessProbe.enabled | bool | `false` | Enable liveness probe |
@@ -454,7 +459,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | okta.portalUrl | string | `""` | Portal URL |
 | okta.secretName | string | `"okta-license"` | k8s secret name containing the OKTA certificates. |
 | okta.ssoUrl | string | `""` | SSO URL |
-| queue | object | `{"host":"rabbitmq","password":"cfy_test_pass","username":"cfy_user"}` | Parameters group for connection to RabbitMQ (Message Broker) |
+| queue | object | object | Parameters group for connection to RabbitMQ (Message Broker) |
 | queue.host | string | `"rabbitmq"` | RabbitMQ connection host (without k8s domain) |
 | queue.password | string | `"cfy_test_pass"` | Password for connection to RabbitMQ |
 | queue.username | string | `"cfy_user"` | Username for connection to RabbitMQ |
@@ -468,7 +473,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | readinessProbe.successThreshold | int | `1` | readiness probe success threshold |
 | readinessProbe.timeoutSeconds | int | `5` | readiness probe timeout in seconds |
 | resources | object | `{}` | Parameters group for resources requests and limits |
-| service | object | `{"extraPorts":{},"host":"cloudify-manager-worker","http":{"port":80},"https":{"port":443},"internalRest":{"port":53333},"name":"cloudify-manager-worker","type":"ClusterIP"}` | Parameters group for k8s service |
+| service | object | object | Parameters group for k8s service |
 | service.extraPorts | object | `{}` | k8s service additional ports. If you need to open additional ports for the manager, uncomment extraPorts and define your port parameters - More than one can be added (below is an example). |
 | service.host | string | `"cloudify-manager-worker"` | k8s service host |
 | service.http.port | int | `80` | k8s service http port |
@@ -481,7 +486,10 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | tls.pgsqlSslKeyName | string | `""` | subPath name for ssl key in k8s secret for connection to external PostgreSQL database. Isn't required if db.postgresqlSslClientVerification = false. |
 | tls.pgsqlSslSecretName | string | `"pgsql-external-cert"` | k8s secret name with ssl certificates for external PostgreSQL database. Required only for connection to external PostgreSQL database. |
 | tls.secretName | string | `"cfy-certs"` | k8s secret name with certificates to secure communications between cloudify manager and postgresql|rabbitmq deployed inside the same k8s cluster. |
-| volume | object | `{"accessMode":"ReadWriteOnce","size":"3Gi","storageClass":"gp2"}` | Parameters group for data storage volume For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany' Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce' |
+| volume | object | object | Parameters group for data storage volume For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany' Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce' |
+| volume.accessMode | string | `"ReadWriteOnce"` | volume access mode |
+| volume.size | string | `"3Gi"` | volume size |
+| volume.storageClass | string | `"gp2"` | volume storage class |
 
 Edit the values file in `./cloudify-manager-worker/values.yaml` according to your preferences:
 
