@@ -433,7 +433,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | image.repository | string | `"cloudifyplatform/premium-cloudify-manager-worker"` | Docker image repository |
 | image.tag | string | `"6.3.2"` | Docker image tag |
 | ingress | object | object | Parameters group for ingress (managed external access to service) |
-| ingress.annotations | object | {"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/proxy-body-size":"50m"} | Ingress annotation object |
+| ingress.annotations | object | object | Ingress annotation object. Please see an example in values.yaml file |
 | ingress.enabled | bool | `false` | Enable ingress |
 | ingress.host | string | `"cfy-efs-app.eks.cloudify.co"` | Hostname for ingress connection |
 | ingress.tls | object | object | Ingress TLS parameters |
