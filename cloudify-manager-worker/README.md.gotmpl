@@ -1,4 +1,4 @@
-[//]: # -*- markdown -*-
+[//]: # (-*- markdown -*-)
 
 # Cloudify manager worker helm chart ( Premium Version )
 
