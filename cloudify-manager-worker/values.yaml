@@ -227,6 +227,7 @@ ingress:
   # -- Hostname for ingress connection
   host: cfy-efs-app.eks.cloudify.co
   # -- Ingress annotation object
+  # @default -- {"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/proxy-body-size":"50m"}
   annotations:
     # Ingress class
     kubernetes.io/ingress.class: nginx
