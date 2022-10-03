@@ -466,7 +466,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | readinessProbe.failureThreshold | int | `5` | readiness probe failure threshold |
 | readinessProbe.httpGet.path | string | `"/console"` | readiness probe HTTP GET path |
 | readinessProbe.httpGet.port | int | `80` | readiness probe HTTP port |
-| readinessProbe.initialDelaySeconds | int | `10` | readiness probe initial delay in seconds |
+| readinessProbe.initialDelaySeconds | int | `0` | readiness probe initial delay in seconds |
 | readinessProbe.periodSeconds | int | `10` | readiness probe period in seconds |
 | readinessProbe.successThreshold | int | `1` | readiness probe success threshold |
 | readinessProbe.timeoutSeconds | int | `5` | readiness probe timeout in seconds |
