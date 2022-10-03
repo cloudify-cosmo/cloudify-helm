@@ -538,10 +538,13 @@ readReplicas:
     enabled: true
 
   # Override the resource configuration for read replicas
-  resources: {}
-  # requests:
-  #   memory: 256Mi
-  #   cpu: 250m
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
 
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -550,6 +553,9 @@ resources:
   requests:
     memory: 256Mi
     cpu: 250m
+  limits:
+    memory: 512Mi
+    cpu: 500m
 
 ## Add annotations to all the deployed resources
 ##
