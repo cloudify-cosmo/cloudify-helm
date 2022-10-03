@@ -8,17 +8,17 @@ image:
 
 db:
   host: postgres-postgresql
-  cloudifyDBName: 'cloudify_db'
-  cloudifyUsername: 'cloudify'
-  cloudifyPassword: 'cloudify'
-  serverDBName: 'postgres'
-  serverUsername: 'postgres'
-  serverPassword: 'cfy_test_pass'
+  cloudifyDBName: "cloudify_db"
+  cloudifyUsername: "cloudify"
+  cloudifyPassword: "cloudify"
+  serverDBName: "postgres"
+  serverUsername: "postgres"
+  serverPassword: "cfy_test_pass"
 
 queue:
   host: rabbitmq
-  username: 'cfy_user'
-  password: 'cfy_test_pass'
+  username: "cfy_user"
+  password: "cfy_test_pass"
 
 service:
   host: cloudify-manager-worker
@@ -39,8 +39,8 @@ secret:
 # Multiple replicas - EFS only, storageClass: 'aws-efs', accessMode: 'ReadWriteMany'
 # Single replica - EBS, storageClass: 'gp2', accessMode: 'ReadWriteOnce'
 volume:
-  storageClass: 'nfs-client'
-  accessMode: 'ReadWriteMany'
+  storageClass: "nfs-client"
+  accessMode: "ReadWriteMany"
   size: "15Gi"
 
 resources:
@@ -60,13 +60,6 @@ config:
   tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
-
-readinessProbe:
-  enabled: true
-  port: 80
-  path: /console
-  successThreshold: 3
-  initialDelaySeconds: 10
 
 ingress:
   enabled: false

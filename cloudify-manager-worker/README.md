@@ -427,7 +427,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | image.initContainer.pullPolicy | string | `"Always"` | imagePullPolicy for init container |
 | image.initContainer.repository | string | `"busybox"` | Docker image repository for init container |
 | image.initContainer.resources | object | `{}` | resources requests and limits for init container |
-| image.initContainer.tag | string | `"latest"` | Docker image tag for init container |
+| image.initContainer.tag | string | `"1.34.1-uclibc"` | Docker image tag for init container |
 | image.pullPolicy | string | `"IfNotPresent"` | Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images |
 | image.pullSecrets | list | `[]` | Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | image.repository | string | `"cloudifyplatform/premium-cloudify-manager-worker"` | Docker image repository |
@@ -441,11 +441,11 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | ingress.tls.secretName | string | `"cfy-secret-name"` | k8s secret name with TLS certificates for ingress |
 | license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information) |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
-| livenessProbe.enabled | bool | `false` | Enable liveness probe |
+| livenessProbe.enabled | bool | `true` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | `8` | liveness probe failure threshold |
 | livenessProbe.httpGet.path | string | `"/api/v3.1/ok"` | liveness probe HTTP GET path |
 | livenessProbe.httpGet.port | int | `80` | liveness probe HTTP port |
-| livenessProbe.initialDelaySeconds | int | `600` | liveness probe initial dalay in seconds |
+| livenessProbe.initialDelaySeconds | int | `600` | liveness probe initial delay in seconds |
 | livenessProbe.periodSeconds | int | `30` | liveness probe period in seconds |
 | livenessProbe.successThreshold | int | `1` | liveness probe success threshold |
 | livenessProbe.timeoutSeconds | int | `15` | liveness probe timeout in seconds |
@@ -462,11 +462,11 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | queue.password | string | `"cfy_test_pass"` | Password for connection to RabbitMQ |
 | queue.username | string | `"cfy_user"` | Username for connection to RabbitMQ |
 | readinessProbe | object | object | Parameters group for pod readiness probe |
-| readinessProbe.enabled | bool | `false` | Enable readiness probe |
+| readinessProbe.enabled | bool | `true` | Enable readiness probe |
 | readinessProbe.failureThreshold | int | `5` | readiness probe failure threshold |
 | readinessProbe.httpGet.path | string | `"/console"` | readiness probe HTTP GET path |
 | readinessProbe.httpGet.port | int | `80` | readiness probe HTTP port |
-| readinessProbe.initialDelaySeconds | int | `200` | readiness probe initial dalay in seconds |
+| readinessProbe.initialDelaySeconds | int | `10` | readiness probe initial delay in seconds |
 | readinessProbe.periodSeconds | int | `10` | readiness probe period in seconds |
 | readinessProbe.successThreshold | int | `1` | readiness probe success threshold |
 | readinessProbe.timeoutSeconds | int | `5` | readiness probe timeout in seconds |
@@ -479,6 +479,15 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | service.internalRest.port | int | `53333` | k8s service internal rest port |
 | service.name | string | `"cloudify-manager-worker"` | k8s service name |
 | service.type | string | `"ClusterIP"` | k8s service type |
+| startupProbe | object | object | Parameters group for pod startup probe |
+| startupProbe.enabled | bool | `true` | Enable startup probe |
+| startupProbe.failureThreshold | int | `30` | startup probe failure threshold |
+| startupProbe.httpGet.path | string | `"/console"` | startup probe HTTP GET path |
+| startupProbe.httpGet.port | int | `80` | startup probe HTTP port |
+| startupProbe.initialDelaySeconds | int | `30` | startup probe initial delay in seconds |
+| startupProbe.periodSeconds | int | `10` | startup probe period in seconds |
+| startupProbe.successThreshold | int | `1` | startup probe success threshold |
+| startupProbe.timeoutSeconds | int | `5` | startup probe timeout in seconds |
 | tls.pgsqlSslCaName | string | `"postgres_ca.crt"` | subPath name for ssl CA cert in k8s secret. Required only for connection to external PostgreSQL database. |
 | tls.pgsqlSslCertName | string | `""` | subPath name for ssl certificate in k8s secret for connection to external PostgreSQL database. Isn't required if db.postgresqlSslClientVerification = false. |
 | tls.pgsqlSslKeyName | string | `""` | subPath name for ssl key in k8s secret for connection to external PostgreSQL database. Isn't required if db.postgresqlSslClientVerification = false. |
