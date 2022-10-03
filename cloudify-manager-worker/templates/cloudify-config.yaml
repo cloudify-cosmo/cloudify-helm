@@ -44,16 +44,22 @@ data:
       cloudify_username: {{ .Values.db.cloudifyUsername }}
       cloudify_password: {{ .Values.db.cloudifyPassword }}
       {{- if .Values.db.useExternalDB }}
-      ca_path: {{ .Values.config.postgresqlCaPath }}
+      ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
       {{- else }}
       ca_path: {{ .Values.config.caCertPath }}
       {{- end }}
       ssl_enabled: true
-      ssl_client_verification: true
+      ssl_client_verification: {{ .Values.db.postgresqlSslClientVerification }}
     postgresql_server:
       postgres_password: {{ .Values.db.serverPassword }}
       {{- if .Values.db.useExternalDB }}
-      ca_path: {{ .Values.config.postgresqlCaPath }}
+      ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+      {{- if ne .Values.tls.pgsqlSslCertName "" }}
+      cert_path: /mnt/cloudify-data/ssl/postgres.crt
+      {{- end }}
+      {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+      key_path: /mnt/cloudify-data/ssl/postgres.key
+      {{- end }}
       {{- else }}
       ca_path: {{ .Values.config.caCertPath }}
       cert_path: {{ .Values.config.tlsCertPath }}
@@ -67,12 +73,22 @@ data:
       scrape_interval: 5s
 
     ssl_inputs:
-      postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
-      postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
       {{- if .Values.db.useExternalDB }}
-      postgresql_ca_cert_path: {{ .Values.config.postgresqlCaPath }}
+      postgresql_ca_cert_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+      {{- if ne .Values.tls.pgsqlSslCertName "" }}
+      postgresql_client_cert_path: /mnt/cloudify-data/ssl/postgres.crt
+      {{- else }}
+      postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+      {{- end }}
+      {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+      postgresql_client_key_path: /mnt/cloudify-data/ssl/postgres.key
+      {{- else }}
+      postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+      {{- end }}
       {{- else }}
       postgresql_ca_cert_path: {{ .Values.config.caCertPath }}
+      postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+      postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
       {{- end }}
       ca_cert_path: {{ .Values.config.caCertPath }}
       internal_cert_path: {{ .Values.config.tlsCertPath }}

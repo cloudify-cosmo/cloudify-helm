@@ -107,8 +107,18 @@ spec:
           subPath: userConfig.json
         {{- if .Values.db.useExternalDB }}
         - name: cfy-pgsql-cert
-          mountPath: {{ .Values.config.postgresqlCaPath }}
-          subPath: postgres.crt
+          mountPath: /mnt/cloudify-data/ssl/postgres_ca.crt
+          subPath: {{ .Values.tls.pgsqlSslCaName }}
+        {{- if ne .Values.tls.pgsqlSslCertName "" }}
+        - name: cfy-pgsql-cert
+          mountPath: /mnt/cloudify-data/ssl/postgres.crt
+          subPath: {{ .Values.tls.pgsqlSslCertName }}
+        {{- end }}
+        {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+        - name: cfy-pgsql-cert
+          mountPath: /mnt/cloudify-data/ssl/postgres.key
+          subPath: {{ .Values.tls.pgsqlSslKeyName }}
+        {{- end }}
         {{- end }}
       volumes:
       - name: run
@@ -169,7 +179,7 @@ spec:
       {{- if .Values.db.useExternalDB }}
       - name: cfy-pgsql-cert
         secret:
-          secretName: {{ .Values.tls.pgsqlCertSecretName }}
+          secretName: {{ .Values.tls.pgsqlSslSecretName }}
       {{- end }}
 
     {{- if .Values.nodeSelector }}

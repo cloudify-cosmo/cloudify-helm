@@ -1,81 +1,119 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
+# -- Parameters group for Docker images
+# @default -- object
 image:
+  # -- Docker image repository
   repository: cloudifyplatform/premium-cloudify-manager-worker
+  # -- Docker image tag
   tag: 6.3.2
-  ## Specify a imagePullPolicy
-  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-  ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-  ##
+  # -- Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   pullPolicy: IfNotPresent
-  ## Optionally specify an array of imagePullSecrets.
-  ## Secrets must be manually created in the namespace.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  ##
+  # -- Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   pullSecrets: []
   # - name: secretName
   initContainer:
+    # -- Docker image repository for init container
     repository: busybox
-    tag: latest
+    # -- Docker image tag for init container
+    tag: 1.34.1-uclibc
+    # -- imagePullPolicy for init container
     pullPolicy: Always
+    # -- resources requests and limits for init container
     resources: {}
 
-# external DB
+# -- Parameters group for connection to PostgreSQL database
+# @default -- object
 db:
-  useExternalDB: false # when switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section and config.postgresqlCaPath
+  # -- When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section
+  useExternalDB: false
+  # -- Enable PostgreSQL client SSL certificate verification.
+  postgresqlSslClientVerification: true
+  # -- PostgreSQL connection host. If db.useExternalDB == true this value should contain FQDN, otherwise hostname without k8s domain.
   host: postgres-postgresql
-  cloudifyDBName: 'cloudify_db'
-  cloudifyUsername: 'cloudify'
-  cloudifyPassword: 'cloudify'
-  serverDBName: 'postgres'
-  serverUsername: 'postgres'
-  serverPassword: 'cfy_test_pass'
+  # -- Database name for store Cloudify Manager data
+  cloudifyDBName: "cloudify_db"
+  # -- Username for DB connection
+  cloudifyUsername: "cloudify"
+  # -- Password for DB connection
+  cloudifyPassword: "cloudify"
+  # -- Databse name for initial connection
+  serverDBName: "postgres"
+  # -- Username for initial DB connection
+  serverUsername: "postgres"
+  # -- Password for initial DB connection
+  serverPassword: "cfy_test_pass"
 
-# external Queue (Message Broker)
+# -- Parameters group for connection to RabbitMQ (Message Broker)
+# @default -- object
 queue:
+  # -- RabbitMQ connection host (without k8s domain)
   host: rabbitmq
-  username: 'cfy_user'
-  password: 'cfy_test_pass'
+  # -- Username for connection to RabbitMQ
+  username: "cfy_user"
+  # -- Password for connection to RabbitMQ
+  password: "cfy_test_pass"
 
+# -- Parameters group for k8s service
+# @default -- object
 service:
+  # -- k8s service host
   host: cloudify-manager-worker
+  # -- k8s service type
   type: ClusterIP
+  # -- k8s service name
   name: cloudify-manager-worker
   http:
+    # -- k8s service http port
     port: 80
   https:
+    # -- k8s service https port
     port: 443
   internalRest:
+    # -- k8s service internal rest port
     port: 53333
-  ## If you need to open additional ports for the manager, uncomment extraPorts and define your port parameters - More than one can be added (below is an example)
+  # -- k8s service additional ports. If you need to open additional ports for the manager, uncomment extraPorts and define your port parameters - More than one can be added (below is an example).
   extraPorts: {}
+  # Example:
   # - name: examplePort
   #   port: 33221
   #   protocol: TCP
   #   targetPort: 33221
 
-## Node labels for default backend pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
+# -- Node labels for default backend pod assignment.
+# Ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
 
-##
-## TLS configuration
-##
+## -- Parameters group for TLS/SSL configuration.
+# @default -- object
 tls:
-  # certificates as a secret, to secure communications between cloudify manager and postgress|rabbitmq
+  # -- k8s secret name with certificates to secure communications between cloudify manager and postgresql|rabbitmq deployed inside the same k8s cluster.
   secretName: cfy-certs
-  pgsqlCertSecretName: pgsql-external-cert #required for external postgresql database only
+  # -- k8s secret name with ssl certificates for external PostgreSQL database. Required only for connection to external PostgreSQL database.
+  pgsqlSslSecretName: pgsql-external-cert
+  # -- subPath name for ssl CA cert in k8s secret. Required only for connection to external PostgreSQL database.
+  pgsqlSslCaName: postgres_ca.crt
+  # -- subPath name for ssl certificate in k8s secret for connection to external PostgreSQL database. Isn't required if db.postgresqlSslClientVerification = false.
+  pgsqlSslCertName: ""
+  # -- subPath name for ssl key in k8s secret for connection to external PostgreSQL database. Isn't required if db.postgresqlSslClientVerification = false.
+  pgsqlSslKeyName: ""
 
+# -- Parameters group for data storage volume
 # For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
 # Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
+# @default -- object
 volume:
-  storageClass: 'gp2'
-  accessMode: 'ReadWriteOnce'
+  # -- volume storage class
+  storageClass: "gp2"
+  # -- volume access mode
+  accessMode: "ReadWriteOnce"
+  # -- volume size
   size: "3Gi"
 
-resources: {}
+# -- Parameters group for resources requests and limits
+resources:
+  {}
   # requests:
   #   memory: 0.5Gi
   #   cpu: 0.5
@@ -83,69 +121,123 @@ resources: {}
   #   memory: 0.5Gi
   #   cpu: 0.5
 
+# -- Parameters group for Cloudify Manager configuration
+# @default -- object
 config:
-  # Multiple replicas works only with NFS like volume
+  # -- Replicas count for launch.
+  # Multiple replicas works only with NFS like volume.
   replicas: 1
+  # -- Add labels to Manager-worker container (see example below).
+  #   example-label: "cloudify-example"
   labels: {}
-#   Add labels to Manager-worker container (see example below)
-#   example-label: "cloudify-example"
+  # -- Delay before Cloudify Manager start, in seconds
   startDelay: 0
-  after_bash: ''
+  # -- bash commands for execute after main startup script
+  after_bash: ""
+  # -- "manager.cli_local_profile_host_name" parameter from Cloudify Manager config.yaml file.
   cliLocalProfileHostName: localhost
   security:
+    # -- Enable SSL for Cloudify Manager.
     sslEnabled: false
+    # -- Initial admin password for Cloudify Manager.
     adminPassword: admin
+  # -- Path to TLS certificate.
   tlsCertPath: /mnt/cloudify-data/ssl/tls.crt
+  # -- Path to TLS certificate key.
   tlsKeyPath: /mnt/cloudify-data/ssl/tls.key
+  # -- Path to CA certificate.
   caCertPath: /mnt/cloudify-data/ssl/ca.crt
-  postgresqlCaPath: /mnt/cloudify-data/ssl/postgres.crt # only required if you're using an external pgsql db
-  workerCount: 4 # suggested worker count for 1vcpu manager, add more if using a stronger host
-  mgmtWorkerCount: 8 # Maximum number of worker processes started by the management worker.
+  # -- Cloudify Manager worker count.
+  # Suggested worker count for 1vcpu manager, add more if using a stronger host
+  workerCount: 4
+  # -- Maximum number of worker processes started by the management worker.
+  mgmtWorkerCount: 8
+  # Used to control specific Stage configurations
   userConfig:
-    # used to control specific Stage configurations
-    loginHint: true # true by default, change to false to remove the initial login password hint
+    # -- Enable initial login password hint.
+    loginHint: true
 
+# -- Parameters group for OKTA
+# @default -- object
 okta:
-  secretName: okta-license # if enabled, upload a secret containing the okta certificate.
+  # -- Enable OKTA support.
   enabled: false
+  # -- k8s secret name containing the OKTA certificates.
+  secretName: okta-license
+  # -- SSL certificate path
   certPath: ""
+  # -- SSO URL
   ssoUrl: ""
+  # -- Portal URL
   portalUrl: ""
 
-license: {} # license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information)
-  # secretName: cfy-license
+# -- Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file.
+# license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information)
+license: {}
+# license:
+#   secretName: cfy-license
 
+# -- Parameters group for pod liveness probe
+# @default -- object
 livenessProbe:
-# Use this probe to configure liveness monitoring
+  # -- Enable liveness probe
   enabled: false
   httpGet:
+    # -- liveness probe HTTP GET path
     path: /api/v3.1/ok
+    # -- liveness probe HTTP port
     port: 80
+  # -- liveness probe timeout in seconds
   timeoutSeconds: 15
+  # -- liveness probe success threshold
   successThreshold: 1
+  # -- liveness probe period in seconds
   periodSeconds: 30
+  # -- liveness probe failure threshold
   failureThreshold: 8
+  # -- liveness probe initial dalay in seconds
   initialDelaySeconds: 600
-     
+
+# -- Parameters group for pod readiness probe
+# @default -- object
 readinessProbe:
-# Use this probe to configure readiness monitoring
+  # -- Enable readiness probe
   enabled: false
   httpGet:
+    # -- readiness probe HTTP GET path
     path: /console
+    # -- readiness probe HTTP port
     port: 80
+  # -- readiness probe timeout in seconds
   timeoutSeconds: 5
+  # -- readiness probe success threshold
   successThreshold: 1
+  # -- readiness probe period in seconds
   periodSeconds: 10
+  # -- readiness probe failure threshold
   failureThreshold: 5
+  # -- readiness probe initial dalay in seconds
   initialDelaySeconds: 200
 
+# -- Parameters group for ingress (managed external access to service)
+# @default -- object
 ingress:
+  # -- Enable ingress
   enabled: false
+  # -- Hostname for ingress connection
   host: cfy-efs-app.eks.cloudify.co
+  # -- Ingress annotation object. Please see an example in values.yaml file
+  # @default -- object
   annotations:
+    # Ingress class
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m # use this annotation to allow upload of resources up to 50mb (e.g. plugins)
+    # Ingress proxy body size. Use this annotation to allow upload of resources up to 50mb (e.g. plugins).
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  # -- Ingress TLS parameters
+  # @default -- object
   tls:
+    # -- Enabled TLS connections for Ingress
     enabled: false
+    # -- k8s secret name with TLS certificates for ingress
     secretName: cfy-secret-name
