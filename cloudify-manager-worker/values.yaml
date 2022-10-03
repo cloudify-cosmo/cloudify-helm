@@ -156,6 +156,8 @@ config:
   userConfig:
     # -- Enable initial login password hint.
     loginHint: true
+    # -- Maximum manager forwarded request size.
+    maxBodySize: 2gb
 
 # -- Parameters group for OKTA
 # @default -- object
