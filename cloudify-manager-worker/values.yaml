@@ -181,7 +181,7 @@ license: {}
 # @default -- object
 livenessProbe:
   # -- Enable liveness probe
-  enabled: false
+  enabled: true
   httpGet:
     # -- liveness probe HTTP GET path
     path: /api/v3.1/ok
@@ -195,14 +195,14 @@ livenessProbe:
   periodSeconds: 30
   # -- liveness probe failure threshold
   failureThreshold: 8
-  # -- liveness probe initial dalay in seconds
+  # -- liveness probe initial delay in seconds
   initialDelaySeconds: 600
 
 # -- Parameters group for pod readiness probe
 # @default -- object
 readinessProbe:
   # -- Enable readiness probe
-  enabled: false
+  enabled: true
   httpGet:
     # -- readiness probe HTTP GET path
     path: /console
@@ -216,8 +216,29 @@ readinessProbe:
   periodSeconds: 10
   # -- readiness probe failure threshold
   failureThreshold: 5
-  # -- readiness probe initial dalay in seconds
-  initialDelaySeconds: 200
+  # -- readiness probe initial delay in seconds
+  initialDelaySeconds: 0
+
+# -- Parameters group for pod startup probe
+# @default -- object
+startupProbe:
+  # -- Enable startup probe
+  enabled: true
+  httpGet:
+    # -- startup probe HTTP GET path
+    path: /console
+    # -- startup probe HTTP port
+    port: 80
+  # -- startup probe timeout in seconds
+  timeoutSeconds: 5
+  # -- startup probe success threshold
+  successThreshold: 1
+  # -- startup probe period in seconds
+  periodSeconds: 10
+  # -- startup probe failure threshold
+  failureThreshold: 30
+  # -- startup probe initial delay in seconds
+  initialDelaySeconds: 30
 
 # -- Parameters group for ingress (managed external access to service)
 # @default -- object
