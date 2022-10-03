@@ -15,8 +15,8 @@ data:
           "post": 30000,
           "put": 30000,
           "delete": 10000
-        }
-        "maxBodySize": {{ .Values.config.userConfig.maxBodySize | default "2gb" | quote }},
+        },
+        "maxBodySize": {{ .Values.config.userConfig.maxBodySize | default "2gb" | quote }}
       },
       "saml": {
         "enabled": {{ .Values.okta.enabled }},
