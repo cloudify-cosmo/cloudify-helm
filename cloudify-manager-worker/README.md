@@ -411,6 +411,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | config.tlsCertPath | string | `"/mnt/cloudify-data/ssl/tls.crt"` | Path to TLS certificate. |
 | config.tlsKeyPath | string | `"/mnt/cloudify-data/ssl/tls.key"` | Path to TLS certificate key. |
 | config.userConfig.loginHint | bool | `true` | Enable initial login password hint. |
+| config.userConfig.maxBodySize | string | `"2gb"` | Maximum manager forwarded request size. |
 | config.workerCount | int | `4` | Cloudify Manager worker count. Suggested worker count for 1vcpu manager, add more if using a stronger host |
 | db | object | object | Parameters group for connection to PostgreSQL database |
 | db.cloudifyDBName | string | `"cloudify_db"` | Database name for store Cloudify Manager data |
@@ -431,7 +432,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | image.pullPolicy | string | `"IfNotPresent"` | Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images |
 | image.pullSecrets | list | `[]` | Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | image.repository | string | `"cloudifyplatform/premium-cloudify-manager-worker"` | Docker image repository |
-| image.tag | string | `"6.3.2"` | Docker image tag |
+| image.tag | string | `"6.4.0"` | Docker image tag |
 | ingress | object | object | Parameters group for ingress (managed external access to service) |
 | ingress.annotations | object | object | Ingress annotation object. Please see an example in values.yaml file |
 | ingress.enabled | bool | `false` | Enable ingress |
