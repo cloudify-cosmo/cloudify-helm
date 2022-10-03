@@ -217,7 +217,7 @@ readinessProbe:
   # -- readiness probe failure threshold
   failureThreshold: 5
   # -- readiness probe initial delay in seconds
-  initialDelaySeconds: 10
+  initialDelaySeconds: 0
 
 # -- Parameters group for pod startup probe
 # @default -- object
