@@ -302,6 +302,7 @@ containerSecurityContext:
       - DAC_READ_SEARCH
       - FOWNER
       - FSETID
+      - SETUID
       - SETGID
       - SETFCAP
       - SETPCAP
