@@ -26,6 +26,12 @@ spec:
         {{- if .Values.image.initContainer.resources }}
         resources: {{- toYaml .Values.image.initContainer.resources | nindent 10 }}
         {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: false
+          capabilities:
+            drop:
+              - ALL
         command:
           - /bin/sh
           - -cx
@@ -79,7 +85,7 @@ spec:
         {{- end }}
         securityContext:
           allowPrivilegeEscalation: false
-          runAsNonRoot: true
+          runAsNonRoot: false
           capabilities:
             drop:
               - ALL

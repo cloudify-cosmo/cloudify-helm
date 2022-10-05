@@ -21,7 +21,16 @@ image:
     # -- imagePullPolicy for init container
     pullPolicy: Always
     # -- resources requests and limits for init container
-    resources: {}
+    # @default -- object
+    resources:
+      # -- requests for init container
+      requests:
+        memory: 100Mi
+        cpu: 0.1
+      # -- limits for init container
+      limits:
+        memory: 100Mi
+        cpu: 0.1
 
 # -- Parameters group for connection to PostgreSQL database
 # @default -- object
@@ -112,14 +121,16 @@ volume:
   size: "3Gi"
 
 # -- Parameters group for resources requests and limits
+# @default -- object
 resources:
-  {}
-  # requests:
-  #   memory: 0.5Gi
-  #   cpu: 0.5
-  # limits:
-  #   memory: 0.5Gi
-  #   cpu: 0.5
+  # -- resources requests for Cloudify Manager container
+  requests:
+    memory: 2Gi
+    cpu: 0.5
+  # -- resources limits for Cloudify Manager container
+  limits:
+    memory: 4.5Gi
+    cpu: 3
 
 # -- Parameters group for Cloudify Manager configuration
 # @default -- object
