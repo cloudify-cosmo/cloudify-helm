@@ -291,3 +291,10 @@ securityContext:
       - KILL
       - MKNOD
       - NET_BIND_SERVICE
+      - DAC_OVERRIDE
+      - DAC_READ_SEARCH
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETFCAP
+      - SETPCAP
