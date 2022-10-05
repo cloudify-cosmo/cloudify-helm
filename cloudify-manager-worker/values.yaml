@@ -306,3 +306,4 @@ containerSecurityContext:
       - SETGID
       - SETFCAP
       - SETPCAP
+      - AUDIT_WRITE
