@@ -276,9 +276,16 @@ ingress:
     # -- k8s secret name with TLS certificates for ingress
     secretName: cfy-secret-name
 
-# -- Parameters group for k8s pod/containers security context
+# -- Parameters group for k8s pod security context
 # @default -- object
-securityContext:
+podSecurityContext:
+  runAsNonRoot: false
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Parameters group for k8s containers security context
+# @default -- object
+containerSecurityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: false
   seccompProfile:

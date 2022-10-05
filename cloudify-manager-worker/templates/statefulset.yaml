@@ -20,7 +20,7 @@ spec:
         {{- end }}
     spec:
       automountServiceAccountToken: false
-      securityContext: {{- toYaml .Values.securityContext | nindent 8 }}
+      podSecurityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
       - name: init-data
         image: {{ .Values.image.initContainer.repository }}:{{ .Values.image.initContainer.tag }}
@@ -28,7 +28,7 @@ spec:
         {{- if .Values.image.initContainer.resources }}
         resources: {{- toYaml .Values.image.initContainer.resources | nindent 10 }}
         {{- end }}
-        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        containerSecurityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         command:
           - /bin/sh
           - -cx
@@ -80,7 +80,7 @@ spec:
         {{- if .Values.resources }}
         resources: {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
-        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        containerSecurityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         volumeMounts:
         - mountPath: /run
           name: run
