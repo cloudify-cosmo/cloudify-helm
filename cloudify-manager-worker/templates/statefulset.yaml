@@ -11,7 +11,6 @@ spec:
     matchLabels:
       app: {{ template "cloudify-manager-worker.name" . }}
   serviceName: {{ .Values.service.name }}
-  automountServiceAccountToken: false
   template:
     metadata:
       labels:
@@ -20,6 +19,7 @@ spec:
         {{- toYaml .Values.config.labels | nindent 8 }}
         {{- end }}
     spec:
+      automountServiceAccountToken: false
       initContainers:
       - name: init-data
         image: {{ .Values.image.initContainer.repository }}:{{ .Values.image.initContainer.tag }}
@@ -27,14 +27,7 @@ spec:
         {{- if .Values.image.initContainer.resources }}
         resources: {{- toYaml .Values.image.initContainer.resources | nindent 10 }}
         {{- end }}
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: false
-          seccompProfile:
-            type: RuntimeDefault
-          capabilities:
-            drop:
-              - ALL
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
         command:
           - /bin/sh
           - -cx
@@ -86,19 +79,7 @@ spec:
         {{- if .Values.resources }}
         resources: {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: false
-          seccompProfile:
-            type: RuntimeDefault
-          capabilities:
-            drop:
-              - ALL
-            add:
-              - CHOWN
-              - KILL
-              - MKNOD
-              - NET_BIND_SERVICE
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
         volumeMounts:
         - mountPath: /run
           name: run
