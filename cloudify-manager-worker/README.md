@@ -413,6 +413,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | config.userConfig.loginHint | bool | `true` | Enable initial login password hint. |
 | config.userConfig.maxBodySize | string | `"2gb"` | Maximum manager forwarded request size. |
 | config.workerCount | int | `4` | Cloudify Manager worker count. Suggested worker count for 1vcpu manager, add more if using a stronger host |
+| containerSecurityContext | object | object | Parameters group for k8s containers security context |
 | db | object | object | Parameters group for connection to PostgreSQL database |
 | db.cloudifyDBName | string | `"cloudify_db"` | Database name for store Cloudify Manager data |
 | db.cloudifyPassword | string | `"cloudify"` | Password for DB connection |
@@ -427,7 +428,9 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | image | object | object | Parameters group for Docker images |
 | image.initContainer.pullPolicy | string | `"Always"` | imagePullPolicy for init container |
 | image.initContainer.repository | string | `"busybox"` | Docker image repository for init container |
-| image.initContainer.resources | object | `{}` | resources requests and limits for init container |
+| image.initContainer.resources | object | object | resources requests and limits for init container |
+| image.initContainer.resources.limits | object | `{"cpu":0.1,"memory":"100Mi"}` | limits for init container |
+| image.initContainer.resources.requests | object | `{"cpu":0.1,"memory":"100Mi"}` | requests for init container |
 | image.initContainer.tag | string | `"1.34.1-uclibc"` | Docker image tag for init container |
 | image.pullPolicy | string | `"IfNotPresent"` | Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images |
 | image.pullSecrets | list | `[]` | Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
@@ -458,6 +461,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | okta.portalUrl | string | `""` | Portal URL |
 | okta.secretName | string | `"okta-license"` | k8s secret name containing the OKTA certificates. |
 | okta.ssoUrl | string | `""` | SSO URL |
+| podSecurityContext | object | object | Parameters group for k8s pod security context |
 | queue | object | object | Parameters group for connection to RabbitMQ (Message Broker) |
 | queue.host | string | `"rabbitmq"` | RabbitMQ connection host (without k8s domain) |
 | queue.password | string | `"cfy_test_pass"` | Password for connection to RabbitMQ |
@@ -471,7 +475,9 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | readinessProbe.periodSeconds | int | `10` | readiness probe period in seconds |
 | readinessProbe.successThreshold | int | `1` | readiness probe success threshold |
 | readinessProbe.timeoutSeconds | int | `5` | readiness probe timeout in seconds |
-| resources | object | `{}` | Parameters group for resources requests and limits |
+| resources | object | object | Parameters group for resources requests and limits |
+| resources.limits | object | `{"cpu":3,"memory":"4.5Gi"}` | resources limits for Cloudify Manager container |
+| resources.requests | object | `{"cpu":0.5,"memory":"2Gi"}` | resources requests for Cloudify Manager container |
 | service | object | object | Parameters group for k8s service |
 | service.extraPorts | object | `{}` | k8s service additional ports. If you need to open additional ports for the manager, uncomment extraPorts and define your port parameters - More than one can be added (below is an example). |
 | service.host | string | `"cloudify-manager-worker"` | k8s service host |
