@@ -99,14 +99,14 @@ You need to deploy those manifests, which will generate cfy-certs secret eventua
 You can find this manifest in external folder - cert-issuer.yaml
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: selfsigned-issuer
 spec:
   selfSigned: {}
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: cfy-ca
@@ -120,7 +120,7 @@ spec:
   issuerRef:
     name: selfsigned-issuer
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: cfy-ca-issuer
@@ -128,7 +128,7 @@ spec:
   ca:
     secretName: cfy-ca-tls
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: cfy-cert

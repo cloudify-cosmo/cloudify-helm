@@ -426,12 +426,6 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | db.useExternalDB | bool | `false` | When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section |
 | fullnameOverride | string | `"cloudify-manager-worker"` |  |
 | image | object | object | Parameters group for Docker images |
-| image.initContainer.pullPolicy | string | `"Always"` | imagePullPolicy for init container |
-| image.initContainer.repository | string | `"busybox"` | Docker image repository for init container |
-| image.initContainer.resources | object | object | resources requests and limits for init container |
-| image.initContainer.resources.limits | object | `{"cpu":0.1,"memory":"100Mi"}` | limits for init container |
-| image.initContainer.resources.requests | object | `{"cpu":0.1,"memory":"100Mi"}` | requests for init container |
-| image.initContainer.tag | string | `"1.34.1-uclibc"` | Docker image tag for init container |
 | image.pullPolicy | string | `"IfNotPresent"` | Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images |
 | image.pullSecrets | list | `[]` | Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | image.repository | string | `"cloudifyplatform/premium-cloudify-manager-worker"` | Docker image repository |

@@ -21,25 +21,6 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      initContainers:
-      - name: init-data
-        image: {{ .Values.image.initContainer.repository }}:{{ .Values.image.initContainer.tag }}
-        imagePullPolicy: {{ .Values.image.initContainer.pullPolicy }}
-        {{- if .Values.image.initContainer.resources }}
-        resources: {{- toYaml .Values.image.initContainer.resources | nindent 10 }}
-        {{- end }}
-        securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
-        command:
-          - /bin/sh
-          - -cx
-          - |
-            mkdir -p /mnt/cloudify-data/ssl
-            cp /tmp/ssl/* /mnt/cloudify-data/ssl
-        volumeMounts:
-        - name: cfy-worker-certs
-          mountPath: /tmp/ssl
-        - name: cloudify-data
-          mountPath: /mnt/cloudify-data
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -112,6 +93,15 @@ spec:
           subPath: after_hook.sh
         - name: cloudify-data
           mountPath: /mnt/cloudify-data
+        - name: cfy-worker-certs
+          mountPath: {{ .Values.tlsCertPath }}
+          subPath: tls.crt
+        - name: cfy-worker-certs
+          mountPath: {{ .Values.tlsKeyPath }}
+          subPath: tls.key
+        - name: cfy-worker-certs
+          mountPath: {{ .Values.caCertPath }}
+          subPath: ca.crt
         {{- if .Values.okta.enabled }}
         - name: okta-license-volume
           mountPath: /mnt/cloudify-data/ssl/okta_certificate.pem
