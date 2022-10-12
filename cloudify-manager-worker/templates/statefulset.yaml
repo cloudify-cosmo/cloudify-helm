@@ -94,13 +94,13 @@ spec:
         - name: cloudify-data
           mountPath: /mnt/cloudify-data
         - name: cfy-worker-certs
-          mountPath: {{ .Values.tlsCertPath }}
+          mountPath: {{ .Values.config.tlsCertPath }}
           subPath: tls.crt
         - name: cfy-worker-certs
-          mountPath: {{ .Values.tlsKeyPath }}
+          mountPath: {{ .Values.config.tlsKeyPath }}
           subPath: tls.key
         - name: cfy-worker-certs
-          mountPath: {{ .Values.caCertPath }}
+          mountPath: {{ .Values.config.caCertPath }}
           subPath: ca.crt
         {{- if .Values.okta.enabled }}
         - name: okta-license-volume
