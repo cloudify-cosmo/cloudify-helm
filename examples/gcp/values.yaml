@@ -3,7 +3,7 @@ fullnameOverride: "cloudify-manager-worker"
 
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
-  tag: 5.3.0
+  tag: 6.4.0
   pullPolicy: Always
 
 db:
@@ -42,11 +42,6 @@ volume:
   storageClass: "nfs-client"
   accessMode: "ReadWriteMany"
   size: "15Gi"
-
-resources:
-  requests:
-    memory: 0.1Gi
-    cpu: 0.1
 
 config:
   # Multiple replicas works only with NFS storage
