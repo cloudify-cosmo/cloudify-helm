@@ -15,6 +15,7 @@ data:
       {{- if .Values.license }}
       cloudify_license_path: /tmp/cloudify/cfy_license.yaml
       {{- end }}
+      cluster_filesystem_replication: false
 
     cli:
       local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
@@ -110,7 +111,7 @@ data:
 
     validations:
       skip_validations: true
-    
+
     sanity:
       skip_sanity: true
 
