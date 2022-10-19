@@ -91,7 +91,7 @@ tls:
   pgsqlSslKeyName: ""
 
 # -- Parameters group for data storage volume
-# For multiple replicas of cloudify manager use NFS like storage, storageClass: 'aws-efs' (AWS example), accessMode: 'ReadWriteMany'
+# For multiple replicas of cloudify manager use NFS like storage, storageClass: 'cm-efs' (AWS example), accessMode: 'ReadWriteMany'
 # Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce'
 # @default -- object
 volume:

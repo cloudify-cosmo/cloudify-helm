@@ -36,7 +36,7 @@ nodeSelector: {}
 secret:
   name: cfy-certs
 
-# Multiple replicas - EFS only, storageClass: 'aws-efs', accessMode: 'ReadWriteMany'
+# Multiple replicas - NFS only, storageClass: 'nfs-client', accessMode: 'ReadWriteMany'
 # Single replica - EBS, storageClass: 'gp2', accessMode: 'ReadWriteOnce'
 volume:
   storageClass: "nfs-client"

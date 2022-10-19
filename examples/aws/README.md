@@ -22,52 +22,43 @@ https://docs.aws.amazon.com/efs/latest/ug/creating-using-create-fs.html
 
 ```bash
 $  aws efs create-file-system \
--\-creation-token efs-storage \
--\-backup true \
--\-encrypted true \
--\-performance-mode generalPurpose \
--\-throughput-mode bursting \
--\-region us-west-2 \
--\-tags Key=Name,Value="Test File System" \
--\-profile adminuser
+--creation-token efs-storage \
+--backup true \
+--encrypted true \
+--performance-mode generalPurpose \
+--throughput-mode bursting \
+--region us-west-2 \
+--tags Key=Name,Value="Test File System" \
+--profile adminuser
 ```
 
-## Deploy EFS provisoner
+### Deploy Amazon EFS CSI driver
 
-### Deploy efs-provisioner.yaml
-
-You need to know **efs.system.id** and region first, look at aws console / EFS to get those.
-
-Change first **efs.system.id** and region in efs-provisioner.yaml
-
-For Example:
-
-```yaml
-# metadata:
-#   name: efs-provisioner
-# data:
-#   file.system.id: fs-f71ec6c3
-#   aws.region: us-west-2
-```
-
-```bash
-kubectl apply -f efs/efs-provisoner.yaml
-```
-
-You can find efs-provisoner.yaml in examples/aws
+Please deploy Amazon EFS CSI driver using official AWS documentation: https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
 
 ### Create storage class
 
+Example of manifest for "cm-efs" storage class, please replace **EFS_ID** to ID of the previously created AWS EFS file system:
 ```yaml
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: aws-efs
-provisioner: example.com/aws-efs
+  name: cm-efs
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: EFS_ID
+  directoryPerms: "700"
+  gid: "0"
+  uid: "0"
+  basePath: "/dynamic_provisioning"
 ```
 
+The same manifest can be found there: [efs/storageclass.yaml](efs/storageclass.yaml)
+
+Apply the manifest:
 ```bash
-kubectl apply -f efs/storage.yaml
+kubectl apply -f efs/storageclass.yaml
 ```
 
 ## Deploy helm chart
@@ -93,7 +84,7 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 
 ```yaml
 volume:
-  storageClass: 'aws-efs'
+  storageClass: 'cm-efs'
   accessMode: 'ReadWriteMany'
   size: "15Gi"
 
