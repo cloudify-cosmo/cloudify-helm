@@ -43,3 +43,27 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{/*
+Define value for manager.public_ip parameter in cloudify main config file
+*/}}
+{{- define "cloudify-manager-worker.public_ip" -}}
+{{- if .Values.config.public_ip -}}
+    {{- .Values.config.public_ip -}}
+{{- else if .Values.ingress.enabled -}}
+    {{- .Values.ingress.host -}}
+{{- else -}}
+    {{- printf "%s.%s.%s" .Values.service.host .Release.Namespace "svc.cluster.local" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Define value for manager.private_ip parameter in cloudify main config file
+*/}}
+{{- define "cloudify-manager-worker.private_ip" -}}
+{{- if .Values.config.private_ip -}}
+    {{- .Values.config.private_ip -}}
+{{- else -}}
+    {{- printf "%s.%s.%s" .Values.service.host .Release.Namespace "svc.cluster.local" -}}
+{{- end -}}
+{{- end -}}

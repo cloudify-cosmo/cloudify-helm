@@ -355,7 +355,9 @@ Use ingress-controller (e.g. NGINX Ingress Controller - https://kubernetes.githu
 
 ### **[OPTION 2]**
 
-Skip Ingress and expose the Cloudify Manager service using LoadBalancer
+Skip Ingress and expose the Cloudify Manager service using LoadBalancer.
+
+To have a fixed URL, you must utilize a DNS service to route the LB URL (hostname) to the URL you want.
 
 **HTTP**
 
@@ -374,19 +376,28 @@ service:
     port: 53333
 ```
 
-That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer)
+That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer).
+
+Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager  load balancer endpoint, for example:
+
+```yaml
+config:
+  public_ip: cloudify-manager.example.com
+```
+
 **To get the hostname of the load balancer run:**
 
 ```bash
 $ kubectl describe svc/cloudify-manager-worker -n NAMESPACE | grep Ingress
 ```
 
+Then you can configure DNS record (ALIAS type), points to this load balancer hostname.
+
 **The value of the ingress will be the UI URL of the Cloudify Manager.**
 
 **HTTPS**
 
 - To secure the site with SSL you can update the load balancer configuration to utilize an SSL Certificate
-- To have a fixed URL, you can utilize a DNS service to route the LB URL (hostname) to the URL you want
 
 ### After values are verified, install the manager worker chart
 
@@ -404,6 +415,8 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | config.cliLocalProfileHostName | string | `"localhost"` | "manager.cli_local_profile_host_name" parameter from Cloudify Manager config.yaml file. |
 | config.labels | object | `{}` | Add labels to Manager-worker container (see example below).   example-label: "cloudify-example" |
 | config.mgmtWorkerCount | int | `8` | Maximum number of worker processes started by the management worker. |
+| config.private_ip | string | `nil` | "manager.private_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically. |
+| config.public_ip | string | `nil` | "manager.public_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically. |
 | config.replicas | int | `1` | Replicas count for launch. Multiple replicas works only with NFS like volume. |
 | config.security.adminPassword | string | `"admin"` | Initial admin password for Cloudify Manager. |
 | config.security.sslEnabled | bool | `false` | Enable SSL for Cloudify Manager. |
