@@ -127,9 +127,11 @@ spec:
         {{- end }}
         {{- if .Values.additionalSecrets }}
         {{- range $index, $secret := .Values.additionalSecrets }}
+        {{- range $key, $mount := $secret.mounts }}
         - name: {{ $secret.name }}
-          mountPath: {{ $secret.mountPath }}
-          subPath: {{ $secret.subPath }}
+          mountPath: {{ $mount.mountPath }}
+          subPath: {{ $mount.subPath }}
+        {{- end }}
         {{- end }}
         {{- end }}
       volumes:
@@ -193,7 +195,7 @@ spec:
         secret:
           secretName: {{ .Values.tls.pgsqlSslSecretName }}
       {{- end }}
-      {{- if .Values.secrets }}
+      {{- if .Values.additionalSecrets }}
       {{- range $index, $secret := .Values.additionalSecrets }}
       - name: {{ $secret.name }}
         secret: 
