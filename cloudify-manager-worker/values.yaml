@@ -102,13 +102,18 @@ volume:
   # -- volume size
   size: "3Gi"
 
-# -- Additional secrets to mount on the manager worker pod, make sure the 'name' is also the secret name in the cluster - uncomment secrets and define your port parameters - More than one can be added (below is an example).
+# -- Additional secrets to mount on the manager worker pod, make sure the 'name' is also the secret name in the cluster.
+# uncomment secrets and define your port parameters
+# More than one secret can be added and more than one mount+sub Path can defined for each secret. (below is an example), .
+# secrets need to be base64 encoded
 additionalSecrets: {}
   # Example
   # - name: secretName
-  #   mountPath: /mnt/cloudify-data/ssl/secretName.crt
-  #   subPath: secretName.crt
-  
+  #   mounts:
+  #     - mountPath: /mnt/cloudify-data/ssl/secretName.crt
+  #       subPath: secretName.crt
+  #     - mountPath: /mnt/cloudify-data/ssl/secretName.key
+  #       subPath: secretName.key
 
 # -- Parameters group for resources requests and limits
 # @default -- object
