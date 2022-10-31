@@ -129,6 +129,10 @@ config:
   after_bash: ""
   # -- "manager.cli_local_profile_host_name" parameter from Cloudify Manager config.yaml file.
   cliLocalProfileHostName: localhost
+  # -- "manager.public_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically.
+  public_ip:
+  # -- "manager.private_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically.
+  private_ip:
   security:
     # -- Enable SSL for Cloudify Manager.
     sslEnabled: false

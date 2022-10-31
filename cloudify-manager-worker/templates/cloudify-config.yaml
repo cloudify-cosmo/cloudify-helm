@@ -1,3 +1,5 @@
+{{- $public_ip := include "cloudify-manager-worker.public_ip" . -}}
+{{- $private_ip := include "cloudify-manager-worker.private_ip" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,8 +7,8 @@ metadata:
 data:
   config.yaml: |
     manager:
-      private_ip: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
-      public_ip: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
+      private_ip: {{ $private_ip }}
+      public_ip: {{ $public_ip }}
       hostname: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
       cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
       security:

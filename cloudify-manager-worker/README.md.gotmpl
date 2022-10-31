@@ -355,7 +355,9 @@ Use ingress-controller (e.g. NGINX Ingress Controller - https://kubernetes.githu
 
 ### **[OPTION 2]**
 
-Skip Ingress and expose the Cloudify Manager service using LoadBalancer
+Skip Ingress and expose the Cloudify Manager service using LoadBalancer.
+
+To have a fixed URL, you must utilize a DNS service to route the LB URL (hostname) to the URL you want.
 
 **HTTP**
 
@@ -374,19 +376,29 @@ service:
     port: 53333
 ```
 
-That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer)
+That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer).
+
+
+Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager  load balancer endpoint, for example:
+
+```yaml
+config:
+  public_ip: cloudify-manager.example.com
+```
+
 **To get the hostname of the load balancer run:**
 
 ```bash
 $ kubectl describe svc/cloudify-manager-worker -n NAMESPACE | grep Ingress
 ```
 
+Then you can configure DNS record (ALIAS type), points to this load balancer hostname.
+
 **The value of the ingress will be the UI URL of the Cloudify Manager.**
 
 **HTTPS**
 
 - To secure the site with SSL you can update the load balancer configuration to utilize an SSL Certificate
-- To have a fixed URL, you can utilize a DNS service to route the LB URL (hostname) to the URL you want
 
 ### After values are verified, install the manager worker chart
 
