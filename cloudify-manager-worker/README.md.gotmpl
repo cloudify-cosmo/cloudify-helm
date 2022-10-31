@@ -515,6 +515,22 @@ tls:
   pgsqlSslKeyName: '' # subPath name for ssl key in k8s secret, isn't required
 ```
 
+### Additional secrets to mount onto cloudify-manager-worker pod
+
+In case you need to mount additional secrets to the pod (e.g. self-signed certificate for 3rd party connection)
+For each secret you need to define its mounts. It's possible to mounts several files under one secret definition using different subPaths
+See below or example in the values file.
+
+```yaml
+additionalSecrets:
+  - name: secretName
+    mounts:
+      - mountPath: /mnt/cloudify-data/ssl/secretName.crt
+        subPath: secretName.crt
+      - mountPath: /mnt/cloudify-data/ssl/secretName.key
+        subPath: secretName.key
+```
+
 ### resources requests and limits:
 
 ```yaml

@@ -409,6 +409,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| additionalSecrets | object | `{}` | Additional secrets to mount on the manager worker pod, make sure the 'name' is also the secret name in the cluster. uncomment secrets and define your mounts More than one secret can be added and more than one mount+sub Path can defined for each secret. (below is an example), . secrets need to be base64 encoded |
 | config | object | object | Parameters group for Cloudify Manager configuration |
 | config.after_bash | string | `""` | bash commands for execute after main startup script |
 | config.caCertPath | string | `"/mnt/cloudify-data/ssl/ca.crt"` | Path to CA certificate. |
@@ -615,6 +616,22 @@ tls:
   pgsqlSslCaName: postgres_ca.crt # subPath name for ssl CA cert in k8s secret
   pgsqlSslCertName: '' # subPath name for ssl cert in k8s secret, isn't required
   pgsqlSslKeyName: '' # subPath name for ssl key in k8s secret, isn't required
+```
+
+### Additional secrets to mount onto cloudify-manager-worker pod
+
+In case you need to mount additional secrets to the pod (e.g. self-signed certificate for 3rd party connection)
+For each secret you need to define its mounts. It's possible to mounts several files under one secret definition using different subPaths
+See below or example in the values file.
+
+```yaml
+additionalSecrets:
+  - name: secretName
+    mounts:
+      - mountPath: /mnt/cloudify-data/ssl/secretName.crt
+        subPath: secretName.crt
+      - mountPath: /mnt/cloudify-data/ssl/secretName.key
+        subPath: secretName.key
 ```
 
 ### resources requests and limits:

@@ -125,6 +125,15 @@ spec:
           subPath: {{ .Values.tls.pgsqlSslKeyName }}
         {{- end }}
         {{- end }}
+        {{- if .Values.additionalSecrets }}
+        {{- range $index, $secret := .Values.additionalSecrets }}
+        {{- range $key, $mount := $secret.mounts }}
+        - name: {{ $secret.name }}
+          mountPath: {{ $mount.mountPath }}
+          subPath: {{ $mount.subPath }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
       volumes:
       - name: run
         emptyDir:
@@ -185,6 +194,13 @@ spec:
       - name: cfy-pgsql-cert
         secret:
           secretName: {{ .Values.tls.pgsqlSslSecretName }}
+      {{- end }}
+      {{- if .Values.additionalSecrets }}
+      {{- range $index, $secret := .Values.additionalSecrets }}
+      - name: {{ $secret.name }}
+        secret: 
+          secretName: {{ $secret.name }}
+      {{- end }}
       {{- end }}
 
     {{- if .Values.nodeSelector }}
