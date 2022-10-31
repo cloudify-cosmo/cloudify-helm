@@ -103,7 +103,7 @@ volume:
   size: "3Gi"
 
 # -- Additional secrets to mount on the manager worker pod, make sure the 'name' is also the secret name in the cluster.
-# uncomment secrets and define mounts
+# uncomment secrets and define your port parameters
 # More than one secret can be added and more than one mount+sub Path can defined for each secret. (below is an example), .
 # secrets need to be base64 encoded
 additionalSecrets: {}

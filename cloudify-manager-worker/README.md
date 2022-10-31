@@ -398,7 +398,6 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| additionalSecrets | object | `{}` | Additional secrets to mount on the manager worker pod, make sure the 'name' is also the secret name in the cluster. uncomment secrets and define mounts More than one secret can be added and more than one mount+sub Path can defined for each secret. (below is an example), . secrets need to be base64 encoded |
 | config | object | object | Parameters group for Cloudify Manager configuration |
 | config.after_bash | string | `""` | bash commands for execute after main startup script |
 | config.caCertPath | string | `"/mnt/cloudify-data/ssl/ca.crt"` | Path to CA certificate. |
