@@ -19,6 +19,10 @@ data:
     mkdir -p /mnt/cloudify-data/cloudify-stage
     mkdir -p /mnt/cloudify-data/latest
 
+    # Config Maps are mounted to /tmp. They should be copied each restart to the PV
+    cp -a --verbose /tmp/cloudify/userConfig.json $CLOUDIFY_DATA_DIR/cloudify-stage/userConfig.json
+    cp -a --verbose /tmp/cloudify/config.yaml $CLOUDIFY_DATA_DIR/etc/config.yaml
+
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
       rm -f /etc/cloudify/config.yaml
