@@ -261,6 +261,8 @@ ingress:
   enabled: false
   # -- Hostname for ingress connection
   host: cfy-efs-app.eks.cloudify.co
+  # Optional Ingress Class Name, instead of using the ingress annotation. A more current approach to ingress controllers
+  #ingressClassName: nginx
   # -- Ingress annotation object. Please see an example in values.yaml file
   # @default -- object
   annotations:
