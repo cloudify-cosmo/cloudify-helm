@@ -12,7 +12,32 @@ image:
   pullPolicy: IfNotPresent
   # -- Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   pullSecrets: []
-  # - name: secretName
+
+# -- Parameters group for init containers
+# @default -- object
+initContainers:
+  checkRabbitReady:
+    # -- Enable check-rabbitmq-ready init container
+    enabled: true
+    # -- Docker image repository for check-rabbitmq-ready init container
+    repository: busybox
+    # -- Docker image tag for check-rabbitmq-ready init container
+    tag: 1.34.1-uclibc
+    # -- imagePullPolicy for check-rabbitmq-ready init container
+    pullPolicy: IfNotPresent
+    # -- timeout for waiting RabbitMQ
+    timeout: 10m
+    # -- resources requests and limits for check-rabbitmq-ready init container
+    # @default -- object
+    resources:
+      # -- requests for check-rabbitmq-ready init container
+      requests:
+        memory: 50Mi
+        cpu: 0.1
+        # -- limits for check-rabbitmq-ready init container
+      limits:
+        memory: 50Mi
+        cpu: 0.1
 
 # -- Parameters group for connection to PostgreSQL database
 # @default -- object
@@ -22,29 +47,29 @@ db:
   # -- Enable PostgreSQL client SSL certificate verification.
   postgresqlSslClientVerification: true
   # -- PostgreSQL connection host. If db.useExternalDB == true this value should contain FQDN, otherwise hostname without k8s domain.
-  host: postgres-postgresql
+  host: &postgresqlFullName "postgres-postgresql"
   # -- Database name for store Cloudify Manager data
   cloudifyDBName: "cloudify_db"
   # -- Username for DB connection
   cloudifyUsername: "cloudify"
   # -- Password for DB connection
   cloudifyPassword: "cloudify"
-  # -- Databse name for initial connection
+  # -- Database name for initial connection
   serverDBName: "postgres"
   # -- Username for initial DB connection
-  serverUsername: "postgres"
+  serverUsername: &postgresqlUsername "postgres"
   # -- Password for initial DB connection
-  serverPassword: "cfy_test_pass"
+  serverPassword: &postgresqlPassword "cfy_test_pass"
 
 # -- Parameters group for connection to RabbitMQ (Message Broker)
 # @default -- object
 queue:
   # -- RabbitMQ connection host (without k8s domain)
-  host: rabbitmq
+  host: &rabbitmqFullName "rabbitmq"
   # -- Username for connection to RabbitMQ
-  username: "cfy_user"
+  username: &rabbitmqUsername "cfy_user"
   # -- Password for connection to RabbitMQ
-  password: "cfy_test_pass"
+  password: &rabbitmqPassword "cfy_test_pass"
 
 # -- Parameters group for k8s service
 # @default -- object
@@ -80,7 +105,7 @@ nodeSelector: {}
 # @default -- object
 tls:
   # -- k8s secret name with certificates to secure communications between cloudify manager and postgresql|rabbitmq deployed inside the same k8s cluster.
-  secretName: cfy-certs
+  secretName: &tlsSecretName "cfy-certs"
   # -- k8s secret name with ssl certificates for external PostgreSQL database. Required only for connection to external PostgreSQL database.
   pgsqlSslSecretName: pgsql-external-cert
   # -- subPath name for ssl CA cert in k8s secret. Required only for connection to external PostgreSQL database.
@@ -106,7 +131,8 @@ volume:
 # uncomment secrets and define your mounts
 # More than one secret can be added and more than one mount+sub Path can defined for each secret. (below is an example), .
 # secrets need to be base64 encoded
-additionalSecrets: {}
+additionalSecrets:
+  {}
   # Example
   # - name: secretName
   #   mounts:
@@ -306,3 +332,155 @@ containerSecurityContext:
       - SETFCAP
       - SETPCAP
       - AUDIT_WRITE
+
+# Parameters for bitnami/rabbitmq helm chart
+rabbitmq:
+  deploy: true
+
+  fullnameOverride: *rabbitmqFullName
+
+  image:
+    tag: 3.8.9-debian-10-r37
+
+  auth:
+    username: *rabbitmqUsername
+    password: *rabbitmqPassword
+
+    tls:
+      enabled: true
+      existingSecret: *tlsSecretName
+      failIfNoPeerCert: false
+      caCertificate: |-
+      serverCertificate: |-
+      serverKey: |-
+
+  configuration: |-
+    ## Username and password
+    default_user = {{ .Values.auth.username }}
+    default_pass = CHANGEME
+    ## Clustering
+    cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
+    cluster_formation.k8s.host = kubernetes.default.svc.{{ .Values.clusterDomain }}
+    cluster_formation.node_cleanup.interval = 10
+    cluster_formation.node_cleanup.only_log_warning = true
+    cluster_partition_handling = autoheal
+    # queue master locator
+    queue_master_locator = min-masters
+    # enable guest user
+    loopback_users.guest = false
+    {{ tpl .Values.extraConfiguration . }}
+    {{- if .Values.auth.tls.enabled }}
+    ssl_options.verify = {{ .Values.auth.tls.sslOptionsVerify }}
+    listeners.ssl.default = {{ .Values.service.tlsPort }}
+    ssl_options.fail_if_no_peer_cert = {{ .Values.auth.tls.failIfNoPeerCert }}
+    ssl_options.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
+    ssl_options.certfile = /opt/bitnami/rabbitmq/certs/server_certificate.pem
+    ssl_options.keyfile = /opt/bitnami/rabbitmq/certs/server_key.pem
+    {{- end }}
+    {{- if .Values.ldap.enabled }}
+    auth_backends.1 = rabbit_auth_backend_ldap
+    auth_backends.2 = internal
+    {{- range $index, $server := .Values.ldap.servers }}
+    auth_ldap.servers.{{ add $index 1 }} = {{ $server }}
+    {{- end }}
+    auth_ldap.port = {{ .Values.ldap.port }}
+    auth_ldap.user_dn_pattern = {{ .Values.ldap.user_dn_pattern  }}
+    {{- if .Values.ldap.tls.enabled }}
+    auth_ldap.use_ssl = true
+    {{- end }}
+    {{- end }}
+    {{- if .Values.metrics.enabled }}
+    ## Prometheus metrics
+    prometheus.tcp.port = 9419
+    {{- end }}
+    {{- if .Values.memoryHighWatermark.enabled }}
+    ## Memory Threshold
+    total_memory_available_override_value = {{ include "rabbitmq.toBytes" .Values.resources.limits.memory }}
+    vm_memory_high_watermark.{{ .Values.memoryHighWatermark.type }} = {{ .Values.memoryHighWatermark.value }}
+    {{- end }}
+    management.ssl.port       = 15671
+    management.ssl.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
+    management.ssl.certfile   = /opt/bitnami/rabbitmq/certs/server_certificate.pem
+    management.ssl.keyfile    = /opt/bitnami/rabbitmq/certs/server_key.pem
+
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 500m
+    requests:
+      memory: 256Mi
+      cpu: 250m
+
+  persistence:
+    enabled: false
+
+  service:
+    extraPorts:
+      - name: manager-ssl
+        port: 15671
+        targetPort: 15671
+
+  metrics:
+    serviceMonitor:
+      honorLabels: true
+
+  volumePermissions:
+    enabled: true
+    image:
+      repository: bitnami/minideb
+      tag: buster
+      pullPolicy: Always
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+# Parameters for bitnami/postgresql helm chart
+postgresql:
+  fullnameOverride: *postgresqlFullName
+
+  image:
+    tag: 11.10.0-debian-10-r9
+
+  postgresqlUsername: *postgresqlUsername
+  postgresqlPassword: *postgresqlPassword
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  tls:
+    enabled: true
+    certificatesSecret: *tlsSecretName
+    certFilename: "tls.crt"
+    certKeyFilename: "tls.key"
+
+  persistence:
+    enabled: false
+
+  volumePermissions:
+    enabled: true
+    image:
+      repository: bitnami/minideb
+      tag: buster
+      pullPolicy: Always
+
+  readReplicas:
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 512Mi
+        cpu: 500m
+
+  metrics:
+    image:
+      tag: 0.8.0-debian-10-r278

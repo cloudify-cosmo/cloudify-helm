@@ -21,6 +21,35 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- if .Values.initContainers.checkRabbitReady.enabled }}
+      - name: check-rabbitmq-ready
+        image: {{ .Values.initContainers.checkRabbitReady.repository }}:{{ .Values.initContainers.checkRabbitReady.tag }}
+        imagePullPolicy: {{ .Values.initContainers.checkRabbitReady.pullPolicy }}
+        {{- if .Values.initContainers.checkRabbitReady.resources }}
+        resources: {{- toYaml .Values.initContainers.checkRabbitReady.resources | nindent 10 }}
+        {{- end }}
+        securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        env:
+        - name: RABBIT_USERNAME
+          value: {{ .Values.queue.username }}
+        - name: RABBIT_PASSWORD
+          value: {{ .Values.queue.password }} # TODO: store value as a secret, use valueFrom
+        # TODO: username/secret as env var (with ref to secrets)
+        command:
+          - /bin/sh
+          - -c
+          - |
+            timeout {{ .Values.initContainers.checkRabbitReady.timeout }} /bin/sh -c '
+              echo "Waiting for RabbitMQ..."
+              until wget --quiet --no-check-certificate https://${RABBIT_USERNAME}:${RABBIT_PASSWORD}@rabbitmq:15671/api/aliveness-test/%2F 2>/dev/null
+                do echo -n "."
+                sleep 1
+              done
+              echo
+              echo "RabbitMQ is available!"'
+        {{- end }}
+        # TODO: postgres check init
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}

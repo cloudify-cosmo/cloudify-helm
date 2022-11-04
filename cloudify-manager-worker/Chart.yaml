@@ -2,3 +2,12 @@ apiVersion: v2
 name: cloudify-manager-worker
 description: Cloudify manager worker
 version: 0.3.1
+dependencies:
+  - name: rabbitmq
+    version: "8.29.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: rabbitmq.deploy
+  - name: postgresql
+    version: "10.15.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    #condition: !db.useExternalDB ## FIXME: doesn't work - negative conditions isn't available
