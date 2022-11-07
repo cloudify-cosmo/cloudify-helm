@@ -16,25 +16,25 @@ image:
 # -- Parameters group for init containers
 # @default -- object
 initContainers:
-  checkRabbitReady:
-    # -- Enable check-rabbitmq-ready init container
+  waitDependencies:
+    # -- Enable wait-for-dependencies init container
     enabled: true
-    # -- Docker image repository for check-rabbitmq-ready init container
+    # -- Docker image repository for wait-for-dependencies init container
     repository: busybox
-    # -- Docker image tag for check-rabbitmq-ready init container
+    # -- Docker image tag for wait-for-dependencies init container
     tag: 1.34.1-uclibc
-    # -- imagePullPolicy for check-rabbitmq-ready init container
+    # -- imagePullPolicy for wait-for-dependencies init container
     pullPolicy: IfNotPresent
-    # -- timeout for waiting RabbitMQ
+    # -- timeout for waiting when all dependencies up
     timeout: 10m
-    # -- resources requests and limits for check-rabbitmq-ready init container
+    # -- resources requests and limits for wait-for-dependencies init container
     # @default -- object
     resources:
-      # -- requests for check-rabbitmq-ready init container
+      # -- requests for wait-for-dependencies init container
       requests:
         memory: 50Mi
         cpu: 0.1
-        # -- limits for check-rabbitmq-ready init container
+        # -- limits for wait-for-dependencies init container
       limits:
         memory: 50Mi
         cpu: 0.1
@@ -333,7 +333,8 @@ containerSecurityContext:
       - SETPCAP
       - AUDIT_WRITE
 
-# Parameters for bitnami/rabbitmq helm chart
+# -- Parameters greoup for bitnami/rabbitmq helm chart
+# @default -- object
 rabbitmq:
   deploy: true
 
@@ -412,7 +413,7 @@ rabbitmq:
       cpu: 250m
 
   persistence:
-    enabled: false
+    enabled: true
 
   service:
     extraPorts:
@@ -438,8 +439,11 @@ rabbitmq:
           cpu: 100m
           memory: 128Mi
 
-# Parameters for bitnami/postgresql helm chart
+# -- Parameters group for bitnami/postgresql helm chart
+# @default -- object
 postgresql:
+  deploy: true
+
   fullnameOverride: *postgresqlFullName
 
   image:
@@ -463,7 +467,7 @@ postgresql:
     certKeyFilename: "tls.key"
 
   persistence:
-    enabled: false
+    enabled: true
 
   volumePermissions:
     enabled: true

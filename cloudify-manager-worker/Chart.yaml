@@ -10,4 +10,4 @@ dependencies:
   - name: postgresql
     version: "10.15.0"
     repository: "https://charts.bitnami.com/bitnami"
-    #condition: !db.useExternalDB ## FIXME: doesn't work - negative conditions isn't available
+    condition: postgresql.deploy
