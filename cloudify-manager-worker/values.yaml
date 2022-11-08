@@ -414,7 +414,7 @@ rabbitmq:
       cpu: 250m
 
   persistence:
-    enabled: true
+    enabled: false
 
   service:
     extraPorts:
@@ -469,7 +469,7 @@ postgresql:
     certKeyFilename: "tls.key"
 
   persistence:
-    enabled: true
+    enabled: false
 
   volumePermissions:
     enabled: true
