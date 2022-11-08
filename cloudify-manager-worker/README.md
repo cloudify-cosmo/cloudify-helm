@@ -434,7 +434,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | db.cloudifyUsername | string | `"cloudify"` | Username for DB connection |
 | db.host | string | `"postgres-postgresql"` | PostgreSQL connection host. If db.useExternalDB == true this value should contain FQDN, otherwise hostname without k8s domain. |
 | db.postgresqlSslClientVerification | bool | `true` | Enable PostgreSQL client SSL certificate verification. |
-| db.serverDBName | string | `"postgres"` | Databse name for initial connection |
+| db.serverDBName | string | `"postgres"` | Database name for initial connection |
 | db.serverPassword | string | `"cfy_test_pass"` | Password for initial DB connection |
 | db.serverUsername | string | `"postgres"` | Username for initial DB connection |
 | db.useExternalDB | bool | `false` | When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section |
@@ -451,6 +451,14 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | ingress.tls | object | object | Ingress TLS parameters |
 | ingress.tls.enabled | bool | `false` | Enabled TLS connections for Ingress |
 | ingress.tls.secretName | string | `"cfy-secret-name"` | k8s secret name with TLS certificates for ingress |
+| initContainers | object | object | Parameters group for init containers |
+| initContainers.waitDependencies.enabled | bool | `true` | Enable wait-for-dependencies init container |
+| initContainers.waitDependencies.pullPolicy | string | `"IfNotPresent"` | imagePullPolicy for wait-for-dependencies init container |
+| initContainers.waitDependencies.repository | string | `"busybox"` | Docker image repository for wait-for-dependencies init container |
+| initContainers.waitDependencies.resources | object | object | resources requests and limits for wait-for-dependencies init container |
+| initContainers.waitDependencies.resources.requests | object | `{"cpu":0.1,"memory":"50Mi"}` | requests for wait-for-dependencies init container |
+| initContainers.waitDependencies.tag | string | `"1.34.1-uclibc"` | Docker image tag for wait-for-dependencies init container |
+| initContainers.waitDependencies.timeout | string | `"10m"` | timeout for waiting when all dependencies up |
 | license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information) |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
@@ -470,10 +478,12 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | okta.secretName | string | `"okta-license"` | k8s secret name containing the OKTA certificates. |
 | okta.ssoUrl | string | `""` | SSO URL |
 | podSecurityContext | object | object | Parameters group for k8s pod security context |
+| postgresql | object | object | Parameters group for bitnami/postgresql helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/README.md |
 | queue | object | object | Parameters group for connection to RabbitMQ (Message Broker) |
 | queue.host | string | `"rabbitmq"` | RabbitMQ connection host (without k8s domain) |
 | queue.password | string | `"cfy_test_pass"` | Password for connection to RabbitMQ |
 | queue.username | string | `"cfy_user"` | Username for connection to RabbitMQ |
+| rabbitmq | object | object | Parameters greoup for bitnami/rabbitmq helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md |
 | readinessProbe | object | object | Parameters group for pod readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readiness probe |
 | readinessProbe.failureThreshold | int | `5` | readiness probe failure threshold |
