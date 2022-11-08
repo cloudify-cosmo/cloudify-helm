@@ -221,6 +221,20 @@ $ helm repo update cloudify-helm
 
 **If you want to customize the values it's recommended to do so before installing the chart** - [see configuration options below](#configuration-options-of-cloudify-manager-worker-valuesyaml), and either way make sure to review the values file.
 
+### Enable PostgreSQL and RabbitMQ deployment
+
+For now deploy PostgreSQL and RabbitMQ as dependent subcharts disabled by default for backward compatibility, so for new deployment you need to enable them.
+
+To do that please ensure you have following parameters in the values file:
+
+```yaml
+postgresql:
+  deploy: true
+ 
+rabbitmq:
+  deploy: true
+```
+
 ### (optional) Ensure UI access to the manager upon installation
 
 ### **[OPTION 1]**
