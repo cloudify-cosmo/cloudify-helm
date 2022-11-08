@@ -414,7 +414,7 @@ rabbitmq:
       cpu: 250m
 
   persistence:
-    enabled: false
+    enabled: true
 
   service:
     extraPorts:
