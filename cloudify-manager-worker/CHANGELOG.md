@@ -37,7 +37,7 @@ Provides a release information for each version splitted by the next sections
 
 ## Upgrade notes
 
-For upgrade from version 0.3.1 and keep data on Cloudify Manager Worker persistance volume please execute following command **before** upgrade:
+For upgrade from version 0.3.* to 0.4.0 and keep data on Cloudify Manager Worker persistance volume please execute following command **before** upgrade:
 
 ```bash
 kubectl -n NAMESPACE annotate --overwrite persistentvolumeclaims cfy-worker-pvc helm.sh/resource-policy=keep
