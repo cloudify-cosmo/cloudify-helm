@@ -8,6 +8,7 @@ Provides a release information for each version splitted by the next sections
 - **Fixed** - for fixed issues
 - **Changed** - for changes in already implemented
 - **Removed** - for now removed features
+- **Upgrade notes** - instruction about upgrage from previous helm chart version
 
 </br>
 
@@ -33,3 +34,17 @@ Provides a release information for each version splitted by the next sections
 
 - Removed file "cloudify-manager-worker/external/postgres-values.yaml" - values file for manual install postgres from bitnami/postgres helm chart.
 - Removed file "cloudify-manager-worker/external/rabbitmq-values.yaml" - values file for manual install rabbitmq from bitnami/rabbitmq helm chart.
+
+## Upgrade notes
+
+For upgrade from version 0.3.* to 0.4.0 and keep data on Cloudify Manager Worker persistance volume please execute following command **before** upgrade:
+
+```bash
+kubectl -n NAMESPACE annotate --overwrite persistentvolumeclaims cfy-worker-pvc helm.sh/resource-policy=keep
+```
+
+After that you can upgrade helm release in usual way, e.g.:
+
+```bash
+helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker --version 0.4.0 -f ./values.yaml -n NAMESPACE
+```
