@@ -600,6 +600,12 @@ Uninstall helm release:
 $ helm uninstall cloudify-manager-worker -n NAMESPACE
 ```
 
+If you want to remove Persistent Volume Claims (for example if you are going to reinstall stack without data saving):
+
+```
+kubectl --namespace NAMESPACE delete persistentvolumeclaims cfy-worker-pvc data-postgres-postgresql-0 data-rabbitmq-0
+```
+
 To clean the supporting files:
 
 ```bash
