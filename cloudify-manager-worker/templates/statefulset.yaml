@@ -21,6 +21,37 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- if .Values.initContainers.waitDependencies.enabled }}
+      - name: wait-for-dependencies
+        image: {{ .Values.initContainers.waitDependencies.repository }}:{{ .Values.initContainers.waitDependencies.tag }}
+        imagePullPolicy: {{ .Values.initContainers.waitDependencies.pullPolicy }}
+        {{- if .Values.initContainers.waitDependencies.resources }}
+        resources: {{- toYaml .Values.initContainers.waitDependencies.resources | nindent 10 }}
+        {{- end }}
+        securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        env:
+        - name: POSTGRES_HOST
+          value: {{ .Values.db.host }}
+        - name: RABBIT_HOST
+          value: {{ .Values.queue.host }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            timeout {{ .Values.initContainers.waitDependencies.timeout }} /bin/sh -c '
+              wait_for_service(){
+                SERVICE="$1:$2"
+                until nc -vz $SERVICE > /dev/null; do
+                  >&2 echo "$SERVICE is unavailable - sleeping"
+                  sleep 2
+                done
+                >&2 echo "$SERVICE is up"
+              }
+              wait_for_service ${POSTGRES_HOST} "5432"
+              wait_for_service ${RABBIT_HOST} "15671"
+            '
+        {{- end }}
       containers:
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}

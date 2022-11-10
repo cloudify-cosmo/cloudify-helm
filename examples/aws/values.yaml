@@ -65,3 +65,9 @@ ingress:
   tls:
     enabled: false
     secretName: cfy-secret-name
+
+postgresql:
+  deploy: true
+
+rabbitmq:
+  deploy: true

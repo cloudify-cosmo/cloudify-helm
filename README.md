@@ -27,8 +27,8 @@ It's a helm chart for cloudify manager which is:
 
 * Highly available, can be deployed with multiple replicas, available only when used with NFS Volume. ( Tested with EFS of AWS | FIlestore of GCP | Azure File Storage)
 * Use persistent volume to survive restarts/failures.
-* Use external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
-* Use external Message Brokes (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
+* Uses DB (PostgreSQL), which may be deployed as a dependency automatically (also possible to use external postgresql).
+* Uses Message Brokers (rabbitMQ), which may be deployed as a dependency automatically.
 
 This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
@@ -36,15 +36,6 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 
 
 ## How to create and deploy such a setup?
-
-1. Deployment of DB (Postgres).
-
-2. Deployment of Message Broker (rabbitMQ).
-
-3. Deployment of Cloudify manager worker.
-
-You need to deploy DB and Message Broker before deploying Cloudify manager worker.
-
 
 To better understand how to install and configure cloudify manager worker setup please read [Cloudify manager worker helm chart](cloudify-manager-worker/README.md)
 

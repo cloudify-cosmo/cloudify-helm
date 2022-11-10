@@ -1,4 +1,13 @@
 apiVersion: v2
 name: cloudify-manager-worker
 description: Cloudify manager worker
-version: 0.3.1
+version: 0.4.0
+dependencies:
+  - name: rabbitmq
+    version: "8.29.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: rabbitmq.deploy
+  - name: postgresql
+    version: "10.15.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.deploy

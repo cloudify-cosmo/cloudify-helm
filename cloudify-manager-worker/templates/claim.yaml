@@ -1,12 +1,16 @@
+{{- $pvc_data := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "cfy-worker-pvc")) }}
+{{- if not $pvc_data }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: cfy-worker-pvc
   annotations:
     volume.beta.kubernetes.io/storage-class: {{ .Values.volume.storageClass }}
+    helm.sh/resource-policy: keep
 spec:
   accessModes:
     - {{ .Values.volume.accessMode }}
   resources:
     requests:
       storage: {{ .Values.volume.size }}
+{{- end -}}

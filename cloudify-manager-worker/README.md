@@ -8,8 +8,8 @@ It's a helm chart for cloudify manager which:
 
 - Is highly available, can be deployed with multiple replicas. ( available only when used NFS like Storage file system )
 - Uses persistent volume to survive restarts/failures.
-- Uses external DB (postgress), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
-- Uses external Message Brokers (rabbitMQ), which may be deployed via public helm chart of Bitnami: https://github.com/bitnami/charts/tree/master/bitnami
+- Uses DB (PostgreSQL), which may be deployed as a dependency automatically (also possible to use external postgresql).
+- Uses Message Brokers (rabbitMQ), which may be deployed as a dependency automatically.
 
 This is how the setup looks after it's deployed to 'cfy-example' namespace (it's possible to have multiple replicas (pods) of cloudify manager):
 
@@ -31,19 +31,15 @@ This is how the setup looks after it's deployed to 'cfy-example' namespace (it's
 
 1. [Generate certificate as a secret in k8s.](#generate-certificates-and-add-as-secret-to-k8s)
 
-2. [Deployment of DB (Postgres).](#install-postgresqlbitnami-to-kubernetes-cluster-with-helm)
+2. [Deployment of Cloudify manager worker with dependencies.](#install-cloudify-manager-worker)
 
-3. [Deployment of Message Broker (rabbitMQ).](#install-rabbitmqbitnami-to-kubernetes-cluster-with-helm)
+3. [(Optional) Ensure UI access to the manager upon installation](#optional-ensure-ui-access-to-the-manager-upon-installation)
 
-4. [Deployment of Cloudify manager worker.](#install-cloudify-manager-worker)
+4. [(Optional) Extra configuration options](#configuration-options-of-cloudify-manager-worker-valuesyaml)
 
-5. [(Optional) Ensure UI access to the manager upon installation](#optional-ensure-ui-access-to-the-manager-upon-installation)
+5. [Troubleshooting](#troubleshoot)
 
-6. [(Optional) Extra configuration options](#configuration-options-of-cloudify-manager-worker-valuesyaml)
-
-7. [Troubleshooting](#troubleshoot)
-
-8. [Uninstallation of helm charts](#uninstallation)
+6. [Uninstallation of helm charts](#uninstallation)
 
 **You need to deploy DB and Message Broker before deploying Cloudify manager worker**
 
@@ -117,6 +113,7 @@ spec:
     - server auth
     - client auth
   isCA: true
+  duration: "87660h"
   issuerRef:
     name: selfsigned-issuer
 ---
@@ -135,6 +132,7 @@ metadata:
 spec:
   secretName: cfy-certs
   isCA: false
+  duration: "87660h"
   usages:
     - server auth
     - client auth
@@ -163,72 +161,6 @@ This step is necessary because the following steps will require files from this 
 
 ```bash
 $ git clone https://github.com/cloudify-cosmo/cloudify-helm.git && cd cloudify-helm
-```
-
-## Install PostgreSQL(bitnami) to Kubernetes cluster with helm
-
-**First we need to add the Bitnami helm repository - for PostgreSQL and RabbitMQ charts**
-
-```bash
-$ helm repo add bitnami https://charts.bitnami.com/bitnami
-```
-
-You can find example of PostgreSQL values.yaml in external/postgres-values.yaml
-
-Use certificate we created as k8s secret: 'cfy-certs'
-
-```yaml
-volumePermissions.enabled=true
-tls:
-  enabled: true
-  preferServerCiphers: true
-  certificatesSecret: 'cfy-certs'
-  certFilename: 'tls.crt'
-  certKeyFilename: 'tls.key'
-```
-
-Install postgresql with postgres-values.yaml with pinned version
-
-```bash
-$ helm install postgres bitnami/postgresql -f ./cloudify-manager-worker/external/postgres-values.yaml --version 10.15.0 -n NAMESPACE
-```
-
-## Install RabbitMQ(bitnami) to Kubernetes cluster with helm
-
-Use certificate we created as k8s secret: 'cfy-certs'
-
-```yaml
-tls:
-  enabled: true
-  existingSecret: cfy-certs
-  failIfNoPeerCert: false
-  sslOptionsVerify: verify_peer
-  caCertificate: |-
-  serverCertificate: |-
-  serverKey: |-
-```
-
-Run management console on 15671 port with SSL (cloudify manager talks to management console via SSL):
-
-add to rabbitmq-values.yaml
-
-```yaml
-configuration: |-
-  management.ssl.port       = 15671
-  management.ssl.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
-  management.ssl.certfile   = /opt/bitnami/rabbitmq/certs/server_certificate.pem
-  management.ssl.keyfile    = /opt/bitnami/rabbitmq/certs/server_key.pem
-
-extraPorts:
-  - name: manager-ssl
-    port: 15671
-    targetPort: 15671
-```
-
-Install rabbitmq with rabbitmq-values.yaml with pinned version
-
-```bash
-$ helm install rabbitmq bitnami/rabbitmq -f ./cloudify-manager-worker/external/rabbitmq-values.yaml --version 8.29.0 -n NAMESPACE
 ```
 
 ## Install cloudify manager worker
@@ -288,6 +220,20 @@ $ helm repo update cloudify-helm
 ```
 
 **If you want to customize the values it's recommended to do so before installing the chart** - [see configuration options below](#configuration-options-of-cloudify-manager-worker-valuesyaml), and either way make sure to review the values file.
+
+### Enable PostgreSQL and RabbitMQ deployment
+
+For now deploy PostgreSQL and RabbitMQ as dependent subcharts disabled by default for backward compatibility, so for new deployment you need to enable them.
+
+To do that please ensure you have following parameters in the values file:
+
+```yaml
+postgresql:
+  deploy: true
+ 
+rabbitmq:
+  deploy: true
+```
 
 ### (optional) Ensure UI access to the manager upon installation
 
@@ -402,7 +348,7 @@ Then you can configure DNS record (ALIAS type), points to this load balancer hos
 ### After values are verified, install the manager worker chart
 
 ```bash
-$ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
+$ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --version 0.4.0 -f ./cloudify-manager-worker/values.yaml -n NAMESPACE
 ```
 
 ## Configuration options of cloudify-manager-worker values.yaml
@@ -434,7 +380,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | db.cloudifyUsername | string | `"cloudify"` | Username for DB connection |
 | db.host | string | `"postgres-postgresql"` | PostgreSQL connection host. If db.useExternalDB == true this value should contain FQDN, otherwise hostname without k8s domain. |
 | db.postgresqlSslClientVerification | bool | `true` | Enable PostgreSQL client SSL certificate verification. |
-| db.serverDBName | string | `"postgres"` | Databse name for initial connection |
+| db.serverDBName | string | `"postgres"` | Database name for initial connection |
 | db.serverPassword | string | `"cfy_test_pass"` | Password for initial DB connection |
 | db.serverUsername | string | `"postgres"` | Username for initial DB connection |
 | db.useExternalDB | bool | `false` | When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section |
@@ -451,6 +397,14 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | ingress.tls | object | object | Ingress TLS parameters |
 | ingress.tls.enabled | bool | `false` | Enabled TLS connections for Ingress |
 | ingress.tls.secretName | string | `"cfy-secret-name"` | k8s secret name with TLS certificates for ingress |
+| initContainers | object | object | Parameters group for init containers |
+| initContainers.waitDependencies.enabled | bool | `true` | Enable wait-for-dependencies init container |
+| initContainers.waitDependencies.pullPolicy | string | `"IfNotPresent"` | imagePullPolicy for wait-for-dependencies init container |
+| initContainers.waitDependencies.repository | string | `"busybox"` | Docker image repository for wait-for-dependencies init container |
+| initContainers.waitDependencies.resources | object | object | resources requests and limits for wait-for-dependencies init container |
+| initContainers.waitDependencies.resources.requests | object | `{"cpu":0.1,"memory":"50Mi"}` | requests for wait-for-dependencies init container |
+| initContainers.waitDependencies.tag | string | `"1.34.1-uclibc"` | Docker image tag for wait-for-dependencies init container |
+| initContainers.waitDependencies.timeout | string | `"10m"` | timeout for waiting when all dependencies up |
 | license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information) |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
@@ -470,10 +424,12 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 | okta.secretName | string | `"okta-license"` | k8s secret name containing the OKTA certificates. |
 | okta.ssoUrl | string | `""` | SSO URL |
 | podSecurityContext | object | object | Parameters group for k8s pod security context |
+| postgresql | object | object | Parameters group for bitnami/postgresql helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/README.md |
 | queue | object | object | Parameters group for connection to RabbitMQ (Message Broker) |
 | queue.host | string | `"rabbitmq"` | RabbitMQ connection host (without k8s domain) |
 | queue.password | string | `"cfy_test_pass"` | Password for connection to RabbitMQ |
 | queue.username | string | `"cfy_user"` | Username for connection to RabbitMQ |
+| rabbitmq | object | object | Parameters greoup for bitnami/rabbitmq helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md |
 | readinessProbe | object | object | Parameters group for pod readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readiness probe |
 | readinessProbe.failureThreshold | int | `5` | readiness probe failure threshold |
@@ -751,10 +707,16 @@ Feel free to open an [issue](https://github.com/cloudify-cosmo/cloudify-helm/iss
 
 ## Uninstallation
 
-As the whole setup is built from mainly 3 helm charts, you simply need to uninstall them.
+Uninstall helm release:
 
 ```bash
-$ helm uninstall cloudify-manager-worker postgres rabbitmq -n NAMESPACE
+$ helm uninstall cloudify-manager-worker -n NAMESPACE
+```
+
+If you want to remove Persistent Volume Claims (for example if you are going to reinstall stack without data saving):
+
+```
+kubectl --namespace NAMESPACE delete persistentvolumeclaims cfy-worker-pvc data-postgres-postgresql-0 data-rabbitmq-0
 ```
 
 To clean the supporting files:

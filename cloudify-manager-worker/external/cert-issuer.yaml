@@ -16,6 +16,7 @@ spec:
     - server auth
     - client auth
   isCA: true
+  duration: "87660h"
   issuerRef:
     name: selfsigned-issuer
 ---
@@ -34,15 +35,16 @@ metadata:
 spec:
   secretName: cfy-certs
   isCA: false
+  duration: "87660h"
   usages:
     - server auth
     - client auth
   dnsNames:
-  - "postgres-postgresql.NAMESPACE.svc.cluster.local"
-  - "rabbitmq.NAMESPACE.svc.cluster.local"
-  - "cloudify-manager-worker.NAMESPACE.svc.cluster.local"
-  - "postgres-postgresql"
-  - "rabbitmq"
-  - "cloudify-manager-worker"
+    - "postgres-postgresql.NAMESPACE.svc.cluster.local"
+    - "rabbitmq.NAMESPACE.svc.cluster.local"
+    - "cloudify-manager-worker.NAMESPACE.svc.cluster.local"
+    - "postgres-postgresql"
+    - "rabbitmq"
+    - "cloudify-manager-worker"
   issuerRef:
     name: cfy-ca-issuer
