@@ -415,6 +415,8 @@ rabbitmq:
 
   persistence:
     enabled: true
+    # this value can be changed based on your cluster desired storage class
+    storageClass: ""
 
   service:
     extraPorts:
@@ -470,6 +472,8 @@ postgresql:
 
   persistence:
     enabled: true
+    # this value can be changed based on your cluster desired storage class
+    storageClass: ""
 
   volumePermissions:
     enabled: true
