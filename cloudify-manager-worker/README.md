@@ -165,11 +165,10 @@ $ git clone https://github.com/cloudify-cosmo/cloudify-helm.git && cd cloudify-h
 
 ## Install cloudify manager worker
 
-### Create configMap with premium license - required if using Cloudify premium version
+### Create secret/configMap with premium license - required if using Cloudify premium version
 
 Create license.yaml file and populate it with license data
 
-- American/British English conventions accepted, but must be alligned across all 'license/licence' strings (values/configMaps)
 
 ```yaml
 apiVersion: v1
@@ -674,7 +673,9 @@ Some common use cases:
 
 This might happen if the English convention of licence/license is not alligned across the values (name of the value and its value), or across the license/licence configMap.
 
-Also, the [StatefulSet](./templates/statefulset.yaml) accepts a license/licence [configMap](#create-configmap-with-premium-license---required-if-using-cloudify-premium-version) with the `data` value of this syntax `cfy_license.yaml` (according to the chosen English convention)
+Since v0.4.1 `licence` convention is not supported. please use `license`.
+
+The [StatefulSet](./templates/statefulset.yaml) accepts a [secret/configMap](#create-secret/configmap-with-premium-license---required-if-using-cloudify-premium-version) with the `data` value of this syntax `cfy_license.yaml` (according to the chosen English convention)
 
 After ensuring the above, try to reinstall the worker chart
 
