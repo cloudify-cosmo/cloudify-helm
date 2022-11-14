@@ -182,9 +182,9 @@ spec:
         secret:
           secretName: {{ .Values.license.secretName }}
       {{- else if .Values.license }}
-       - name: cloudify-license-volume
-         configMap:
-           name: {{ .Values.license.secretName }}
+      - name: cloudify-license-volume
+        configMap:
+          name: {{ .Values.license.secretName }}
       {{- end }}
       {{- if .Values.okta.enabled }}
       - name: okta-license-volume
