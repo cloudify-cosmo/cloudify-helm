@@ -230,7 +230,7 @@ To do that please ensure you have following parameters in the values file:
 ```yaml
 postgresql:
   deploy: true
-  
+ 
 rabbitmq:
   deploy: true
 ```
@@ -323,7 +323,6 @@ service:
 ```
 
 That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer).
-
 
 Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager  load balancer endpoint, for example:
 
