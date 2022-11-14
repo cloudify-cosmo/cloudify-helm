@@ -209,7 +209,7 @@ okta:
   # -- Portal URL
   portalUrl: ""
 
-# -- Can contain "secretName" field with existing license in k8s configMap. to use Secret instead, set useSecret to true.
+# -- Can contain "secretName" field with existing license in k8s configMap, to use Secret instead, set useSecret to true.
 license: {}
 # license:
 #   secretName: cfy-license

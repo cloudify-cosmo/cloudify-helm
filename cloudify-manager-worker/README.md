@@ -169,7 +169,6 @@ $ git clone https://github.com/cloudify-cosmo/cloudify-helm.git && cd cloudify-h
 
 Create license.yaml file and populate it with license data
 
-
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -229,7 +228,7 @@ To do that please ensure you have following parameters in the values file:
 ```yaml
 postgresql:
   deploy: true
- 
+
 rabbitmq:
   deploy: true
 ```
@@ -404,7 +403,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | initContainers.waitDependencies.resources.requests | object | `{"cpu":0.1,"memory":"50Mi"}` | requests for wait-for-dependencies init container |
 | initContainers.waitDependencies.tag | string | `"1.34.1-uclibc"` | Docker image tag for wait-for-dependencies init container |
 | initContainers.waitDependencies.timeout | string | `"10m"` | timeout for waiting when all dependencies up |
-| license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. |
+| license | object | `{}` | Can contain "secretName" field with existing license in k8s configMap, to use Secret instead, set useSecret to true. |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | `8` | liveness probe failure threshold |
@@ -671,11 +670,11 @@ Some common use cases:
 
 ### License is not uploaded correctly upon installation
 
-This might happen if the English convention of licence/license is not alligned across the values (name of the value and its value), or across the license/licence configMap.
+[deprecated] This might happen if the English convention of licence/license is not alligned across the values (name of the value and its value), or across the license/licence configMap.
 
 Since v0.4.1 `licence` convention is not supported. please use `license`.
 
-The [StatefulSet](./templates/statefulset.yaml) accepts a [secret/configMap](#create-secret/configmap-with-premium-license---required-if-using-cloudify-premium-version) with the `data` value of this syntax `cfy_license.yaml` (according to the chosen English convention)
+The [StatefulSet](./templates/statefulset.yaml) accepts a [secret/configMap](#create-secret/configmap-with-premium-license---required-if-using-cloudify-premium-version) with the `data` value of this syntax `cfy_license.yaml`
 
 After ensuring the above, try to reinstall the worker chart
 
