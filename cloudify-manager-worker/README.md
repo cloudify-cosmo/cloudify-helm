@@ -405,7 +405,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | initContainers.waitDependencies.resources.requests | object | `{"cpu":0.1,"memory":"50Mi"}` | requests for wait-for-dependencies init container |
 | initContainers.waitDependencies.tag | string | `"1.34.1-uclibc"` | Docker image tag for wait-for-dependencies init container |
 | initContainers.waitDependencies.timeout | string | `"10m"` | timeout for waiting when all dependencies up |
-| license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information) |
+| license | object | `{}` | Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file. |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | `8` | liveness probe failure threshold |

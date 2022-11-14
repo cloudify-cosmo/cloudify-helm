@@ -210,10 +210,11 @@ okta:
   portalUrl: ""
 
 # -- Can contain "secretName" field with existing in k8s configMap name contains cloudify manager license file.
-# license/licence conventions are accepted - make sure to allign the convention across the values file (This line and secret name) & in the configMap itself (See docs for more information)
 license: {}
 # license:
 #   secretName: cfy-license
+# -- optionally use a secret instead of configMap for the license file
+#   useSecret: true 
 
 # -- Parameters group for pod liveness probe
 # @default -- object
@@ -285,6 +286,8 @@ ingress:
   enabled: false
   # -- Hostname for ingress connection
   host: cfy-efs-app.eks.cloudify.co
+  # -- Optional Ingress Class Name, instead of using the ingress annotation.
+  # ingressClassName: nginx
   # -- Ingress annotation object. Please see an example in values.yaml file
   # @default -- object
   annotations:
