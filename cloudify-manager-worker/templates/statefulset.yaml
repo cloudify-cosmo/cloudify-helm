@@ -177,14 +177,14 @@ spec:
       - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
-      {{- if .Values.license }}
+      {{- if .Values.license.useSecret }}
+      - name: cloudify-license-volume
+        secret:
+          secretName: {{ .Values.license.secretName }}
+      {{- else if .Values.license }}
       - name: cloudify-license-volume
         configMap:
           name: {{ .Values.license.secretName }}
-      {{- else if .Values.licence }} # add option to accept legacy 'licence' instead of 'license'
-      - name: cloudify-licence-volume
-        configMap:
-          name: {{ .Values.licence.secretName }}
       {{- end }}
       {{- if .Values.okta.enabled }}
       - name: okta-license-volume
