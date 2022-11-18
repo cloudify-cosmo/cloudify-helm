@@ -77,7 +77,7 @@ service:
   # -- k8s service host
   host: cloudify-manager-worker
   # -- k8s service type
-  type: ClusterIP
+  type: LoadBalancer
   # -- k8s service name
   name: cloudify-manager-worker
   http:
@@ -340,7 +340,7 @@ containerSecurityContext:
 # Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md
 # @default -- object
 rabbitmq:
-  deploy: false
+  deploy: true
 
   fullnameOverride: *rabbitmqFullName
 
@@ -449,7 +449,7 @@ rabbitmq:
 # Details: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/README.md
 # @default -- object
 postgresql:
-  deploy: false
+  deploy: true
 
   fullnameOverride: *postgresqlFullName
 

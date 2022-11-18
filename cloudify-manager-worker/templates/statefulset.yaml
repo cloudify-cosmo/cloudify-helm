@@ -133,6 +133,9 @@ spec:
         - name: cfy-worker-certs
           mountPath: {{ .Values.config.caCertPath }}
           subPath: ca.crt
+        - name: rsyslog-conf
+          mountPath: /mnt/cloudify-data/rsyslog/rsyslog.conf
+          subPath: rsyslog.conf
         {{- if .Values.okta.enabled }}
         - name: okta-license-volume
           mountPath: /mnt/cloudify-data/ssl/okta_certificate.pem
@@ -177,6 +180,9 @@ spec:
       - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
+      - name: rsyslog-conf
+        secret:
+          secretName: rsyslog.conf
       {{- if .Values.license.useSecret }}
       - name: cloudify-license-volume
         secret:

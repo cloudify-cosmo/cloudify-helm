@@ -63,6 +63,9 @@ data:
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
 
+      echo "Copy rsyslog"
+      cp "$CLOUDIFY_DATA_DIR/rsyslog/rsyslog.conf" /etc/rsyslog.conf
+
       echo "Set proper permissions for stage/composer files"
       chown composer_user /opt/cloudify-composer/backend/conf/prod.json
       chown stage_user /opt/cloudify-stage/conf/manager.json
