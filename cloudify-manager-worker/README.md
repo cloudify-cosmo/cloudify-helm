@@ -203,6 +203,24 @@ Apply created config map:
 $ kubectl apply -f license.yaml
 ```
 
+### Create secret for okta-license - required if using Okta/SSO
+
+First obtain the okta/sso server certificate and store it in a file for exanple okta_certificate.pem
+
+```bash
+echo -n '-----BEGIN CERTIFICATE-----
+MIIDXDCCAkSgAwIBAgIJAKwO13ndNBPjMA0GCSqGSIb3DQEBCwUAMCkxJzAlBgNV
+BAMMHkNsb3VkaWZ5IGdlbmVyYXRlZCBjZXJ0aWZpY2F0ZTAeFw0yMTA2MTQxMjMx
+NDZaFw0zMTA2MTIxMjMxNDZaMCYxJDAiBgNVBAMMG2lwLTEwLTEwLTQtMTE2LmVj
+-----END CERTIFICATE-----'  > ./okta_certificate.pem
+```
+
+then let's create the okta-license secret in the NAMESPACE
+
+```bash
+kubectl create secret generic okta-license --from-file=./okta_certificate.pem -n NAMESPACE
+```
+
 ### Add the cloudify-helm repo
 
 Add the cloudify-helm chart repo or upgrade it
