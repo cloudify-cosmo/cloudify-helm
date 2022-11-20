@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datadog.conf
+data: 
+  datadog.conf: |
+    ## For each file to send
+    $template DatadogFormat,"api_key <%pri%>%protocol-version% %timestamp:::date-rfc3339% %HOSTNAME% %app-name% - - - %msg%\n"
+
+    ruleset(name="infiles") {
+        action(type="omfwd" target="tcp-intake.logs.datadoghq.eu" protocol="tcp" port="1883" template="DatadogFormat")
+    }
+
+    input(type="imfile" ruleset="infiles" Tag="manager" File="/var/log/cloudify/manager/cfy_manager.log" StateFile="<unique_file_id1>")
