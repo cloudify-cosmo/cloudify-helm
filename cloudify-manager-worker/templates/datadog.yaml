@@ -12,3 +12,8 @@ data:
     }
 
     input(type="imfile" ruleset="infiles" Tag="manager" File="/var/log/cloudify/manager/cfy_manager.log" StateFile="<unique_file_id1>")
+    input(type="imfile" ruleset="infiles" Tag="ampq-postgres" File="/var/log/cloudify/ampq-postgres/ampg_postgres.log" StateFile="<unique_file_id1>")
+    input(type="imfile" ruleset="infiles" Tag="composer-app" File="/var/log/cloudify/composer/app.log" StateFile="<unique_file_id1>")
+    input(type="imfile" ruleset="infiles" Tag="composer-errors" File="/var/log/cloudify/composer/erros.log" StateFile="<unique_file_id1>")
+    input(type="imfile" ruleset="infiles" Tag="execution-scheduler" File="/var/log/cloudify/execution-scheduler/scheduler.log" StateFile="<unique_file_id1>")
+    input(type="imfile" ruleset="infiles" Tag="mgmtworker" File="/var/log/cloudify/mgmtworker/mgmtworker.log" StateFile="<unique_file_id1>")
