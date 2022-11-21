@@ -5,15 +5,35 @@ metadata:
 data: 
   datadog.conf: |
     ## For each file to send
-    $template DatadogFormat,"api_key <%pri%>%protocol-version% %timestamp:::date-rfc3339% %HOSTNAME% %app-name% - - - %msg%\n"
+    $template DatadogFormat,"{{ .Values.rsyslog.datadog_api_key }} <%pri%>%protocol-version% %timestamp:::date-rfc3339% %HOSTNAME% %app-name% - - - %msg%\n"
 
     ruleset(name="infiles") {
         action(type="omfwd" target="tcp-intake.logs.datadoghq.eu" protocol="tcp" port="1883" template="DatadogFormat")
     }
 
     input(type="imfile" ruleset="infiles" Tag="manager" File="/var/log/cloudify/manager/cfy_manager.log" StateFile="<unique_file_id1>")
-    input(type="imfile" ruleset="infiles" Tag="ampq-postgres" File="/var/log/cloudify/ampq-postgres/ampg_postgres.log" StateFile="<unique_file_id1>")
-    input(type="imfile" ruleset="infiles" Tag="composer-app" File="/var/log/cloudify/composer/app.log" StateFile="<unique_file_id1>")
-    input(type="imfile" ruleset="infiles" Tag="composer-errors" File="/var/log/cloudify/composer/erros.log" StateFile="<unique_file_id1>")
-    input(type="imfile" ruleset="infiles" Tag="execution-scheduler" File="/var/log/cloudify/execution-scheduler/scheduler.log" StateFile="<unique_file_id1>")
-    input(type="imfile" ruleset="infiles" Tag="mgmtworker" File="/var/log/cloudify/mgmtworker/mgmtworker.log" StateFile="<unique_file_id1>")
+    input(type="imfile" ruleset="infiles" Tag="ampq-postgres" File="/var/log/cloudify/ampq-postgres/ampg_postgres.log" StateFile="<unique_file_id2>")
+    input(type="imfile" ruleset="infiles" Tag="composer-app" File="/var/log/cloudify/composer/app.log" StateFile="<unique_file_id3>")
+    input(type="imfile" ruleset="infiles" Tag="composer-errors" File="/var/log/cloudify/composer/erros.log" StateFile="<unique_file_id4>")
+    input(type="imfile" ruleset="infiles" Tag="execution-scheduler" File="/var/log/cloudify/execution-scheduler/scheduler.log" StateFile="<unique_file_id5>")
+    input(type="imfile" ruleset="infiles" Tag="mgmtworker" File="/var/log/cloudify/mgmtworker/mgmtworker.log" StateFile="<unique_file_id6>")
+    input(type="imfile" ruleset="infiles" Tag="nginx-cloudify-access" File="/var/log/cloudify/nginx/cloudify.access.log" StateFile="<unique_file_id7>")
+    input(type="imfile" ruleset="infiles" Tag="nginx-access" File="/var/log/cloudify/nginx/access.log" StateFile="<unique_file_id8>")
+    input(type="imfile" ruleset="infiles" Tag="nginx-cloudify-error" File="/var/log/cloudify/nginx/cloudify.error.log" StateFile="<unique_file_id9>")
+    input(type="imfile" ruleset="infiles" Tag="nginx-error" File="/var/log/cloudify/nginx/error.log" StateFile="<unique_file_id10>")
+    input(type="imfile" ruleset="infiles" Tag="ngiinx-monitoring-access" File="/var/log/cloudify/nginx/monitoring.access.log" StateFile="<unique_file_id11>")
+    input(type="imfile" ruleset="infiles" Tag="nginx-monitoring-error-log" File="/var/log/cloudify/nginx/monitoring.error.log" StateFile="<unique_file_id12>")
+    input(type="imfile" ruleset="infiles" Tag="api-audit" File="/var/log/cloudify/rest/api-audit.log" StateFile="<unique_file_id13>")
+    input(type="imfile" ruleset="infiles" Tag="api-gunicorn" File="/var/log/cloudify/rest/api-gunicorn.log" StateFile="<unique_file_id14>")
+    input(type="imfile" ruleset="infiles" Tag="api-audit" File="/var/log/cloudify/rest/audit.log" StateFile="<unique_file_id15>")
+    input(type="imfile" ruleset="infiles" Tag="api-cloudify-service" File="/var/log/cloudify/rest/cloudify-api-service.log" StateFile="<unique_file_id16>")
+    input(type="imfile" ruleset="infiles" Tag="api-cloudify-rest-service" File="/var/log/cloudify/rest/cloudify-rest-service.log" StateFile="<unique_file_id17>")
+    input(type="imfile" ruleset="infiles" Tag="api-gunicorn" File="/var/log/cloudify/rest/gunicorn.log" StateFile="<unique_file_id18>")
+    input(type="imfile" ruleset="infiles" Tag="stage-server-error" File="/var/log/cloudify/stage/server-error.log" StateFile="<unique_file_id19>")
+    input(type="imfile" ruleset="infiles" Tag="stage-server-output" File="/var/log/cloudify/stage/server-output.log" StateFile="<unique_file_id20>")
+
+
+
+
+
+

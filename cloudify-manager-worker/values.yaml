@@ -497,3 +497,6 @@ postgresql:
   metrics:
     image:
       tag: 0.8.0-debian-10-r278
+
+rsyslog:
+  datadog_api_key: ""
