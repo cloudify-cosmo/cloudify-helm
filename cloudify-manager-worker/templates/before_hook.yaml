@@ -66,7 +66,8 @@ data:
       echo "Setup rsyslog files"
       sed -i '1s/^/module(load="imfile" PollingInterval="10")\n/' /etc/rsyslog.conf
       cp "$CLOUDIFY_DATA_DIR/rsyslog/datadog.conf" /etc/rsyslog.d/datadog.conf
-
+      rsyslogd
+      
       echo "Set proper permissions for stage/composer files"
       chown composer_user /opt/cloudify-composer/backend/conf/prod.json
       chown stage_user /opt/cloudify-stage/conf/manager.json
