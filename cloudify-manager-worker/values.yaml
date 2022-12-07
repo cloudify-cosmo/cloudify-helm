@@ -214,7 +214,7 @@ license: {}
 # license:
 #   secretName: cfy-license
 # -- optionally use a secret instead of configMap for the license file
-#   useSecret: true 
+#   useSecret: true
 
 # -- Parameters group for pod liveness probe
 # @default -- object
@@ -336,7 +336,117 @@ containerSecurityContext:
       - SETPCAP
       - AUDIT_WRITE
 
-# -- Parameters greoup for bitnami/rabbitmq helm chart.
+# -- Content of the main configuration file for cloudify manager (config.yaml).
+# @default --
+mainConfig: |
+  {{- $public_ip := include "cloudify-manager-worker.public_ip" . -}}
+  {{- $private_ip := include "cloudify-manager-worker.private_ip" . -}}
+  manager:
+    private_ip: {{ $private_ip }}
+    public_ip: {{ $public_ip }}
+    hostname: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
+    cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
+    security:
+      ssl_enabled: {{ .Values.config.security.sslEnabled }}
+      admin_password: {{ .Values.config.security.adminPassword }}
+    {{- if .Values.license }}
+    cloudify_license_path: /tmp/cloudify/cfy_license.yaml
+    {{- end }}
+    cluster_filesystem_replication: false
+  cli:
+    local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
+  rabbitmq:
+    username: {{ .Values.queue.username }}
+    password: {{ .Values.queue.password }}
+    ca_path: {{ .Values.config.caCertPath }}
+    cert_path: {{ .Values.config.tlsCertPath }}
+    key_path: {{ .Values.config.tlsKeyPath }}
+    is_external: true
+    cluster_members:
+      rabbit1:
+        networks:
+          default: {{ .Values.queue.host }}.{{.Release.Namespace}}.svc.cluster.local
+  postgresql_client:
+    {{- if .Values.db.useExternalDB }}
+    host: {{ .Values.db.host }}
+    {{- else }}
+    host: {{ .Values.db.host }}.{{.Release.Namespace}}.svc.cluster.local
+    {{- end }}
+    server_db_name: {{ .Values.db.serverDBName }}
+    server_username: {{ .Values.db.serverUsername }}
+    server_password: {{ .Values.db.serverPassword }}
+    cloudify_db_name: {{ .Values.db.cloudifyDBName }}
+    cloudify_username: {{ .Values.db.cloudifyUsername }}
+    cloudify_password: {{ .Values.db.cloudifyPassword }}
+    {{- if .Values.db.useExternalDB }}
+    ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+    {{- else }}
+    ca_path: {{ .Values.config.caCertPath }}
+    {{- end }}
+    ssl_enabled: true
+    ssl_client_verification: {{ .Values.db.postgresqlSslClientVerification }}
+  postgresql_server:
+    postgres_password: {{ .Values.db.serverPassword }}
+    {{- if .Values.db.useExternalDB }}
+    ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+    {{- if ne .Values.tls.pgsqlSslCertName "" }}
+    cert_path: /mnt/cloudify-data/ssl/postgres.crt
+    {{- end }}
+    {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+    key_path: /mnt/cloudify-data/ssl/postgres.key
+    {{- end }}
+    {{- else }}
+    ca_path: {{ .Values.config.caCertPath }}
+    cert_path: {{ .Values.config.tlsCertPath }}
+    key_path: {{ .Values.config.tlsKeyPath }}
+    {{- end }}
+  prometheus:
+    ca_path: {{ .Values.config.caCertPath }}
+    cert_path: {{ .Values.config.tlsCertPath }}
+    key_path: {{ .Values.config.tlsKeyPath }}
+    scrape_interval: 5s
+  ssl_inputs:
+    {{- if .Values.db.useExternalDB }}
+    postgresql_ca_cert_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+    {{- if ne .Values.tls.pgsqlSslCertName "" }}
+    postgresql_client_cert_path: /mnt/cloudify-data/ssl/postgres.crt
+    {{- else }}
+    postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+    {{- end }}
+    {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+    postgresql_client_key_path: /mnt/cloudify-data/ssl/postgres.key
+    {{- else }}
+    postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+    {{- end }}
+    {{- else }}
+    postgresql_ca_cert_path: {{ .Values.config.caCertPath }}
+    postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+    postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+    {{- end }}
+    ca_cert_path: {{ .Values.config.caCertPath }}
+    internal_cert_path: {{ .Values.config.tlsCertPath }}
+    internal_key_path: {{ .Values.config.tlsKeyPath }}
+    external_cert_path: {{ .Values.config.tlsCertPath }}
+    external_key_path: {{ .Values.config.tlsKeyPath }}
+    external_ca_cert_path: {{ .Values.config.caCertPath }}
+  composer:
+    # If set to true, Cloudify Composer will not be installed
+    skip_installation: false
+  restservice:
+    gunicorn:
+      worker_count: {{ .Values.config.workerCount }}
+  mgmtworker:
+    max_workers: {{ .Values.config.mgmtWorkerCount }}
+  validations:
+    skip_validations: true
+  sanity:
+    skip_sanity: true
+  services_to_install:
+  - manager_service
+  - monitoring_service
+  service_management: supervisord
+
+# -- Parameters group for bitnami/rabbitmq helm chart.
 # Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md
 # @default -- object
 rabbitmq:
