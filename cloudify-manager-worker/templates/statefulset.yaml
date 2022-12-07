@@ -22,6 +22,32 @@ spec:
       automountServiceAccountToken: false
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+      - name: prepare-configs
+        image: {{ .Values.initContainers.prepareConfigs.repository }}:{{ .Values.initContainers.prepareConfigs.tag }}
+        imagePullPolicy: {{ .Values.initContainers.prepareConfigs.pullPolicy }}
+        {{- if .Values.initContainers.prepareConfigs.resources }}
+        resources: {{- toYaml .Values.initContainers.prepareConfigs.resources | nindent 10 }}
+        {{- end }}
+        securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        # TODO: secrets to inject
+        # env:
+        # - name: POSTGRES_HOST
+        #   value: {{ .Values.db.host }}
+        # - name: RABBIT_HOST
+        #   value: {{ .Values.queue.host }}
+        volumeMounts:
+          - name: cloudify-cfg-volume
+            mountPath: /tmp/cloudify/config.yaml
+            subPath: config.yaml
+          - name: cloudify-data
+            mountPath: /mnt/cloudify-data
+        # TODO: inject secrets
+        command:
+          - /bin/sh
+          - -c
+          - |
+            mkdir -p /mnt/cloudify-data/etc
+            cp /tmp/cloudify/config.yaml /mnt/cloudify-data/etc/config.yaml
       {{- if .Values.initContainers.waitDependencies.enabled }}
       - name: wait-for-dependencies
         image: {{ .Values.initContainers.waitDependencies.repository }}:{{ .Values.initContainers.waitDependencies.tag }}
@@ -98,9 +124,6 @@ spec:
           name: run
         - mountPath: /run/lock
           name: runlock
-        - name: cloudify-cfg-volume
-          mountPath: /tmp/cloudify/config.yaml
-          subPath: config.yaml
         {{- if .Values.license }}
         - name: cloudify-license-volume
           mountPath: /tmp/cloudify/cfy_license.yaml
@@ -139,7 +162,7 @@ spec:
           subPath: okta_certificate.pem
         {{- end }}
         - name: stage-user-config-volume
-          mountPath: /tmp/cloudify/userConfig.json
+          mountPath: /mnt/cloudify-data/cloudify-stage/userConfig.json
           subPath: userConfig.json
         {{- if .Values.db.useExternalDB }}
         - name: cfy-pgsql-cert

@@ -38,6 +38,26 @@ initContainers:
       limits:
         memory: 50Mi
         cpu: 0.1
+  prepareConfigs:
+    # -- Enable prepare-configs init container
+    enabled: true
+    # -- Docker image repository for prepare-configs init container
+    repository: busybox
+    # -- Docker image tag for prepare-configs init container
+    tag: 1.34.1-uclibc
+    # -- imagePullPolicy for prepare-configs init container
+    pullPolicy: IfNotPresent
+    # -- resources requests and limits for prepare-configs init container
+    # @default -- object
+    resources:
+      # -- requests for prepare-configs init container
+      requests:
+        memory: 50Mi
+        cpu: 0.1
+        # -- limits for prepare-configs init container
+      limits:
+        memory: 50Mi
+        cpu: 0.1
 
 # -- Parameters group for connection to PostgreSQL database
 # @default -- object
@@ -445,6 +465,48 @@ mainConfig: |
   - manager_service
   - monitoring_service
   service_management: supervisord
+
+# -- Content of the userConfig.json configuration file
+# @default --
+userConfig: |
+  {
+    "maps": {
+      "tilesUrlTemplate": "https://tiles.stadiamaps.com/tiles/osm_bright/${z}/${x}/${y}${r}.png?api_key=${accessToken}",
+      "attribution": "&copy; <a href=\"https://stadiamaps.com/\">Stadia Maps</a>, &copy; <a href=\"https://openmaptiles.org/\">OpenMapTiles</a> &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors"
+    },
+    "proxy": {
+      "timeouts": {
+        "get": 30000,
+        "post": 30000,
+        "put": 30000,
+        "delete": 10000
+      },
+      "maxBodySize": "{{ .Values.config.userConfig.maxBodySize | default "2gb" }}"
+    },
+    "saml": {
+      "enabled": {{ .Values.okta.enabled }},
+      "certPath": "{{ .Values.okta.certPath }}",
+      "ssoUrl": "{{ .Values.okta.ssoUrl }}",
+      "portalUrl": "{{ .Values.okta.portalUrl }}"
+    },
+    "whiteLabel": {
+      "logoUrl": "",
+      "mainColor": "#0077FC",
+      "headerTextColor": "white",
+      "showVersionDetails": true,
+      "showFirstLoginHint": {{ .Values.config.userConfig.loginHint }},
+      "loginPageHeaderColor": "white",
+      "loginPageTextColor": "white",
+      "sidebarColor": "#050229",
+      "sidebarTextColor" : "white",
+      "sidebarHoverActiveColor": "#1e1a3d",
+      "sidebarHoverActiveTextColor": "#65adff",
+      "customCssPath": ""
+    },
+    "widgets": {
+      "allowedModules": ["lodash", "body", "elkjs"]
+    }
+  }
 
 # -- Parameters group for bitnami/rabbitmq helm chart.
 # Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md
