@@ -29,25 +29,38 @@ spec:
         resources: {{- toYaml .Values.initContainers.prepareConfigs.resources | nindent 10 }}
         {{- end }}
         securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
-        # TODO: secrets to inject
-        # env:
-        # - name: POSTGRES_HOST
-        #   value: {{ .Values.db.host }}
-        # - name: RABBIT_HOST
-        #   value: {{ .Values.queue.host }}
+        env:
+        {{- if .Values.db.serverExistingPasswordSecret }}
+        - name: POSTGRES_SERVER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.db.serverExistingPasswordSecret }}
+              key: postgresql-password
+              optional: false
+        {{- end }}
         volumeMounts:
           - name: cloudify-cfg-volume
             mountPath: /tmp/cloudify/config.yaml
             subPath: config.yaml
           - name: cloudify-data
             mountPath: /mnt/cloudify-data
-        # TODO: inject secrets
+        # TODO: inject all secrets
         command:
           - /bin/sh
           - -c
           - |
+            echo "Copying main config file"
             mkdir -p /mnt/cloudify-data/etc
             cp /tmp/cloudify/config.yaml /mnt/cloudify-data/etc/config.yaml
+            replace_placeholder(){
+                local PLACEHOLDER="$1"
+                local VALUE="$2"
+                if test -n "${VALUE}"; then
+                  echo "Replacing placeholder #{postgresServerPassword}"
+                  sed -i -e "s|${PLACEHOLDER}|${VALUE}|g" /mnt/cloudify-data/etc/config.yaml
+                fi
+            }
+            replace_placeholder "#{postgresServerPassword}" "${POSTGRES_SERVER_PASSWORD}"
       {{- if .Values.initContainers.waitDependencies.enabled }}
       - name: wait-for-dependencies
         image: {{ .Values.initContainers.waitDependencies.repository }}:{{ .Values.initContainers.waitDependencies.tag }}

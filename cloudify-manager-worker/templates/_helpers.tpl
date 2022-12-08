@@ -80,3 +80,14 @@ Usage:
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+Return values or placeholders for replace in script
+*/}}
+{{- define "cloudify-manager-worker.postgresServerPassword" -}}
+    {{- if .Values.db.serverExistingPasswordSecret -}}
+        {{- printf "#{postgresServerPassword}" -}}
+    {{- else -}}
+        {{- .Values.db.serverPassword -}}
+    {{- end -}}
+{{- end -}}

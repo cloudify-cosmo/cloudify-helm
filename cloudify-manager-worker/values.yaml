@@ -78,6 +78,8 @@ db:
   serverDBName: "postgres"
   # -- Username for initial DB connection
   serverUsername: &postgresqlUsername "postgres"
+  # -- Name of existing k8s secret to use for PostgreSQL password. If not empty, existing secret will be used instead of db.serverPassword parameter.
+  serverExistingPasswordSecret: &postgresqlServerExistingPasswordSecret ""
   # -- Password for initial DB connection
   serverPassword: &postgresqlPassword "cfy_test_pass"
 
@@ -359,11 +361,9 @@ containerSecurityContext:
 # -- Content of the main configuration file for cloudify manager (config.yaml).
 # @default --
 mainConfig: |
-  {{- $public_ip := include "cloudify-manager-worker.public_ip" . -}}
-  {{- $private_ip := include "cloudify-manager-worker.private_ip" . -}}
   manager:
-    private_ip: {{ $private_ip }}
-    public_ip: {{ $public_ip }}
+    private_ip: {{ include "cloudify-manager-worker.private_ip" . }}
+    public_ip: {{ include "cloudify-manager-worker.public_ip" . }}
     hostname: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
     cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
     security:
@@ -394,7 +394,7 @@ mainConfig: |
     {{- end }}
     server_db_name: {{ .Values.db.serverDBName }}
     server_username: {{ .Values.db.serverUsername }}
-    server_password: {{ .Values.db.serverPassword }}
+    server_password: {{ include "cloudify-manager-worker.postgresServerPassword" . }}
     cloudify_db_name: {{ .Values.db.cloudifyDBName }}
     cloudify_username: {{ .Values.db.cloudifyUsername }}
     cloudify_password: {{ .Values.db.cloudifyPassword }}
@@ -406,7 +406,7 @@ mainConfig: |
     ssl_enabled: true
     ssl_client_verification: {{ .Values.db.postgresqlSslClientVerification }}
   postgresql_server:
-    postgres_password: {{ .Values.db.serverPassword }}
+    postgres_password: {{ include "cloudify-manager-worker.postgresServerPassword" . }}
     {{- if .Values.db.useExternalDB }}
     ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
     {{- if ne .Values.tls.pgsqlSslCertName "" }}
@@ -629,6 +629,7 @@ postgresql:
     tag: 11.10.0-debian-10-r9
 
   postgresqlUsername: *postgresqlUsername
+  existingSecret: *postgresqlServerExistingPasswordSecret
   postgresqlPassword: *postgresqlPassword
 
   resources:
