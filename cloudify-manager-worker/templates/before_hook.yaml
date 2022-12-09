@@ -62,16 +62,12 @@ data:
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
-
-      echo "Setup rsyslog files"
-      sed -i '1s/^/module(load="imfile" PollingInterval="10")\n/' /etc/rsyslog.conf
-      cp "$CLOUDIFY_DATA_DIR/rsyslog/datadog.conf" /etc/rsyslog.d/datadog.conf
-      rsyslogd
       
       echo "Set proper permissions for stage/composer files"
       chown composer_user /opt/cloudify-composer/backend/conf/prod.json
       chown stage_user /opt/cloudify-stage/conf/manager.json
       chown stage_user /opt/cloudify-stage/conf/userConfig.json
+      
     else
       echo "Copy config"
       rm -f /etc/cloudify/config.yaml
@@ -84,3 +80,6 @@ data:
         ln -s --verbose "$OKTA" /etc/cloudify/ssl/okta_certificate.pem
       fi
     fi
+  
+    echo "Set crontab for /var/log directory"
+    echo "* * * * * /usr/bin/rsync -a /var/log/cloudify /tmp/log" | crontab -u cfyuser -
