@@ -13,6 +13,30 @@ spec:
   serviceName: {{ .Values.service.name }}
   template:
     metadata:
+      annotations:
+        ad.datadoghq.com/{{ template "cloudify-manager-worker.name" . }}.logs: |
+          [{
+              "type": "file",
+              "path": "/var/log/cloudify/manager/cfy_manager.log",
+              "source": "file",
+              "service": "cfy-manager"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/stage/server-output.log",
+              "source": "{{ template "cloudify-manager-worker.name" . }}",
+              "service": "stage-server-output"
+          },
+          {
+            "type": "file",
+            "path": "/var/log/cloudify/nginx/cloudify.access.log",
+            "source": "{{ template "cloudify-manager-worker.name" . }}",
+            "service": "nginx-cloudify"
+          },
+          {
+            "source":"{{ template "cloudify-manager-worker.name" . }}",
+            "service":"cfy-manager"
+          }] 
       labels:
         app: {{ template "cloudify-manager-worker.name" . }}
         {{- if .Values.config.labels }}
@@ -94,6 +118,8 @@ spec:
         {{- end }}
         securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         volumeMounts:
+        - mountPath: /tmp/log
+          name: applogs
         - mountPath: /run
           name: run
         - mountPath: /run/lock
@@ -133,9 +159,6 @@ spec:
         - name: cfy-worker-certs
           mountPath: {{ .Values.config.caCertPath }}
           subPath: ca.crt
-        - name: datadog-conf
-          mountPath: /mnt/cloudify-data/rsyslog/datadog.conf
-          subPath: datadog.conf
         {{- if .Values.okta.enabled }}
         - name: okta-license-volume
           mountPath: /mnt/cloudify-data/ssl/okta_certificate.pem
@@ -169,6 +192,9 @@ spec:
         {{- end }}
         {{- end }}
       volumes:
+      - name: applogs
+        hostPath:
+          path: /tmp/log      
       - name: run
         emptyDir:
           medium: Memory
@@ -180,9 +206,6 @@ spec:
       - name: cloudify-cfg-volume
         configMap:
           name: cloudify-config
-      - name: datadog-conf
-        configMap: 
-          name: datadog.conf
       {{- if .Values.license.useSecret }}
       - name: cloudify-license-volume
         secret:
