@@ -233,6 +233,78 @@ rabbitmq:
   deploy: true
 ```
 
+### (optional) If you want to use k8s secrets for store passwords
+
+#### PostgreSQL initial password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=postgresql-password='POSTGRESQL_INIT_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+db:
+  serverExistingPasswordSecret: "SECRET_NAME"
+ 
+postgresql:
+  existingSecret: "SECRET_NAME"
+```
+
+#### PostgreSQL application connection password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=postgresql-cloudify-password='POSTGRESQL_CLOUDIFY_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+db:
+  cloudifyExistingPassword:
+	secret: "SECRET_NAME"
+```
+
+#### RabitMQ password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=rabbitmq-password='RABBITMQ_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+queue:
+  existingPasswordSecret: "SECRET_NAME"
+ 
+rabbitmq:
+  auth:
+    existingPasswordSecret: "SECRET_NAME"
+```
+
+#### Cloudify Manager worker admin password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=cfy-admin-password='CLOUDIFY_ADMIN_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+config:
+  security:
+    existingAdminPassword:
+      secret: "SECRET_NAME"
+```
+
 ### (optional) Ensure UI access to the manager upon installation
 
 ### **[OPTION 1]**
