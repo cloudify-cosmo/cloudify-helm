@@ -67,3 +67,48 @@ Define value for manager.private_ip parameter in cloudify main config file
     {{- printf "%s.%s.%s" .Values.service.host .Release.Namespace "svc.cluster.local" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Renders a value that contains template.
+Usage:
+{{ include "common.tplvalues.render" ( dict "value" .Values.path.to.the.Value "context" $) }}
+*/}}
+{{- define "common.tplvalues.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Return values or placeholders for replace in script
+*/}}
+{{- define "cloudify-manager-worker.postgresServerPassword" -}}
+    {{- if .Values.db.serverExistingPasswordSecret -}}
+        {{- printf "#{postgresServerPassword}" -}}
+    {{- else -}}
+        {{- .Values.db.serverPassword -}}
+    {{- end -}}
+{{- end -}}
+{{- define "cloudify-manager-worker.postgresCloudifyPassword" -}}
+    {{- if .Values.db.cloudifyExistingPassword.secret -}}
+        {{- printf "#{postgresCloudifyPassword}" -}}
+    {{- else -}}
+        {{- .Values.db.cloudifyPassword -}}
+    {{- end -}}
+{{- end -}}
+{{- define "cloudify-manager-worker.rabbitmqPassword" -}}
+    {{- if .Values.queue.existingPasswordSecret -}}
+        {{- printf "#{rabbitmqPassword}" -}}
+    {{- else -}}
+        {{- .Values.queue.password -}}
+    {{- end -}}
+{{- end -}}
+{{- define "cloudify-manager-worker.CfyAdminPassword" -}}
+    {{- if .Values.config.security.existingAdminPassword.secret -}}
+        {{- printf "#{CfyAdminPassword}" -}}
+    {{- else -}}
+        {{- .Values.config.security.adminPassword -}}
+    {{- end -}}
+{{- end -}}

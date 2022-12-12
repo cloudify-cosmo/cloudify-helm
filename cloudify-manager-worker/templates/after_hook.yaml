@@ -34,7 +34,6 @@ data:
         cfy_manager stop
 
         echo "Copy necessary files to Persistent Volume"
-        cp -a --verbose /etc/cloudify/config.yaml $CLOUDIFY_DATA_DIR/etc
         cp -a --verbose /opt/mgmtworker/work/admin_token $CLOUDIFY_DATA_DIR/mgmtworker
         cp -a --verbose /opt/manager/authorization.conf $CLOUDIFY_DATA_DIR/manager
         cp -a --verbose /opt/manager/rest-security.conf $CLOUDIFY_DATA_DIR/manager
@@ -42,7 +41,6 @@ data:
         cp -a --verbose /opt/cloudify-composer/backend/conf/db_ca.crt $CLOUDIFY_DATA_DIR/cloudify-composer
         cp -a --verbose /opt/cloudify-stage/conf/db_ca.crt $CLOUDIFY_DATA_DIR/cloudify-stage
         cp -a --verbose /opt/cloudify-stage/conf/manager.json $CLOUDIFY_DATA_DIR/cloudify-stage
-        cp -a --verbose /opt/cloudify-stage/conf/userConfig.json $CLOUDIFY_DATA_DIR/cloudify-stage
 
         echo "Copy necessary directories to Persistent Volume"
         cp -a --verbose /opt/manager/resources $CLOUDIFY_DATA_DIR/manager
@@ -64,7 +62,6 @@ data:
         rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
         rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
         rm -f --verbose /opt/cloudify-stage/conf/manager.json
-        rm -f --verbose /opt/cloudify-stage/conf/userConfig.json
 
         echo "Making symbolic links for directory"
         ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
@@ -79,7 +76,6 @@ data:
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
         ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userConfig.json" /opt/cloudify-stage/conf/userConfig.json
 
         cfy_manager start
     fi

@@ -38,6 +38,24 @@ initContainers:
       limits:
         memory: 50Mi
         cpu: 0.1
+  prepareConfigs:
+    # -- Docker image repository for prepare-configs init container
+    repository: busybox
+    # -- Docker image tag for prepare-configs init container
+    tag: 1.34.1-uclibc
+    # -- imagePullPolicy for prepare-configs init container
+    pullPolicy: IfNotPresent
+    # -- resources requests and limits for prepare-configs init container
+    # @default -- object
+    resources:
+      # -- requests for prepare-configs init container
+      requests:
+        memory: 50Mi
+        cpu: 0.1
+        # -- limits for prepare-configs init container
+      limits:
+        memory: 50Mi
+        cpu: 0.1
 
 # -- Parameters group for connection to PostgreSQL database
 # @default -- object
@@ -52,12 +70,19 @@ db:
   cloudifyDBName: "cloudify_db"
   # -- Username for DB connection
   cloudifyUsername: "cloudify"
+  cloudifyExistingPassword:
+    # -- Name of existing k8s secret with PostgreSQL application connection password. If not empty, existing secret will be used instead of db.cloudifyPassword parameter.
+    secret: ""
+    # -- Name of existing k8s secret key with PostgreSQL application connection password.
+    key: "postgresql-cloudify-password"
   # -- Password for DB connection
   cloudifyPassword: "cloudify"
   # -- Database name for initial connection
   serverDBName: "postgres"
   # -- Username for initial DB connection
   serverUsername: &postgresqlUsername "postgres"
+  # -- Name of existing k8s secret with PostgreSQL initial connection password (must contain a value for `postgresql-password` key). If not empty, existing secret will be used instead of db.serverPassword parameter.
+  serverExistingPasswordSecret: &postgresqlServerExistingPasswordSecret ""
   # -- Password for initial DB connection
   serverPassword: &postgresqlPassword "cfy_test_pass"
 
@@ -68,6 +93,8 @@ queue:
   host: &rabbitmqFullName "rabbitmq"
   # -- Username for connection to RabbitMQ
   username: &rabbitmqUsername "cfy_user"
+  # -- Name of existing k8s secret with RabbitMQ password (must contain a value for `rabbitmq-password` key). If not empty, existing secret will be used instead of queue.password parameter.
+  existingPasswordSecret: &rabbitmqExistingPasswordSecret ""
   # -- Password for connection to RabbitMQ
   password: &rabbitmqPassword "cfy_test_pass"
 
@@ -175,6 +202,11 @@ config:
   security:
     # -- Enable SSL for Cloudify Manager.
     sslEnabled: false
+    existingAdminPassword:
+      # -- Name of existing k8s secret with initial password for Cloudify Manager admin user. If not empty, existing secret will be used instead of config.security.adminPassword parameter.
+      secret: ""
+      # -- Name of existing k8s secret key with initial password for Cloudify Manager admin user.
+      key: "cfy-admin-password"
     # -- Initial admin password for Cloudify Manager.
     adminPassword: admin
   # -- Path to TLS certificate.
@@ -214,7 +246,7 @@ license: {}
 # license:
 #   secretName: cfy-license
 # -- optionally use a secret instead of configMap for the license file
-#   useSecret: true 
+#   useSecret: true
 
 # -- Parameters group for pod liveness probe
 # @default -- object
@@ -336,7 +368,157 @@ containerSecurityContext:
       - SETPCAP
       - AUDIT_WRITE
 
-# -- Parameters greoup for bitnami/rabbitmq helm chart.
+# -- Content of the main configuration file for cloudify manager (config.yaml).
+# @default -- config.yaml template
+mainConfig: |
+  manager:
+    private_ip: {{ include "cloudify-manager-worker.private_ip" . }}
+    public_ip: {{ include "cloudify-manager-worker.public_ip" . }}
+    hostname: {{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local
+    cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
+    security:
+      ssl_enabled: {{ .Values.config.security.sslEnabled }}
+      admin_password: {{ include "cloudify-manager-worker.CfyAdminPassword" . }}
+    {{- if .Values.license }}
+    cloudify_license_path: /tmp/cloudify/cfy_license.yaml
+    {{- end }}
+    cluster_filesystem_replication: false
+  cli:
+    local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
+  rabbitmq:
+    username: {{ .Values.queue.username }}
+    password: {{ include "cloudify-manager-worker.rabbitmqPassword" . }}
+    ca_path: {{ .Values.config.caCertPath }}
+    cert_path: {{ .Values.config.tlsCertPath }}
+    key_path: {{ .Values.config.tlsKeyPath }}
+    is_external: true
+    cluster_members:
+      rabbit1:
+        networks:
+          default: {{ .Values.queue.host }}.{{.Release.Namespace}}.svc.cluster.local
+  postgresql_client:
+    {{- if .Values.db.useExternalDB }}
+    host: {{ .Values.db.host }}
+    {{- else }}
+    host: {{ .Values.db.host }}.{{.Release.Namespace}}.svc.cluster.local
+    {{- end }}
+    server_db_name: {{ .Values.db.serverDBName }}
+    server_username: {{ .Values.db.serverUsername }}
+    server_password: {{ include "cloudify-manager-worker.postgresServerPassword" . }}
+    cloudify_db_name: {{ .Values.db.cloudifyDBName }}
+    cloudify_username: {{ .Values.db.cloudifyUsername }}
+    cloudify_password: {{ include "cloudify-manager-worker.postgresCloudifyPassword" . }}
+    {{- if .Values.db.useExternalDB }}
+    ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+    {{- else }}
+    ca_path: {{ .Values.config.caCertPath }}
+    {{- end }}
+    ssl_enabled: true
+    ssl_client_verification: {{ .Values.db.postgresqlSslClientVerification }}
+  postgresql_server:
+    postgres_password: {{ include "cloudify-manager-worker.postgresServerPassword" . }}
+    {{- if .Values.db.useExternalDB }}
+    ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+    {{- if ne .Values.tls.pgsqlSslCertName "" }}
+    cert_path: /mnt/cloudify-data/ssl/postgres.crt
+    {{- end }}
+    {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+    key_path: /mnt/cloudify-data/ssl/postgres.key
+    {{- end }}
+    {{- else }}
+    ca_path: {{ .Values.config.caCertPath }}
+    cert_path: {{ .Values.config.tlsCertPath }}
+    key_path: {{ .Values.config.tlsKeyPath }}
+    {{- end }}
+  prometheus:
+    ca_path: {{ .Values.config.caCertPath }}
+    cert_path: {{ .Values.config.tlsCertPath }}
+    key_path: {{ .Values.config.tlsKeyPath }}
+    scrape_interval: 5s
+  ssl_inputs:
+    {{- if .Values.db.useExternalDB }}
+    postgresql_ca_cert_path: /mnt/cloudify-data/ssl/postgres_ca.crt
+    {{- if ne .Values.tls.pgsqlSslCertName "" }}
+    postgresql_client_cert_path: /mnt/cloudify-data/ssl/postgres.crt
+    {{- else }}
+    postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+    {{- end }}
+    {{- if ne .Values.tls.pgsqlSslKeyName "" }}
+    postgresql_client_key_path: /mnt/cloudify-data/ssl/postgres.key
+    {{- else }}
+    postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+    {{- end }}
+    {{- else }}
+    postgresql_ca_cert_path: {{ .Values.config.caCertPath }}
+    postgresql_client_cert_path: {{ .Values.config.tlsCertPath }}
+    postgresql_client_key_path: {{ .Values.config.tlsKeyPath }}
+    {{- end }}
+    ca_cert_path: {{ .Values.config.caCertPath }}
+    internal_cert_path: {{ .Values.config.tlsCertPath }}
+    internal_key_path: {{ .Values.config.tlsKeyPath }}
+    external_cert_path: {{ .Values.config.tlsCertPath }}
+    external_key_path: {{ .Values.config.tlsKeyPath }}
+    external_ca_cert_path: {{ .Values.config.caCertPath }}
+  composer:
+    # If set to true, Cloudify Composer will not be installed
+    skip_installation: false
+  restservice:
+    gunicorn:
+      worker_count: {{ .Values.config.workerCount }}
+  mgmtworker:
+    max_workers: {{ .Values.config.mgmtWorkerCount }}
+  validations:
+    skip_validations: true
+  sanity:
+    skip_sanity: true
+  services_to_install:
+  - manager_service
+  - monitoring_service
+  service_management: supervisord
+
+# -- Content of the userConfig.json configuration file
+# @default -- userConfig.json template
+userConfig: |
+  {
+    "maps": {
+      "tilesUrlTemplate": "https://tiles.stadiamaps.com/tiles/osm_bright/${z}/${x}/${y}${r}.png?api_key=${accessToken}",
+      "attribution": "&copy; <a href=\"https://stadiamaps.com/\">Stadia Maps</a>, &copy; <a href=\"https://openmaptiles.org/\">OpenMapTiles</a> &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors"
+    },
+    "proxy": {
+      "timeouts": {
+        "get": 30000,
+        "post": 30000,
+        "put": 30000,
+        "delete": 10000
+      },
+      "maxBodySize": "{{ .Values.config.userConfig.maxBodySize | default "2gb" }}"
+    },
+    "saml": {
+      "enabled": {{ .Values.okta.enabled }},
+      "certPath": "{{ .Values.okta.certPath }}",
+      "ssoUrl": "{{ .Values.okta.ssoUrl }}",
+      "portalUrl": "{{ .Values.okta.portalUrl }}"
+    },
+    "whiteLabel": {
+      "logoUrl": "",
+      "mainColor": "#0077FC",
+      "headerTextColor": "white",
+      "showVersionDetails": true,
+      "showFirstLoginHint": {{ .Values.config.userConfig.loginHint }},
+      "loginPageHeaderColor": "white",
+      "loginPageTextColor": "white",
+      "sidebarColor": "#050229",
+      "sidebarTextColor" : "white",
+      "sidebarHoverActiveColor": "#1e1a3d",
+      "sidebarHoverActiveTextColor": "#65adff",
+      "customCssPath": ""
+    },
+    "widgets": {
+      "allowedModules": ["lodash", "body", "elkjs"]
+    }
+  }
+
+# -- Parameters group for bitnami/rabbitmq helm chart.
 # Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md
 # @default -- object
 rabbitmq:
@@ -350,6 +532,7 @@ rabbitmq:
   auth:
     username: *rabbitmqUsername
     password: *rabbitmqPassword
+    existingPasswordSecret: *rabbitmqExistingPasswordSecret
 
     tls:
       enabled: true
@@ -457,6 +640,7 @@ postgresql:
     tag: 11.10.0-debian-10-r9
 
   postgresqlUsername: *postgresqlUsername
+  existingSecret: *postgresqlServerExistingPasswordSecret
   postgresqlPassword: *postgresqlPassword
 
   resources:

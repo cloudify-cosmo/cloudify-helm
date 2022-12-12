@@ -233,6 +233,78 @@ rabbitmq:
   deploy: true
 ```
 
+### (optional) If you want to use k8s secrets for store passwords
+
+#### PostgreSQL initial password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=postgresql-password='POSTGRESQL_INIT_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+db:
+  serverExistingPasswordSecret: "SECRET_NAME"
+ 
+postgresql:
+  existingSecret: "SECRET_NAME"
+```
+
+#### PostgreSQL application connection password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=postgresql-cloudify-password='POSTGRESQL_CLOUDIFY_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+db:
+  cloudifyExistingPassword:
+    secret: "SECRET_NAME"
+```
+
+#### RabitMQ password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=rabbitmq-password='RABBITMQ_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+queue:
+  existingPasswordSecret: "SECRET_NAME"
+ 
+rabbitmq:
+  auth:
+    existingPasswordSecret: "SECRET_NAME"
+```
+
+#### Cloudify Manager worker admin password
+
+Create k8s secret:
+
+```bash
+$ kubectl -n NAMESPACE create secret generic SECRET_NAME --from-literal=cfy-admin-password='CLOUDIFY_ADMIN_PASSWORD'
+```
+
+Update following parameters in your helm values file:
+
+```yaml
+config:
+  security:
+    existingAdminPassword:
+      secret: "SECRET_NAME"
+```
+
 ### (optional) Ensure UI access to the manager upon installation
 
 ### **[OPTION 1]**
@@ -364,6 +436,8 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | config.public_ip | string | `nil` | "manager.public_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically. |
 | config.replicas | int | `1` | Replicas count for launch. Multiple replicas works only with NFS like volume. |
 | config.security.adminPassword | string | `"admin"` | Initial admin password for Cloudify Manager. |
+| config.security.existingAdminPassword.key | string | `"cfy-admin-password"` | Name of existing k8s secret key with initial password for Cloudify Manager admin user. |
+| config.security.existingAdminPassword.secret | string | `""` | Name of existing k8s secret with initial password for Cloudify Manager admin user. If not empty, existing secret will be used instead of config.security.adminPassword parameter. |
 | config.security.sslEnabled | bool | `false` | Enable SSL for Cloudify Manager. |
 | config.startDelay | int | `0` | Delay before Cloudify Manager start, in seconds |
 | config.tlsCertPath | string | `"/mnt/cloudify-data/ssl/tls.crt"` | Path to TLS certificate. |
@@ -374,11 +448,14 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | containerSecurityContext | object | object | Parameters group for k8s containers security context |
 | db | object | object | Parameters group for connection to PostgreSQL database |
 | db.cloudifyDBName | string | `"cloudify_db"` | Database name for store Cloudify Manager data |
+| db.cloudifyExistingPassword.key | string | `"postgresql-cloudify-password"` | Name of existing k8s secret key with PostgreSQL application connection password. |
+| db.cloudifyExistingPassword.secret | string | `""` | Name of existing k8s secret with PostgreSQL application connection password. If not empty, existing secret will be used instead of db.cloudifyPassword parameter. |
 | db.cloudifyPassword | string | `"cloudify"` | Password for DB connection |
 | db.cloudifyUsername | string | `"cloudify"` | Username for DB connection |
 | db.host | string | `"postgres-postgresql"` | PostgreSQL connection host. If db.useExternalDB == true this value should contain FQDN, otherwise hostname without k8s domain. |
 | db.postgresqlSslClientVerification | bool | `true` | Enable PostgreSQL client SSL certificate verification. |
 | db.serverDBName | string | `"postgres"` | Database name for initial connection |
+| db.serverExistingPasswordSecret | string | `""` | Name of existing k8s secret with PostgreSQL initial connection password (must contain a value for `postgresql-password` key). If not empty, existing secret will be used instead of db.serverPassword parameter. |
 | db.serverPassword | string | `"cfy_test_pass"` | Password for initial DB connection |
 | db.serverUsername | string | `"postgres"` | Username for initial DB connection |
 | db.useExternalDB | bool | `false` | When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section |
@@ -396,6 +473,11 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | ingress.tls.enabled | bool | `false` | Enabled TLS connections for Ingress |
 | ingress.tls.secretName | string | `"cfy-secret-name"` | k8s secret name with TLS certificates for ingress |
 | initContainers | object | object | Parameters group for init containers |
+| initContainers.prepareConfigs.pullPolicy | string | `"IfNotPresent"` | imagePullPolicy for prepare-configs init container |
+| initContainers.prepareConfigs.repository | string | `"busybox"` | Docker image repository for prepare-configs init container |
+| initContainers.prepareConfigs.resources | object | object | resources requests and limits for prepare-configs init container |
+| initContainers.prepareConfigs.resources.requests | object | `{"cpu":0.1,"memory":"50Mi"}` | requests for prepare-configs init container |
+| initContainers.prepareConfigs.tag | string | `"1.34.1-uclibc"` | Docker image tag for prepare-configs init container |
 | initContainers.waitDependencies.enabled | bool | `true` | Enable wait-for-dependencies init container |
 | initContainers.waitDependencies.pullPolicy | string | `"IfNotPresent"` | imagePullPolicy for wait-for-dependencies init container |
 | initContainers.waitDependencies.repository | string | `"busybox"` | Docker image repository for wait-for-dependencies init container |
@@ -413,6 +495,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | livenessProbe.periodSeconds | int | `30` | liveness probe period in seconds |
 | livenessProbe.successThreshold | int | `1` | liveness probe success threshold |
 | livenessProbe.timeoutSeconds | int | `15` | liveness probe timeout in seconds |
+| mainConfig | string | config.yaml template | Content of the main configuration file for cloudify manager (config.yaml). |
 | nameOverride | string | `"cloudify-manager-worker"` |  |
 | nodeSelector | object | `{}` | Node labels for default backend pod assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/ |
 | okta | object | object | Parameters group for OKTA |
@@ -424,10 +507,11 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | podSecurityContext | object | object | Parameters group for k8s pod security context |
 | postgresql | object | object | Parameters group for bitnami/postgresql helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/README.md |
 | queue | object | object | Parameters group for connection to RabbitMQ (Message Broker) |
+| queue.existingPasswordSecret | string | `""` | Name of existing k8s secret with RabbitMQ password (must contain a value for `rabbitmq-password` key). If not empty, existing secret will be used instead of queue.password parameter. |
 | queue.host | string | `"rabbitmq"` | RabbitMQ connection host (without k8s domain) |
 | queue.password | string | `"cfy_test_pass"` | Password for connection to RabbitMQ |
 | queue.username | string | `"cfy_user"` | Username for connection to RabbitMQ |
-| rabbitmq | object | object | Parameters greoup for bitnami/rabbitmq helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md |
+| rabbitmq | object | object | Parameters group for bitnami/rabbitmq helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md |
 | readinessProbe | object | object | Parameters group for pod readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readiness probe |
 | readinessProbe.failureThreshold | int | `5` | readiness probe failure threshold |
@@ -462,6 +546,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | tls.pgsqlSslKeyName | string | `""` | subPath name for ssl key in k8s secret for connection to external PostgreSQL database. Isn't required if db.postgresqlSslClientVerification = false. |
 | tls.pgsqlSslSecretName | string | `"pgsql-external-cert"` | k8s secret name with ssl certificates for external PostgreSQL database. Required only for connection to external PostgreSQL database. |
 | tls.secretName | string | `"cfy-certs"` | k8s secret name with certificates to secure communications between cloudify manager and postgresql|rabbitmq deployed inside the same k8s cluster. |
+| userConfig | string | userConfig.json template | Content of the userConfig.json configuration file |
 | volume | object | object | Parameters group for data storage volume For multiple replicas of cloudify manager use NFS like storage, storageClass: 'cm-efs' (AWS example), accessMode: 'ReadWriteMany' Single replica - EBS (AWS example), storageClass: 'gp2' (AWS example), accessMode: 'ReadWriteOnce' |
 | volume.accessMode | string | `"ReadWriteOnce"` | volume access mode |
 | volume.size | string | `"3Gi"` | volume size |
