@@ -369,7 +369,7 @@ containerSecurityContext:
       - AUDIT_WRITE
 
 # -- Content of the main configuration file for cloudify manager (config.yaml).
-# @default --
+# @default -- config.yaml template
 mainConfig: |
   manager:
     private_ip: {{ include "cloudify-manager-worker.private_ip" . }}
@@ -477,7 +477,7 @@ mainConfig: |
   service_management: supervisord
 
 # -- Content of the userConfig.json configuration file
-# @default --
+# @default -- userConfig.json template
 userConfig: |
   {
     "maps": {
