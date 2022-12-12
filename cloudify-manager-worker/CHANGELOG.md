@@ -12,6 +12,37 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
+# [UNRELEASED]
+
+## Changed
+
+- Completely different way for manage config files for Cloudify Manager worker - for now values file contains parameters **mainConfig** and **userConfig** with templates for main config file (config.yaml) and user config file (userConfig.json) for CLoudify Manager worker. These templates will be rendered and copied into containers each time during pod launch/restart/etc (even if these configs already present on persistent volume). If you need to customize these config files you need to do it using helm values.
+
+## Added
+
+- Parameter **mainConfig** with template of main config file for Cloudify Manager worker (config.yaml).
+- Parameter **userConfig** with template of user config file for Cloudify Manager worker (userConfig.json).
+- Added optional posibility to use already existing in k8s secrets for all passwords parameters, following parameters was added into helm values:
+  - db.serverExistingPasswordSecret
+  - db.cloudifyExistingPassword.{secret/key}
+  - queue.existingPasswordSecret
+  - config.security.existingAdminPassword.{secret/key}
+- Added optional possibility to use a secret instead of configMap for the license file (if helm value license.useSecret is true).
+- Added optional ingressClassName for ingress.
+
+## Fixed
+
+- 
+
+## Removed
+
+- 
+
+## Upgrade notes
+
+If you have some manual customizations in the main or user config files (config.yaml or userConfig.json) of Cloudify Manager worker you need to migrate them in helm values (new parameters "mainConfig" and "userConfig") before upgrade. To do that, please copy parameters "mainConfig" and "userConfig" with values from default values.yaml of this helm chart and customize necessary parameters.
+
+
 # [v0.4.0] - 2022-11-08
 
 ## Changed
