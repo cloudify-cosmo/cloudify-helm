@@ -266,7 +266,7 @@ Update following parameters in your helm values file:
 ```yaml
 db:
   cloudifyExistingPassword:
-	secret: "SECRET_NAME"
+    secret: "SECRET_NAME"
 ```
 
 #### RabitMQ password
