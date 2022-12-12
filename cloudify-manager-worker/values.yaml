@@ -39,8 +39,6 @@ initContainers:
         memory: 50Mi
         cpu: 0.1
   prepareConfigs:
-    # -- Enable prepare-configs init container
-    enabled: true
     # -- Docker image repository for prepare-configs init container
     repository: busybox
     # -- Docker image tag for prepare-configs init container
