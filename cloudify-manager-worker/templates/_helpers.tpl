@@ -91,3 +91,24 @@ Return values or placeholders for replace in script
         {{- .Values.db.serverPassword -}}
     {{- end -}}
 {{- end -}}
+{{- define "cloudify-manager-worker.postgresCloudifyPassword" -}}
+    {{- if .Values.db.cloudifyExistingPassword.secret -}}
+        {{- printf "#{postgresCloudifyPassword}" -}}
+    {{- else -}}
+        {{- .Values.db.cloudifyPassword -}}
+    {{- end -}}
+{{- end -}}
+{{- define "cloudify-manager-worker.rabbitmqPassword" -}}
+    {{- if .Values.queue.existingPasswordSecret -}}
+        {{- printf "#{rabbitmqPassword}" -}}
+    {{- else -}}
+        {{- .Values.queue.password -}}
+    {{- end -}}
+{{- end -}}
+{{- define "cloudify-manager-worker.CfyAdminPassword" -}}
+    {{- if .Values.config.security.existingAdminPassword.secret -}}
+        {{- printf "#{CfyAdminPassword}" -}}
+    {{- else -}}
+        {{- .Values.config.security.adminPassword -}}
+    {{- end -}}
+{{- end -}}

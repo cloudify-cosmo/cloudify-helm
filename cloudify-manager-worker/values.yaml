@@ -72,13 +72,18 @@ db:
   cloudifyDBName: "cloudify_db"
   # -- Username for DB connection
   cloudifyUsername: "cloudify"
+  cloudifyExistingPassword:
+    # -- Name of existing k8s secret with PostgreSQL application connection password. If not empty, existing secret will be used instead of db.cloudifyPassword parameter.
+    secret: ""
+    # -- Name of existing k8s secret key with PostgreSQL application connection password.
+    key: "postgresql-cloudify-password"
   # -- Password for DB connection
   cloudifyPassword: "cloudify"
   # -- Database name for initial connection
   serverDBName: "postgres"
   # -- Username for initial DB connection
   serverUsername: &postgresqlUsername "postgres"
-  # -- Name of existing k8s secret to use for PostgreSQL password. If not empty, existing secret will be used instead of db.serverPassword parameter.
+  # -- Name of existing k8s secret with PostgreSQL initial connection password (must contain a value for `postgresql-password` key). If not empty, existing secret will be used instead of db.serverPassword parameter.
   serverExistingPasswordSecret: &postgresqlServerExistingPasswordSecret ""
   # -- Password for initial DB connection
   serverPassword: &postgresqlPassword "cfy_test_pass"
@@ -90,6 +95,8 @@ queue:
   host: &rabbitmqFullName "rabbitmq"
   # -- Username for connection to RabbitMQ
   username: &rabbitmqUsername "cfy_user"
+  # -- Name of existing k8s secret with RabbitMQ password (must contain a value for `rabbitmq-password` key). If not empty, existing secret will be used instead of queue.password parameter.
+  existingPasswordSecret: &rabbitmqExistingPasswordSecret ""
   # -- Password for connection to RabbitMQ
   password: &rabbitmqPassword "cfy_test_pass"
 
@@ -197,6 +204,11 @@ config:
   security:
     # -- Enable SSL for Cloudify Manager.
     sslEnabled: false
+    existingAdminPassword:
+      # -- Name of existing k8s secret with initial password for Cloudify Manager admin user. If not empty, existing secret will be used instead of config.security.adminPassword parameter.
+      secret: ""
+      # -- Name of existing k8s secret key with initial password for Cloudify Manager admin user.
+      key: "cfy-admin-password"
     # -- Initial admin password for Cloudify Manager.
     adminPassword: admin
   # -- Path to TLS certificate.
@@ -368,7 +380,7 @@ mainConfig: |
     cli_local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
     security:
       ssl_enabled: {{ .Values.config.security.sslEnabled }}
-      admin_password: {{ .Values.config.security.adminPassword }}
+      admin_password: {{ include "cloudify-manager-worker.CfyAdminPassword" . }}
     {{- if .Values.license }}
     cloudify_license_path: /tmp/cloudify/cfy_license.yaml
     {{- end }}
@@ -377,7 +389,7 @@ mainConfig: |
     local_profile_host_name: {{ .Values.config.cliLocalProfileHostName }}
   rabbitmq:
     username: {{ .Values.queue.username }}
-    password: {{ .Values.queue.password }}
+    password: {{ include "cloudify-manager-worker.rabbitmqPassword" . }}
     ca_path: {{ .Values.config.caCertPath }}
     cert_path: {{ .Values.config.tlsCertPath }}
     key_path: {{ .Values.config.tlsKeyPath }}
@@ -397,7 +409,7 @@ mainConfig: |
     server_password: {{ include "cloudify-manager-worker.postgresServerPassword" . }}
     cloudify_db_name: {{ .Values.db.cloudifyDBName }}
     cloudify_username: {{ .Values.db.cloudifyUsername }}
-    cloudify_password: {{ .Values.db.cloudifyPassword }}
+    cloudify_password: {{ include "cloudify-manager-worker.postgresCloudifyPassword" . }}
     {{- if .Values.db.useExternalDB }}
     ca_path: /mnt/cloudify-data/ssl/postgres_ca.crt
     {{- else }}
@@ -522,6 +534,7 @@ rabbitmq:
   auth:
     username: *rabbitmqUsername
     password: *rabbitmqPassword
+    existingPasswordSecret: *rabbitmqExistingPasswordSecret
 
     tls:
       enabled: true

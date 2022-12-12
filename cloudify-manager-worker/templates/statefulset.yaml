@@ -38,13 +38,36 @@ spec:
               key: postgresql-password
               optional: false
         {{- end }}
+        {{- if .Values.db.cloudifyExistingPassword.secret }}
+        - name: POSTGRES_CLOUDIFY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.db.cloudifyExistingPassword.secret }}
+              key: {{ .Values.db.cloudifyExistingPassword.key }}
+              optional: false
+        {{- end }}
+        {{- if .Values.queue.existingPasswordSecret }}
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.queue.existingPasswordSecret }}
+              key: rabbitmq-password
+              optional: false
+        {{- end }}
+        {{- if .Values.config.security.existingAdminPassword.secret }}
+        - name: CFY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.security.existingAdminPassword.secret }}
+              key: {{ .Values.config.security.existingAdminPassword.key }}
+              optional: false
+        {{- end }}
         volumeMounts:
           - name: cloudify-cfg-volume
             mountPath: /tmp/cloudify/config.yaml
             subPath: config.yaml
           - name: cloudify-data
             mountPath: /mnt/cloudify-data
-        # TODO: inject all secrets
         command:
           - /bin/sh
           - -c
@@ -56,11 +79,14 @@ spec:
                 local PLACEHOLDER="$1"
                 local VALUE="$2"
                 if test -n "${VALUE}"; then
-                  echo "Replacing placeholder #{postgresServerPassword}"
+                  echo "Replacing placeholder ${PLACEHOLDER}"
                   sed -i -e "s|${PLACEHOLDER}|${VALUE}|g" /mnt/cloudify-data/etc/config.yaml
                 fi
             }
             replace_placeholder "#{postgresServerPassword}" "${POSTGRES_SERVER_PASSWORD}"
+            replace_placeholder "#{postgresCloudifyPassword}" "${POSTGRES_CLOUDIFY_PASSWORD}"
+            replace_placeholder "#{rabbitmqPassword}" "${RABBITMQ_PASSWORD}"
+            replace_placeholder "#{CfyAdminPassword}" "${CFY_ADMIN_PASSWORD}"
       {{- if .Values.initContainers.waitDependencies.enabled }}
       - name: wait-for-dependencies
         image: {{ .Values.initContainers.waitDependencies.repository }}:{{ .Values.initContainers.waitDependencies.tag }}
