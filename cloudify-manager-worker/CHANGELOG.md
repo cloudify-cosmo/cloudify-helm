@@ -12,7 +12,7 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
-# [UNRELEASED]
+# [v0.4.1] - 2022-12-12
 
 ## Changed
 
