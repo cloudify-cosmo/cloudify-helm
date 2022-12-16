@@ -131,6 +131,14 @@ nodeSelector: {}
 ## -- Parameters group for TLS/SSL configuration.
 # @default -- object
 tls:
+  # -- Parameters sub-group for generate certificates using cert-manager.
+  certManager:
+    # -- Enable to auto create certs using cert-manager.
+    generate: false
+    # -- Expiry time for generated certs (87660h = 10y).
+    expiration: 87660h
+    # -- Secret name for CA certificate (necessary only for generate certificates by cert-manager).
+    caSecretName: cfy-ca-tls
   # -- k8s secret name with certificates to secure communications between cloudify manager and postgresql|rabbitmq deployed inside the same k8s cluster.
   secretName: &tlsSecretName "cfy-certs"
   # -- k8s secret name with ssl certificates for external PostgreSQL database. Required only for connection to external PostgreSQL database.
