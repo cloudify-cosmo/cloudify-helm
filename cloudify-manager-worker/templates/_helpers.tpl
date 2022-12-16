@@ -45,6 +45,13 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/*
+Return the target Kubernetes version
+*/}}
+{{- define "common.capabilities.kubeVersion" -}}
+{{- default .Capabilities.KubeVersion.Version .Values.kubeVersion -}}
+{{- end -}}
+
+{{/*
 Define value for manager.public_ip parameter in cloudify main config file
 */}}
 {{- define "cloudify-manager-worker.public_ip" -}}

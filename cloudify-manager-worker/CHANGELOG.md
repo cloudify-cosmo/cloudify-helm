@@ -12,6 +12,29 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
+# [UNRELEASED]
+
+## Changed
+
+- 
+
+## Added
+
+- For k8s versions >= 1.25 added **minReadySeconds** statefulset spec for solve issue with launch second pod in HA mode.
+
+## Fixed
+
+- 
+
+## Removed
+
+- 
+
+## Upgrade notes
+
+-
+
+
 # [v0.4.1] - 2022-12-12
 
 ## Changed

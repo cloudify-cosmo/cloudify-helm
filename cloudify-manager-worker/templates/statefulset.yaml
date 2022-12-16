@@ -11,6 +11,9 @@ spec:
     matchLabels:
       app: {{ template "cloudify-manager-worker.name" . }}
   serviceName: {{ .Values.service.name }}
+  {{- if (semverCompare ">=1.25-0" (include "common.capabilities.kubeVersion" .)) }}
+  minReadySeconds: {{ .Values.config.minReadySeconds }}
+  {{- end }}
   template:
     metadata:
       labels:

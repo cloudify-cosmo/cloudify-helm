@@ -432,6 +432,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | config.cliLocalProfileHostName | string | `"localhost"` | "manager.cli_local_profile_host_name" parameter from Cloudify Manager config.yaml file. |
 | config.labels | object | `{}` | Add labels to Manager-worker container (see example below).   example-label: "cloudify-example" |
 | config.mgmtWorkerCount | int | `8` | Maximum number of worker processes started by the management worker. |
+| config.minReadySeconds | int | `120` | Minimum number of seconds for which a newly created Pod should be running and ready without any of its containers crashing, for it to be considered available. |
 | config.private_ip | string | `nil` | "manager.private_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically. |
 | config.public_ip | string | `nil` | "manager.public_ip" parameter from Cloudify Manager config.yaml file. If is not set, will be calculated automatically. |
 | config.replicas | int | `1` | Replicas count for launch. Multiple replicas works only with NFS like volume. |
@@ -485,6 +486,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | initContainers.waitDependencies.resources.requests | object | `{"cpu":0.1,"memory":"50Mi"}` | requests for wait-for-dependencies init container |
 | initContainers.waitDependencies.tag | string | `"1.34.1-uclibc"` | Docker image tag for wait-for-dependencies init container |
 | initContainers.waitDependencies.timeout | string | `"10m"` | timeout for waiting when all dependencies up |
+| kubeVersion | string | `""` |  |
 | license | object | `{}` | Can contain "secretName" field with existing license in k8s configMap, to use Secret instead, set useSecret to true. |
 | livenessProbe | object | object | Parameters group for pod liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
@@ -712,6 +714,8 @@ readinessProbe:
   path: /console
   initialDelaySeconds: 10
 ```
+
+**NOTE:** If you need to deploy Cloudify Manager in high availability mode with **2** replicas (config.replicas=2), and your k8s cluster version **< 1.25** please set value for parameter **readinessProbe.initialDelaySeconds** to **120** for avoid issues with second replica start.
 
 ### Config
 
