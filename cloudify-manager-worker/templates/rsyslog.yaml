@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: rsyslog.conf
-data: 
-  rsyslog.conf: |-
-    {{ $.Files.Get "files/rsyslog.conf" | b64enc }}
