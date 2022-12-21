@@ -1,0 +1,52 @@
+{{- if .Values.tls.certManager.generate }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cfy-ca
+spec:
+  secretName: {{ .Values.tls.certManager.caSecretName }}
+  commonName: {{.Release.Namespace}}.svc.cluster.local
+  usages:
+    - server auth
+    - client auth
+  isCA: true
+  duration: {{ .Values.tls.certManager.expiration }}
+  issuerRef:
+    name: selfsigned-issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cfy-ca-issuer
+spec:
+  ca:
+    secretName: {{ .Values.tls.certManager.caSecretName }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cfy-cert
+spec:
+  secretName: {{ .Values.tls.secretName }}
+  isCA: false
+  duration: {{ .Values.tls.certManager.expiration }}
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+    - "{{ .Values.db.host }}.{{.Release.Namespace}}.svc.cluster.local"
+    - "{{ .Values.queue.host }}.{{.Release.Namespace}}.svc.cluster.local"
+    - "{{ .Values.service.host }}.{{.Release.Namespace}}.svc.cluster.local"
+    - "{{ .Values.db.host }}"
+    - "{{ .Values.queue.host }}"
+    - "{{ .Values.service.host }}"
+  issuerRef:
+    name: cfy-ca-issuer
+{{- end }}

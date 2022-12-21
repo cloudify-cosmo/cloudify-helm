@@ -21,6 +21,8 @@ Provides a release information for each version splitted by the next sections
 ## Added
 
 - For k8s versions >= 1.25 added **minReadySeconds** statefulset spec for solve issue with launch second pod in HA mode.
+- Added optional possibility for generate TLS certs using cert-manager (https://cert-manager.io). This feature disabled by default, can be enabled set parameter value 'tls.certManager.generate' to 'true'.
+- Group of parameters 'tls.certManager' for manage options for cert-manager.
 
 ## Fixed
 
