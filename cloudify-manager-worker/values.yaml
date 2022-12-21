@@ -1,6 +1,9 @@
 nameOverride: "cloudify-manager-worker"
 fullnameOverride: "cloudify-manager-worker"
 
+# Override Kubernetes version
+kubeVersion: ""
+
 # -- Parameters group for Docker images
 # @default -- object
 image:
@@ -194,6 +197,8 @@ config:
   # -- Replicas count for launch.
   # Multiple replicas works only with NFS like volume.
   replicas: 1
+  # -- Minimum number of seconds for which a newly created Pod should be running and ready without any of its containers crashing, for it to be considered available.
+  minReadySeconds: 120
   # -- Add labels to Manager-worker container (see example below).
   #   example-label: "cloudify-example"
   labels: {}

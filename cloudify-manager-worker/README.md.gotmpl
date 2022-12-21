@@ -602,6 +602,8 @@ readinessProbe:
   initialDelaySeconds: 10
 ```
 
+**NOTE:** If you need to deploy Cloudify Manager in high availability mode with **2** replicas (config.replicas=2), and your k8s cluster version **< 1.25** please set value for parameter **readinessProbe.initialDelaySeconds** to **120** for avoid issues with second replica start.
+
 ### Config
 
 You can delay start of cfy manager / install all plugins / disable security (not recommended)...
