@@ -12,7 +12,7 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
-# [UNRELEASED]
+# [v0.4.2]
 
 ## Changed
 
@@ -26,7 +26,7 @@ Provides a release information for each version splitted by the next sections
 
 ## Fixed
 
-- 
+- Fixed issue with dependent charts removed from bitnami index (https://github.com/bitnami/charts/issues/10539).
 
 ## Removed
 
