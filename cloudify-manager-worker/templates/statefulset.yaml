@@ -23,15 +23,111 @@ spec:
           },
           {
               "type": "file",
-              "path": "/var/log/cloudify/stage/server-output.log",
+              "path": "/var/log/cloudify/ampq-postgres/ampg_postgres.log",
+              "source": "file",
+              "service": "ampq-postgres"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/composer/app.log",
+              "source": "file",
+              "service": "composer-app"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/composer/errors.log",
+              "source": "file",
+              "service": "composer-errors"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/execution-scheduler/scheduler.log",
+              "source": "file",
+              "service": "execution-scheduler"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/nginx/cloudify.access.log",
+              "source": "file",
+              "service": "nginx-cloudify-access"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/nginx/access.log",
+              "source": "file",
+              "service": "nginx-access"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/nginx/cloudify.error.log",
+              "source": "file",
+              "service": "nginx-cloudify-error"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/nginx/error.log",
               "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "stage-server-output"
+              "service": "nginx-error"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/nginx/monitoring.access.log",
+              "source": "{{ template "cloudify-manager-worker.name" . }}",
+              "service": "nginx-monitoring-access"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/nginx/monitoring.error.log",
+              "source": "{{ template "cloudify-manager-worker.name" . }}",
+              "service": "nginx-monitoring-error"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/rest/api-audit.log",
+              "source": "{{ template "cloudify-manager-worker.name" . }}",
+              "service": "rest-api-audit"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/rest/api-gunicorn.log",
+              "source": "{{ template "cloudify-manager-worker.name" . }}",
+              "service": "rest-api-gunicorn"
+          },
+          {
+              "type": "file",
+              "path": "/var/log/cloudify/rest/audit.log",
+              "source": "{{ template "cloudify-manager-worker.name" . }}",
+              "service": "rest-audit"
           },
           {
             "type": "file",
-            "path": "/var/log/cloudify/nginx/cloudify.access.log",
+            "path": "/var/log/cloudify/rest/cloudify-api-service.log",
             "source": "{{ template "cloudify-manager-worker.name" . }}",
-            "service": "nginx-cloudify"
+            "service": "rest-cloudify-api-service"
+          },
+          {
+            "type": "file",
+            "path": "/var/log/cloudify/rest/cloudify-rest-service.log",
+            "source": "{{ template "cloudify-manager-worker.name" . }}",
+            "service": "rest-cloudify-rest-service"
+          },
+          {
+            "type": "file",
+            "path": "/var/log/cloudify/rest/gunicorn.log",
+            "source": "{{ template "cloudify-manager-worker.name" . }}",
+            "service": "rest-gunicorn"
+          },
+          {
+            "type": "file",
+            "path": "/var/log/cloudify/stage/server-error.log",
+            "source": "{{ template "cloudify-manager-worker.name" . }}",
+            "service": "stage-server-error"
+          },
+          {
+            "type": "file",
+            "path": "/var/log/cloudify/stage/server-output.log",
+            "source": "{{ template "cloudify-manager-worker.name" . }}",
+            "service": "stage-server-output"
           },
           {
             "source":"{{ template "cloudify-manager-worker.name" . }}",
