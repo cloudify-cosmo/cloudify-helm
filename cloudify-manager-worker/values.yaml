@@ -77,7 +77,7 @@ service:
   # -- k8s service host
   host: cloudify-manager-worker
   # -- k8s service type
-  type: CLusterIP
+  type: ClusterIP
   # -- k8s service name
   name: cloudify-manager-worker
   http:
