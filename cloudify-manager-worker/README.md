@@ -606,6 +606,68 @@ $ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f 
 
 If DB schema was changed in newer version, needed migration will be running first on DB, then application will be restarted during upgrade - be patient, because it may take a couple of minutes.
 
+#### Upgrading RabbitMQ
+
+If as part of the helm upgrade the RabbitMQ node is upgraded (e.g. if the 
+upgrade specifies a newer RabbitMQ image), the user will need to preserve 
+the erlang cookie from the existing installation. It can be done as follows:
+
+```bash
+$ export RABBITMQ_ERLANG_COOKIE=$(kubectl get secret --namespace "michael-ns" rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)
+```
+and then:
+```bash
+helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker \
+--set rabbitmq.auth.erlangCookie=$RABBITMQ_ERLANG_COOKIE
+```
+
+
+#### Upgrading to Cloudify manager worker 7.X
+
+In Cloudify Manager 7 we upgraded the version of PostgreSQL to 14 and of 
+RabbitMQ to 3.10. 
+
+In Cloudify-Helm we use the bitnami/postgresql chart 
+(which deploys PostgreSQL version 11 for Cloudify Manager 6.X, also compatible 
+with Cloudify Manager 7.X). The bitnami/postgresql chart does not support 
+database version upgrade, so if the user likes to upgrade PostgreSQL they'll 
+need to do so manually using the [pg_upgrade](https://www.postgresql.org/docs/current/pgupgrade.html) tool.
+
+Additionally, coming from Cloudify Manager 6.X, the 
+_populate_deployment_statuses_ and _migrate_pickle_to_json_ scripts must run 
+on the data in the Manager's database in order to use it in the new version.
+It is handled in the `config.after_bash` value.
+
+Change the following in values.yaml:
+```yaml
+image:
+  repository: cloudifyplatform/premium-cloudify-manager-worker
+  tag: 7.0.0
+...
+
+rabbitmq:
+  
+  image:
+    tag: 3.10.13-debian-11-r9
+...
+
+config:
+  
+  after_bash: "if [[ $(/opt/manager/env/bin/python --version) == *'3.10'* ]]; then opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/populate_deployment_statuses.py; opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/migrate_pickle_to_json.py; fi"
+```
+Alternatively these can be set directly through the `helm upgrade` command 
+(notice the `--set` of the erlang cookie, see above):
+
+```bash
+$ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker \
+--reuse-values --set image.tag=7.0.0 --set rabbitmq.image.tag='3.10.13-debian-11-r9' \
+--set config.after_bash="if [[ \$(/opt/manager/env/bin/python --version) == *'3.10'* ]]; then opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/populate_deployment_statuses.py; opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/migrate_pickle_to_json.py; fi" \
+--set rabbitmq.auth.erlangCookie=$RABBITMQ_ERLANG_COOKIE -n NAMESPACE
+```
+
+
+
+
 ### Image:
 
 ```yaml
