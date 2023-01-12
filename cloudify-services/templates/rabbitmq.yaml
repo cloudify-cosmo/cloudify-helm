@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+spec:
+  containers:
+    - image: docker.io/library/cloudify-manager-rabbitmq
+      imagePullPolicy: IfNotPresent
+      name: rabbitmq
+      resources: {}
+      ports:
+        - containerPort: 15671
+        - containerPort: 15692
+        - containerPort: 5671
+      volumeMounts:
+        - mountPath: /etc/cloudify/ssl
+          name: ssl
+          readOnly: true
+  restartPolicy: Always
+  volumes:
+    - name: ssl
+      persistentVolumeClaim:
+        claimName: ssl
+        readOnly: true
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  ports:
+    - port: 15671
+  selector:
+    app: rabbitmq
+  type: NodePort
