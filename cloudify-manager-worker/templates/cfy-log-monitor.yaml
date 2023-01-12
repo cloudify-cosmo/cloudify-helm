@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cfy-log-monitoring
+data:
+  cfy_log_monitoring.sh: |
+    #!/usr/bin/env bash    
+
+    set -eu
+    LOGS=/var/log/cloudify
+    echo 'Start logging to output'
+    
+    ( umask 0 && truncate -s0 $LOGS/manager/cfy_manager.log )
+    ( umask 0 && truncate -s0 $LOGS/amqp-postgres/amqp_postgres.log )
+    ( umask 0 && truncate -s0 $LOGS/composer/{app,errors}.log )
+    ( umask 0 && truncate -s0 $LOGS/execution-scheduler/schedule r.log )
+    ( umask 0 && truncate -s0 $LOGS/mgmtworker/mgmtworker.log )
+    ( umask 0 && truncate -s0 $LOGS/nginx/{cloudify.access,access,cloudify.error,error,monitoring.access,monitoring.error}.log )
+    ( umask 0 && truncate -s0 $LOGS/rest/{api-audit,api-gunicorn,audit,cloudify-rest-service,cloudify-api-service,gunicorn}.log )
+    ( umask 0 && truncate -s0 $LOGS/stage/server-{error,output}.log )
+
+    tail -fF $LOGS/**/*.log

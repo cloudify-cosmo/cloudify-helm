@@ -116,6 +116,9 @@ spec:
         - name: cfy-starter-volume
           mountPath: /tmp/cloudify/cfy_starter.sh
           subPath: cfy_starter.sh
+        - name: cfy-log-monitoring-volume
+          mountPath: /tmp/cloudify/cfy_log_monitoring.sh
+          subPath: cfy_log_monitoring.sh
         - name: before-hook-volume
           mountPath: /tmp/cloudify/before_hook.sh
           subPath: before_hook.sh
@@ -203,6 +206,12 @@ spec:
           sources:
           - configMap:
               name: cfy-starter
+      - name: cfy-log-monitoring-volume
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: cfy-log-monitoring
       - name: before-hook-volume
         projected:
           defaultMode: 0754
