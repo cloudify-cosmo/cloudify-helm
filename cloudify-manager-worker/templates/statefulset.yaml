@@ -13,126 +13,6 @@ spec:
   serviceName: {{ .Values.service.name }}
   template:
     metadata:
-      annotations:
-        ad.datadoghq.com/{{ template "cloudify-manager-worker.name" . }}.logs: |
-          [{
-              "type": "file",
-              "path": "/var/log/cloudify/manager/cfy_manager.log",
-              "source": "file",
-              "service": "cfy-manager"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/ampq-postgres/ampg_postgres.log",
-              "source": "file",
-              "service": "ampq-postgres"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/composer/app.log",
-              "source": "file",
-              "service": "composer-app"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/composer/errors.log",
-              "source": "file",
-              "service": "composer-errors"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/execution-scheduler/scheduler.log",
-              "source": "file",
-              "service": "execution-scheduler"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/nginx/cloudify.access.log",
-              "source": "file",
-              "service": "nginx-cloudify-access"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/nginx/access.log",
-              "source": "file",
-              "service": "nginx-access"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/nginx/cloudify.error.log",
-              "source": "file",
-              "service": "nginx-cloudify-error"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/nginx/error.log",
-              "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "nginx-error"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/nginx/monitoring.access.log",
-              "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "nginx-monitoring-access"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/nginx/monitoring.error.log",
-              "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "nginx-monitoring-error"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/rest/api-audit.log",
-              "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "rest-api-audit"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/rest/api-gunicorn.log",
-              "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "rest-api-gunicorn"
-          },
-          {
-              "type": "file",
-              "path": "/var/log/cloudify/rest/audit.log",
-              "source": "{{ template "cloudify-manager-worker.name" . }}",
-              "service": "rest-audit"
-          },
-          {
-            "type": "file",
-            "path": "/var/log/cloudify/rest/cloudify-api-service.log",
-            "source": "{{ template "cloudify-manager-worker.name" . }}",
-            "service": "rest-cloudify-api-service"
-          },
-          {
-            "type": "file",
-            "path": "/var/log/cloudify/rest/cloudify-rest-service.log",
-            "source": "{{ template "cloudify-manager-worker.name" . }}",
-            "service": "rest-cloudify-rest-service"
-          },
-          {
-            "type": "file",
-            "path": "/var/log/cloudify/rest/gunicorn.log",
-            "source": "{{ template "cloudify-manager-worker.name" . }}",
-            "service": "rest-gunicorn"
-          },
-          {
-            "type": "file",
-            "path": "/var/log/cloudify/stage/server-error.log",
-            "source": "{{ template "cloudify-manager-worker.name" . }}",
-            "service": "stage-server-error"
-          },
-          {
-            "type": "file",
-            "path": "/var/log/cloudify/stage/server-output.log",
-            "source": "{{ template "cloudify-manager-worker.name" . }}",
-            "service": "stage-server-output"
-          },
-          {
-            "source":"{{ template "cloudify-manager-worker.name" . }}",
-            "service":"cfy-manager"
-          }] 
       labels:
         app: {{ template "cloudify-manager-worker.name" . }}
         {{- if .Values.config.labels }}
@@ -214,8 +94,6 @@ spec:
         {{- end }}
         securityContext: {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         volumeMounts:
-        - mountPath: /tmp/log
-          name: applogs
         - mountPath: /run
           name: run
         - mountPath: /run/lock
@@ -238,6 +116,9 @@ spec:
         - name: cfy-starter-volume
           mountPath: /tmp/cloudify/cfy_starter.sh
           subPath: cfy_starter.sh
+        - name: cfy-log-monitoring-volume
+          mountPath: /tmp/cloudify/cfy_log_monitoring.sh
+          subPath: cfy_log_monitoring.sh
         - name: before-hook-volume
           mountPath: /tmp/cloudify/before_hook.sh
           subPath: before_hook.sh
@@ -288,9 +169,6 @@ spec:
         {{- end }}
         {{- end }}
       volumes:
-      - name: applogs
-        hostPath:
-          path: /tmp/log      
       - name: run
         emptyDir:
           medium: Memory
@@ -328,6 +206,12 @@ spec:
           sources:
           - configMap:
               name: cfy-starter
+      - name: cfy-log-monitoring-volume
+        projected:
+          defaultMode: 0754
+          sources:
+          - configMap:
+              name: cfy-log-monitoring
       - name: before-hook-volume
         projected:
           defaultMode: 0754
