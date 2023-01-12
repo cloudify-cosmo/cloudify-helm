@@ -622,7 +622,7 @@ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker \
 ```
 
 
-#### Upgrading to Cloudify manager worker 7.X
+#### Upgrading to Cloudify manager worker 7.X [UNRELEASED]
 
 In Cloudify Manager 7 we upgraded the version of PostgreSQL to 14 and of 
 RabbitMQ to 3.10. 
@@ -664,8 +664,6 @@ $ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker \
 --set config.after_bash="if [[ \$(/opt/manager/env/bin/python --version) == *'3.10'* ]]; then opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/populate_deployment_statuses.py; opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/migrate_pickle_to_json.py; fi" \
 --set rabbitmq.auth.erlangCookie=$RABBITMQ_ERLANG_COOKIE -n NAMESPACE
 ```
-
-
 
 
 ### Image:
