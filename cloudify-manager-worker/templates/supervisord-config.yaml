@@ -21,3 +21,13 @@ data:
     startsecs=30
     stderr_logfile=/var/log/cron.err.log
     stdout_logfile=/var/log/cron.out.log
+
+    [program:log-monitor]
+    command=/tmp/cloudify/cfy_log_monitoring.sh
+    autostart=true
+    autorestart=true
+    startsecs=30
+    stderr_logfile=/dev/stdout
+    stdout_logfile_maxbytes=0
+    stdout_logfile=/dev/stderr
+    stderr_logfile_maxbytes=0
