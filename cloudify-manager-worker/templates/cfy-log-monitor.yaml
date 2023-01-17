@@ -19,24 +19,24 @@ data:
     ( umask 0 && truncate -s0 $LOGS/rest/{api-audit,api-gunicorn,audit,cloudify-rest-service,cloudify-api-service,gunicorn}.log )
     ( umask 0 && truncate -s0 $LOGS/stage/server-{error,output}.log )
 
-    tail -fF --quiet $LOGS/manager/cfy_manager.log | sed "s|^|cfy_manager.log: |" & \
-    tail -fF --quiet $LOGS/amqp-postgres/amqp_postgres.log | sed "s|^|amqp_postgres.log: |" &  \
-    tail -fF --quiet $LOGS/composer/app.log | sed "s|^|app.log: |" & \
-    tail -fF --quiet $LOGS/composer/errors.log | sed "s|^|errors.log: |" & \
-    tail -fF --quiet $LOGS/execution-scheduler/scheduler.log  | sed "s|^|scheduler.log: |" & \
-    tail -fF --quiet $LOGS/mgmtworker/mgmtworker.log  | sed "s|^|mgmtworker.log: |" & \
-    tail -fF --quiet $LOGS/nginx/cloudify.access.log | sed "s|^|cloudify.access.log: |" & \
-    tail -fF --quiet $LOGS/nginx/access.log | sed "s|^|access.log: |" & \
-    tail -fF --quiet $LOGS/nginx/cloudify.error.log | sed "s|^|cloudify.error.log: |" & \
-    tail -fF --quiet $LOGS/nginx/error.log | sed "s|^|errors.log: |" & \
-    tail -fF --quiet $LOGS/nginx/monitoring.access.log | sed "s|^|monitoring.access.log: |" & \
-    tail -fF --quiet $LOGS/nginx/monitoring.error.log | sed "s|^|monitoring.error.log: |" & \
-    tail -fF --quiet $LOGS/rest/api-audit.log | sed "s|^|api-audit.log: |" & \
-    tail -fF --quiet $LOGS/rest/api-gunicorn.log | sed "s|^|api-gunicorn.log: |" & \
-    tail -fF --quiet $LOGS/rest/audit.log | sed "s|^|audit.log: |" & \
-    tail -fF --quiet $LOGS/rest/cloudify-rest-service.log | sed "s|^|cloudify-rest-service.log: |" & \
-    tail -fF --quiet $LOGS/rest/cloudify-api-service.log | sed "s|^|cloudify-api-service.log: |" & \
-    tail -fF --quiet $LOGS/rest/gunicorn.log | sed "s|^|gunicorn.log: |" & \
-    tail -fF --quiet $LOGS/stage/server-error.log | sed "s|^|server-errors.log: |" & \
-    tail -fF --quiet $LOGS/stage/server-output.log | sed "s|^|server-output.log: |"
+    tail -F --quiet $LOGS/manager/cfy_manager.log | sed "s|^|cfy_manager.log: |" & \
+    tail -F --quiet $LOGS/amqp-postgres/amqp_postgres.log | sed "s|^|amqp_postgres.log: |" &  \
+    tail -F --quiet $LOGS/composer/app.log | sed "s|^|app.log: |" & \
+    tail -F --quiet $LOGS/composer/errors.log | sed "s|^|errors.log: |" & \
+    tail -F --quiet $LOGS/execution-scheduler/scheduler.log  | sed "s|^|scheduler.log: |" & \
+    tail -F --quiet $LOGS/mgmtworker/mgmtworker.log  | sed "s|^|mgmtworker.log: |" & \
+    tail -F --quiet $LOGS/nginx/cloudify.access.log | sed "s|^|cloudify.access.log: |" & \
+    tail -F --quiet $LOGS/nginx/access.log | sed "s|^|access.log: |" & \
+    tail -F --quiet $LOGS/nginx/cloudify.error.log | sed "s|^|cloudify.error.log: |" & \
+    tail -F --quiet $LOGS/nginx/error.log | sed "s|^|errors.log: |" & \
+    tail -F --quiet $LOGS/nginx/monitoring.access.log | sed "s|^|monitoring.access.log: |" & \
+    tail -F --quiet $LOGS/nginx/monitoring.error.log | sed "s|^|monitoring.error.log: |" & \
+    tail -F --quiet $LOGS/rest/api-audit.log | sed "s|^|api-audit.log: |" & \
+    tail -F --quiet $LOGS/rest/api-gunicorn.log | sed "s|^|api-gunicorn.log: |" & \
+    tail -F --quiet $LOGS/rest/audit.log | sed "s|^|audit.log: |" & \
+    tail -F --quiet $LOGS/rest/cloudify-rest-service.log | sed "s|^|cloudify-rest-service.log: |" & \
+    tail -F --quiet $LOGS/rest/cloudify-api-service.log | sed "s|^|cloudify-api-service.log: |" & \
+    tail -F --quiet $LOGS/rest/gunicorn.log | sed "s|^|gunicorn.log: |" & \
+    tail -F --quiet $LOGS/stage/server-error.log | sed "s|^|server-errors.log: |" & \
+    tail -F --quiet $LOGS/stage/server-output.log | sed "s|^|server-output.log: |"
 
