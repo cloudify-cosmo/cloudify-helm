@@ -546,6 +546,9 @@ rabbitmq:
     username: *rabbitmqUsername
     password: *rabbitmqPassword
     existingPasswordSecret: *rabbitmqExistingPasswordSecret
+    erlangCookie: "cfy-erlang-cookie"
+    # secret should contain the key "rabbitmq-erlang-cookie"
+    existingErlangSecret: ""
 
     tls:
       enabled: true
