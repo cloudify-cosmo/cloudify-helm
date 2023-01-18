@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mgmtworker
+spec:
+  containers:
+    - image: docker.io/library/cloudify-manager-mgmtworker
+      imagePullPolicy: IfNotPresent
+      name: mgmtworker
+      resources: {}
+      volumeMounts:
+        - mountPath: /etc/cloudify/ssl
+          name: ssl
+          readOnly: true
+        - mountPath: /opt/mgmtworker/work
+          name: mgmtworker-workdir
+  restartPolicy: Always
+  volumes:
+    - name: ssl
+      persistentVolumeClaim:
+        claimName: ssl
+        readOnly: true
+    - name: mgmtworker-workdir
+      persistentVolumeClaim:
+        claimName: mgmtworker-workdir

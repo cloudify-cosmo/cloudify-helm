@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: certs-creator
+spec:
+  containers:
+    - command:
+        - /opt/rest-service/docker/entrypoint_certs.sh
+      image: docker.io/library/cloudify-manager-certs_creator
+      imagePullPolicy: IfNotPresent
+      name: certs
+      resources: {}
+      volumeMounts:
+        - mountPath: /ssl
+          name: ssl
+  restartPolicy: OnFailure
+  volumes:
+    - name: ssl
+      persistentVolumeClaim:
+        claimName: ssl

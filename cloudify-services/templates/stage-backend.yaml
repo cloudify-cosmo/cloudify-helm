@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: stage-backend
+  name: stage-backend
+spec:
+  containers:
+    - env:
+        - name: RESTSERVICE_ADDRESS
+          value: nginx
+      image: docker.io/library/stage_backend
+      imagePullPolicy: IfNotPresent
+      name: stage-backend
+      resources: {}
+      ports:
+        - containerPort: 8088
+      volumeMounts:
+        - mountPath: /etc/cloudify/ssl
+          name: ssl
+          readOnly: true
+  restartPolicy: OnFailure
+  volumes:
+    - name: ssl
+      persistentVolumeClaim:
+        claimName: ssl
+        readOnly: true
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stage-backend
+spec:
+  ports:
+    - port: 8088
+  selector:
+    app: stage-backend
+  type: ClusterIP
