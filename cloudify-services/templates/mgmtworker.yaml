@@ -14,8 +14,6 @@ spec:
           readOnly: true
         - mountPath: /opt/mgmtworker/work
           name: mgmtworker-workdir
-        - mountPath: /opt/manager/resources/cloudify/types
-          name: mgmtworker-types
   restartPolicy: Always
   volumes:
     - name: ssl
@@ -25,6 +23,3 @@ spec:
     - name: mgmtworker-workdir
       persistentVolumeClaim:
         claimName: mgmtworker-workdir
-    - name: mgmtworker-types
-      persistentVolumeClaim:
-        claimName: mgmtworker-types
