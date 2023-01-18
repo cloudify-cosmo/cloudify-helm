@@ -24,4 +24,4 @@ spec:
     - port: 8188
   selector:
     app: stage-frontend
-  type: NodePort
+  type: ClusterIP

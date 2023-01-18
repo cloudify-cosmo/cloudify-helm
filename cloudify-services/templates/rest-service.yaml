@@ -31,4 +31,4 @@ spec:
     - port: 8100
   selector:
     app: rest-service
-  type: NodePort
+  type: ClusterIP

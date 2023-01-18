@@ -36,4 +36,4 @@ spec:
     - port: 8088
   selector:
     app: stage-backend
-  type: NodePort
+  type: ClusterIP

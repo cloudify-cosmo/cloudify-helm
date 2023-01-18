@@ -1,0 +1,35 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "cloudify-services.fullname" . -}}
+{{- $httpPort := .Values.service.http.port -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels: {{ include "cloudify-services.labels" . | nindent 4 }}
+{{- with .Values.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  {{- if .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: {{ .servicePort | default $httpPort }}
+{{- end }}

@@ -45,4 +45,4 @@ spec:
       port: 53333
   selector:
     app: nginx
-  type: NodePort
+  type: ClusterIP

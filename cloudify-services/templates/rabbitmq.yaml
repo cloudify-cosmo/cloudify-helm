@@ -35,4 +35,4 @@ spec:
     - port: 15671
   selector:
     app: rabbitmq
-  type: NodePort
+  type: ClusterIP

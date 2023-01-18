@@ -8,7 +8,6 @@ load-images:
 	kind load docker-image cloudify-manager-execution_scheduler:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-nginx:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rabbitmq:$$DOCKER_TAG
-	kind load docker-image cloudify-manager-postgresql:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-fileserver:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-config:$$DOCKER_TAG
 	kind load docker-image stage_frontend:$$DOCKER_TAG

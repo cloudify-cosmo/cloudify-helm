@@ -36,4 +36,4 @@ spec:
     - port: 3000
   selector:
     app: composer-backend
-  type: NodePort
+  type: ClusterIP

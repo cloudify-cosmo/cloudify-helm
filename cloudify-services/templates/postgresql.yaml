@@ -13,7 +13,7 @@ spec:
           value: cloudify
         - name: POSTGRES_USER
           value: cloudify
-      image: docker.io/library/cloudify-manager-postgresql
+      image: docker.io/library/postgres
       imagePullPolicy: IfNotPresent
       name: postgresql
       resources: {}
@@ -31,4 +31,4 @@ spec:
     - port: 5432
   selector:
     app: postgresql
-  type: NodePort
+  type: ClusterIP
