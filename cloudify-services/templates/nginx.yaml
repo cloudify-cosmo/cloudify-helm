@@ -14,11 +14,6 @@ spec:
         - containerPort: 443
         - containerPort: 53333
       resources: {}
-      env:
-        - name: REST_SERVICE_PORT
-          value: "8100"
-        - name: FILESERVER_PORT
-          value: "9000"
       volumeMounts:
         - mountPath: /etc/cloudify/ssl
           name: ssl
