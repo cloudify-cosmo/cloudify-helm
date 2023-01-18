@@ -12,6 +12,41 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
+# [v0.4.3]
+
+## Changed
+
+- 
+
+## Added
+
+- Additional process for stream log files into stdout.
+- Default parameter rabbitmq.auth.erlangCookie for avoid issues with helm upgrade (rabbitmq.auth.existingErlangSecret can be used instead).
+
+## Fixed
+
+- Fixed issue with helm upgrade and rabbitmq subchart.
+
+## Removed
+
+- 
+
+## Upgrade notes
+
+- If you have rabbitmq cluster with several nodes (rabbitmq.replicaCount > 1) you need to preserve the erlang cookie from the existing installation. It can be done as follows:
+
+```bash
+$ kubectl get secret --namespace "NAMESPACE" rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode
+```
+
+and then please add erlang cookie parameter value, got on the previous step, into your values file:
+```
+rabbitmq:
+  auth:
+    erlangCookie: "ERLANG_COOKIE"
+```
+
+
 # [v0.4.2]
 
 ## Changed
