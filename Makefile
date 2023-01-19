@@ -9,7 +9,6 @@ load-images:
 	kind load docker-image cloudify-manager-nginx:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rabbitmq:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-fileserver:$$DOCKER_TAG
-	kind load docker-image cloudify-manager-config:$$DOCKER_TAG
 	kind load docker-image stage_frontend:$$DOCKER_TAG
 	kind load docker-image stage_backend:$$DOCKER_TAG
 	kind load docker-image composer_frontend:$$DOCKER_TAG

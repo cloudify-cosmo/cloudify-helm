@@ -3,23 +3,41 @@ kind: Pod
 metadata:
   name: mgmtworker
 spec:
-  containers:
-    - image: docker.io/library/cloudify-manager-mgmtworker
+  initContainers:
+    - name: mgmtworker-init
+      image: docker.io/library/cloudify-manager-rest_service
       imagePullPolicy: IfNotPresent
-      name: mgmtworker
+      command:
+        - /usr/bin/env
+        - -S
+        - bash
+        - -exuc
+        - "/opt/rest-service/docker/prepare_secrets.sh && export CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml} && if [ ! -e ${CONFIG_FILE} ] ; then echo \"manager:\n  hostname: cloudify-manager\n  private_ip: ${ENTRYPOINT}\n\" > ${CONFIG_FILE} ; fi && cat ${CONFIG_FILE} && python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq && python -m manager_rest.configure_manager -c /tmp/config.yaml --create-admin-token /opt/mgmtworker/work/admin_token"
+      env:
+        - name: ENTRYPOINT
+          value: localhost
+      volumeMounts:
+        - mountPath: /etc/cloudify/ssl
+          name: ssl
+          readOnly: true
+        - mountPath: /opt/mgmtworker/work
+          name: workdir-volume
+  containers:
+    - name: mgmtworker
+      image: docker.io/library/cloudify-manager-mgmtworker
+      imagePullPolicy: IfNotPresent
       resources: {}
       volumeMounts:
         - mountPath: /etc/cloudify/ssl
           name: ssl
           readOnly: true
         - mountPath: /opt/mgmtworker/work
-          name: mgmtworker-workdir
+          name: workdir-volume
   restartPolicy: Always
   volumes:
     - name: ssl
       persistentVolumeClaim:
         claimName: ssl
         readOnly: true
-    - name: mgmtworker-workdir
-      persistentVolumeClaim:
-        claimName: mgmtworker-workdir
+    - name: workdir-volume
+      emptyDir: {}
