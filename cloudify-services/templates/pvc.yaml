@@ -8,32 +8,6 @@ spec:
   resources:
     requests:
       storage: 100Mi
-status: {}
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mgmtworker-workdir
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
-status: {}
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: manager-config
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
 
 ---
 apiVersion: v1
