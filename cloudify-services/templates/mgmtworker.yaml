@@ -14,13 +14,13 @@ spec:
         - -exuc
         - |
           /opt/rest-service/docker/prepare_secrets.sh
-          export CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml}
-          if [ ! -e ${CONFIG_FILE} ] ; then
+          export "CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml}"
+          if [ ! -e "${CONFIG_FILE}" ] ; then
             echo "
             manager:
               hostname: cloudify-manager
               private_ip: ${ENTRYPOINT}
-            " > ${CONFIG_FILE}
+            " > "${CONFIG_FILE}"
           fi
           python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq
           python -m manager_rest.configure_manager -c /tmp/config.yaml --create-admin-token /opt/mgmtworker/work/admin_token
