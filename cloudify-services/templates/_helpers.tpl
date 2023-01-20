@@ -60,3 +60,22 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Generate certificates for cloudify-services
+*/}}
+{{- define "cloudify-services.gen-certs" -}}
+{{- $ca := genCA "cloudify-services-ca" 3650 -}}
+{{- $externalCert := genSignedCert "nginx" nil nil 3650 $ca -}}
+{{- $internalCert := genSignedCert "nginx" nil nil 3650 $ca -}}
+{{- $rabbitCert := genSignedCert "rabbitmq" nil nil 3650 $ca -}}
+cloudify_internal_ca_key.pem: {{ $ca.Key | b64enc }}
+cloudify_internal_ca_cert.pem: {{ $ca.Cert | b64enc }}
+cloudify_external_key.pem: {{ $externalCert.Key | b64enc }}
+cloudify_external_cert.pem: {{ $externalCert.Cert | b64enc }}
+cloudify_internal_key.pem: {{ $internalCert.Key | b64enc }}
+cloudify_internal_cert.pem: {{ $internalCert.Cert | b64enc }}
+rabbitmq-key.pem: {{ $rabbitCert.Key | b64enc }}
+rabbitmq-cert.pem: {{ $rabbitCert.Cert | b64enc }}
+{{- end -}}
