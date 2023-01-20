@@ -32,7 +32,10 @@ metadata:
   name: rabbitmq
 spec:
   ports:
-    - port: 15671
+    - name: "5671"
+      port: 5671
+    - name: "15671"
+      port: 15671
   selector:
     app: rabbitmq
   type: ClusterIP
