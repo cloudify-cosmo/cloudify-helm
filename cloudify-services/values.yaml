@@ -36,6 +36,17 @@ ingress:
     enabled: false
     secretName: cfy-secret-name
 
+# These should be base64-encoded TLS certificates and keys
+certs:
+  ca_cert: ""
+  ca_key: ""
+  external_cert: ""
+  external_key: ""
+  internal_cert: ""
+  internal_key: ""
+  rabbitmq_cert: ""
+  rabbitmq_key: ""
+
 resources: {}
 
 autoscaling:
