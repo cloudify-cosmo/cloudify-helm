@@ -14,7 +14,19 @@ spec:
         - -S
         - bash
         - -exuc
-        - "/opt/rest-service/docker/prepare_secrets.sh && export CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml} && if [ ! -e ${CONFIG_FILE} ] ; then echo \"manager:\n  hostname: cloudify-manager\n  private_ip: ${ENTRYPOINT}\n\" > ${CONFIG_FILE} ; fi && python -m manager_rest.configure_manager --db-wait postgresql && cd /opt/rest-service/migrations && alembic upgrade head"
+        - |
+          /opt/rest-service/docker/prepare_secrets.sh
+          export CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml}
+          if [ ! -e ${CONFIG_FILE} ] ; then
+            echo "
+            manager:
+              hostname: cloudify-manager
+              private_ip: ${ENTRYPOINT}
+            " > ${CONFIG_FILE}
+          fi
+          python -m manager_rest.configure_manager --db-wait postgresql
+          cd /opt/rest-service/migrations
+          alembic upgrade head
       env:
         - name: ENTRYPOINT
           value: localhost
