@@ -60,3 +60,34 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Generate certificates for cloudify-services
+*/}}
+{{- define "cloudify-services.gen-certs" -}}
+{{- $ca := genCA "cloudify-services-ca" 3650 }}
+{{- if and (.Values.certs.ca_cert) (.Values.certs.ca_key) }}
+{{- $ca = buildCustomCert .Values.certs.ca_cert .Values.certs.ca_key }}
+{{- end }}
+{{- $externalCert := genSignedCert "nginx" nil nil 3650 $ca -}}
+{{- if and (.Values.certs.external_cert) (.Values.certs.external_key) }}
+{{- $externalCert = buildCustomCert .Values.certs.external_cert .Values.certs.external_key }}
+{{- end }}
+{{- $internalCert := genSignedCert "nginx" nil nil 3650 $ca -}}
+{{- if and (.Values.certs.internal_cert) (.Values.certs.internal_key) }}
+{{- $internalCert = buildCustomCert .Values.certs.internal_cert .Values.certs.internal_key }}
+{{- end }}
+{{- $rabbitmqCert := genSignedCert "rabbitmq" nil nil 3650 $ca -}}
+{{- if and (.Values.certs.rabbitmq_cert) (.Values.certs.rabbitmq_key) }}
+{{- $rabbitmqCert = buildCustomCert .Values.certs.rabbitmq_cert .Values.certs.rabbitmq_key }}
+{{- end }}
+cloudify_internal_ca_cert.pem: {{ $ca.Cert | b64enc }}
+cloudify_internal_ca_key.pem: {{ $ca.Key | b64enc }}
+cloudify_external_cert.pem: {{ $externalCert.Cert | b64enc }}
+cloudify_external_key.pem: {{ $externalCert.Key | b64enc }}
+cloudify_internal_cert.pem: {{ $internalCert.Cert | b64enc }}
+cloudify_internal_key.pem: {{ $internalCert.Key | b64enc }}
+rabbitmq-cert.pem: {{ $rabbitmqCert.Cert | b64enc }}
+rabbitmq-key.pem: {{ $rabbitmqCert.Key | b64enc }}
+{{- end -}}

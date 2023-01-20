@@ -47,8 +47,8 @@ spec:
   restartPolicy: Always
   volumes:
     - name: ssl
-      persistentVolumeClaim:
-        claimName: ssl
-        readOnly: true
+      secret:
+        secretName: {{ template "cloudify-services.name" . }}-certs
+        optional: false
     - name: workdir-volume
       emptyDir: {}

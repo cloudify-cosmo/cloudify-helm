@@ -3,7 +3,6 @@ export DOCKER_TAG ?= latest
 
 load-images:
 	kind load docker-image cloudify-manager-mgmtworker:$$DOCKER_TAG
-	kind load docker-image cloudify-manager-certs_creator:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rest_service:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-execution_scheduler:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-nginx:$$DOCKER_TAG
