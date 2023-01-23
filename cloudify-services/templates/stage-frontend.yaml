@@ -15,12 +15,12 @@ spec:
         app: stage-frontend
     spec:
       containers:
-        - image: docker.io/library/stage_frontend
-          imagePullPolicy: IfNotPresent
+        - image: {{ .Values.stage_frontend.image }}
+          imagePullPolicy: {{ .Values.stage_frontend.imagePullPolicy }}
           name: stage-frontend
           resources: {}
           ports:
-            - containerPort: 8188
+            - containerPort: {{ .Values.stage_frontend.port }}
       restartPolicy: Always
 
 ---
@@ -30,7 +30,7 @@ metadata:
   name: stage-frontend
 spec:
   ports:
-    - port: 8188
+    - port: {{ .Values.stage_frontend.port }}
   selector:
     app: stage-frontend
   type: ClusterIP

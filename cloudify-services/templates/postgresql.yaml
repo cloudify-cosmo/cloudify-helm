@@ -17,17 +17,17 @@ spec:
       containers:
         - env:
             - name: POSTGRES_DB
-              value: cloudify_db
+              value: {{ .Values.postgresql.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: cloudify
+              value: {{ .Values.postgresql.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: cloudify
-          image: docker.io/library/postgres
-          imagePullPolicy: IfNotPresent
+              value: {{ .Values.postgresql.env.POSTGRES_USER }}
+          image: {{ .Values.postgresql.image }}
+          imagePullPolicy: {{ .Values.postgresql.imagePullPolicy }}
           name: postgresql
           resources: {}
           ports:
-            - containerPort: 5432
+            - containerPort: {{ .Values.postgresql.port }}
       restartPolicy: Always
 
 ---
@@ -37,7 +37,7 @@ metadata:
   name: postgresql
 spec:
   ports:
-    - port: 5432
+    - port: {{ .Values.postgresql.port }}
   selector:
     app: postgresql
   type: ClusterIP

@@ -17,15 +17,15 @@ spec:
       containers:
         - env:
             - name: RESTSERVICE_ADDRESS
-              value: nginx
-          image: docker.io/library/stage_backend
-          imagePullPolicy: IfNotPresent
+              value: {{ .Values.stage_backend.env.RESTSERVICE_ADDRESS }}
+          image: {{ .Values.stage_backend.image }}
+          imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           name: stage-backend
           resources: {}
           ports:
-            - containerPort: 8088
+            - containerPort: {{ .Values.stage_backend.port }}
           volumeMounts:
-            - mountPath: /etc/cloudify/ssl
+            - mountPath: {{ .Values.resources.ssl }}
               name: ssl
               readOnly: true
       restartPolicy: Always
@@ -42,7 +42,7 @@ metadata:
   name: stage-backend
 spec:
   ports:
-    - port: 8088
+    - port: {{ .Values.stage_backend.port }}
   selector:
     app: stage-backend
   type: ClusterIP

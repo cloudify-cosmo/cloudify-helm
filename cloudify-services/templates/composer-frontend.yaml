@@ -15,12 +15,12 @@ spec:
         app: composer-frontend
     spec:
       containers:
-        - image: docker.io/library/composer_frontend
-          imagePullPolicy: IfNotPresent
+        - image: {{ .Values.composer_frontend.image }}
+          imagePullPolicy: {{ .Values.composer_frontend.imagePullPolicy }}
           name: composer-frontend
           resources: {}
           ports:
-            - containerPort: 8188
+            - containerPort: {{ .Values.composer_frontend.port }}
       restartPolicy: Always
 
 ---
@@ -30,7 +30,7 @@ metadata:
   name: composer-frontend
 spec:
   ports:
-    - port: 8188
+    - port: {{ .Values.composer_frontend.port }}
   selector:
     app: composer-frontend
   type: ClusterIP

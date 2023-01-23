@@ -15,15 +15,15 @@ spec:
         app: fileserver
     spec:
       containers:
-        - image: docker.io/library/cloudify-manager-fileserver
-          imagePullPolicy: IfNotPresent
+        - image: {{ .Values.fileserver.image }}
+          imagePullPolicy: {{ .Values.fileserver.imagePullPolicy }}
           name: fileserver
           ports:
             - containerPort: 9000
             - containerPort: 9090
           resources: {}
           volumeMounts:
-            - mountPath: /data
+            - mountPath: {{ .Values.fileserver.fileserverDataPath }}
               name: fileserver-data
       restartPolicy: Always
       volumes:

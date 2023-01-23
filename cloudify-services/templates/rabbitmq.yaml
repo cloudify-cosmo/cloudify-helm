@@ -15,8 +15,8 @@ spec:
         app: rabbitmq
     spec:
       containers:
-        - image: docker.io/library/cloudify-manager-rabbitmq
-          imagePullPolicy: IfNotPresent
+        - image: {{ .Values.rabbitmq.image }}
+          imagePullPolicy: {{ .Values.rabbitmq.imagePullPolicy }}
           name: rabbitmq
           resources: {}
           ports:
@@ -24,7 +24,7 @@ spec:
             - containerPort: 15692
             - containerPort: 5671
           volumeMounts:
-            - mountPath: /etc/cloudify/ssl
+            - mountPath: {{ .Values.resources.ssl }}
               name: ssl
               readOnly: true
       restartPolicy: Always

@@ -1,54 +1,63 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: mgmtworker
 spec:
-  initContainers:
-    - name: mgmtworker-init
-      image: docker.io/library/cloudify-manager-rest_service
-      imagePullPolicy: IfNotPresent
-      command:
-        - /usr/bin/env
-        - -S
-        - bash
-        - -exuc
-        - |
-          /opt/rest-service/docker/prepare_secrets.sh
-          export "CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml}"
-          if [ ! -e "${CONFIG_FILE}" ] ; then
-            echo "
-            manager:
-              hostname: cloudify-manager
-              private_ip: ${ENTRYPOINT}
-            " > "${CONFIG_FILE}"
-          fi
-          python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq
-          python -m manager_rest.configure_manager -c /tmp/config.yaml --create-admin-token /opt/mgmtworker/work/admin_token
-      env:
-        - name: ENTRYPOINT
-          value: localhost
-      volumeMounts:
-        - mountPath: /etc/cloudify/ssl
-          name: ssl
-          readOnly: true
-        - mountPath: /opt/mgmtworker/work
-          name: workdir-volume
-  containers:
-    - name: mgmtworker
-      image: docker.io/library/cloudify-manager-mgmtworker
-      imagePullPolicy: IfNotPresent
-      resources: {}
-      volumeMounts:
-        - mountPath: /etc/cloudify/ssl
-          name: ssl
-          readOnly: true
-        - mountPath: /opt/mgmtworker/work
-          name: workdir-volume
-  restartPolicy: Always
-  volumes:
-    - name: ssl
-      secret:
-        secretName: {{ template "cloudify-services.name" . }}-certs
-        optional: false
-    - name: workdir-volume
-      emptyDir: {}
+  replicas: {{ .Values.rabbitmq.replicas }}
+  selector:
+    matchLabels:
+      app: mgmtworker
+  template:
+    metadata:
+      labels:
+        app: mgmtworker
+    spec:
+      initContainers:
+        - name: mgmtworker-init
+          image: {{ .Values.rest_service.image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          command:
+            - /usr/bin/env
+            - -S
+            - bash
+            - -exuc
+            - |
+              /opt/rest-service/docker/prepare_secrets.sh
+              export "CONFIG_FILE=${CONFIG_FILE_PATH:-/tmp/config.yaml}"
+              if [ ! -e "${CONFIG_FILE}" ] ; then
+                echo "
+                manager:
+                  hostname: cloudify-manager
+                  private_ip: ${ENTRYPOINT}
+                " > "${CONFIG_FILE}"
+              fi
+              python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq
+              python -m manager_rest.configure_manager -c /tmp/config.yaml --create-admin-token /opt/mgmtworker/work/admin_token
+          env:
+            - name: ENTRYPOINT
+              value: localhost
+          volumeMounts:
+            - mountPath: {{ .Values.resources.ssl }}
+              name: ssl
+              readOnly: true
+            - mountPath: {{ .Values.mgmtworker.workDirPath }}
+              name: workdir-volume
+      containers:
+        - name: mgmtworker
+          image: {{ .Values.mgmtworker.image }}
+          imagePullPolicy: {{ .Values.mgmtworker.imagePullPolicy }}
+          resources: {}
+          volumeMounts:
+            - mountPath: {{ .Values.resources.ssl }}
+              name: ssl
+              readOnly: true
+            - mountPath: {{ .Values.mgmtworker.workDirPath }}
+              name: workdir-volume
+      restartPolicy: Always
+      volumes:
+        - name: ssl
+          secret:
+            secretName: {{ template "cloudify-services.name" . }}-certs
+            optional: false
+        - name: workdir-volume
+          emptyDir: {}

@@ -17,15 +17,15 @@ spec:
       containers:
         - env:
             - name: RESTSERVICE_ADDRESS
-              value: nginx
-          image: docker.io/library/composer_backend
-          imagePullPolicy: IfNotPresent
+              value: {{ .Values.composer_backend.env.RESTSERVICE_ADDRESS }}
+          image: {{ .Values.composer_backend.image }}
+          imagePullPolicy: {{ .Values.composer_backend.imagePullPolicy }}
           name: composer-backend
           resources: {}
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.composer_backend.port }}
           volumeMounts:
-            - mountPath: /etc/cloudify/ssl
+            - mountPath: {{ .Values.resources.ssl}}
               name: ssl
               readOnly: true
       restartPolicy: Always
@@ -42,7 +42,7 @@ metadata:
   name: composer-backend
 spec:
   ports:
-    - port: 3000
+    - port: {{ .Values.composer_backend.port }}
   selector:
     app: composer-backend
   type: ClusterIP

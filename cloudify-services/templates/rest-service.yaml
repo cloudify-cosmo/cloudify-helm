@@ -16,8 +16,8 @@ spec:
     spec:
       initContainers:
         - name: rest-service-init
-          image: docker.io/library/cloudify-manager-rest_service
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.rest_service.image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           command:
             - /usr/bin/env
             - -S
@@ -44,12 +44,12 @@ spec:
               name: manager-volume
       containers:
         - name: rest-service
-          image: docker.io/library/cloudify-manager-rest_service
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.rest_service.image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           ports:
-            - containerPort: 8100
+            - containerPort: {{ .Values.rest_service.port }}
           volumeMounts:
-            - mountPath: /opt/manager
+            - mountPath: {{ .Values.rest_service.managerDirPath }}
               name: manager-volume
       restartPolicy: Always
       volumes:
@@ -63,7 +63,7 @@ metadata:
   name: rest-service
 spec:
   ports:
-    - port: 8100
+    - port: {{ .Values.rest_service.port }}
   selector:
     app: rest-service
   type: ClusterIP

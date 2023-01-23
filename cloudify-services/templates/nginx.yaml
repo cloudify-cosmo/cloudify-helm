@@ -15,8 +15,8 @@ spec:
         app: nginx
     spec:
       containers:
-        - image: docker.io/library/cloudify-manager-nginx
-          imagePullPolicy: IfNotPresent
+        - image: {{ .Values.nginx.image }}
+          imagePullPolicy: {{ .Values.nginx.imagePullPolicy }}
           name: nginx
           ports:
             - containerPort: 80
@@ -24,7 +24,7 @@ spec:
             - containerPort: 53333
           resources: {}
           volumeMounts:
-            - mountPath: /etc/cloudify/ssl
+            - mountPath: {{ .Values.resources.ssl }}
               name: ssl
               readOnly: true
       restartPolicy: Always
