@@ -1,29 +1,37 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: nginx
   name: nginx
 spec:
-  containers:
-    - image: docker.io/library/cloudify-manager-nginx
-      imagePullPolicy: IfNotPresent
-      name: nginx
-      ports:
-        - containerPort: 80
-        - containerPort: 443
-        - containerPort: 53333
-      resources: {}
-      volumeMounts:
-        - mountPath: /etc/cloudify/ssl
-          name: ssl
-          readOnly: true
-  restartPolicy: Always
-  volumes:
-    - name: ssl
-      secret:
-        secretName: {{ template "cloudify-services.name" . }}-certs
-        optional: false
+  replicas: {{ .Values.nginx.replicas }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: {{ .Values.nginx.image }}
+          imagePullPolicy: {{ .Values.nginx.imagePullPolicy }}
+          name: nginx
+          ports:
+            {{- range .Values.nginx.port }}
+            - containerPort: {{ . }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /etc/cloudify/ssl
+              name: ssl
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: ssl
+          secret:
+            secretName: {{ template "cloudify-services.name" . }}-certs
+            optional: false
 
 ---
 apiVersion: v1
@@ -32,12 +40,10 @@ metadata:
   name: nginx
 spec:
   ports:
-    - name: "80"
-      port: 80
-    - name: "443"
-      port: 443
-    - name: "53333"
-      port: 53333
+    {{- range .Values.nginx.port }}
+    - name: {{ . | quote }}
+      port: {{ . }}
+    {{- end }}
   selector:
     app: nginx
   type: ClusterIP

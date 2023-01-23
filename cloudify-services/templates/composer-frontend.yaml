@@ -1,18 +1,26 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: composer-frontend
   name: composer-frontend
 spec:
-  containers:
-    - image: docker.io/library/composer_frontend
-      imagePullPolicy: IfNotPresent
-      name: composer-frontend
-      resources: {}
-      ports:
-        - containerPort: 8188
-  restartPolicy: Always
+  replicas: {{ .Values.composer_frontend.replicas }}
+  selector:
+    matchLabels:
+      app: composer-frontend
+  template:
+    metadata:
+      labels:
+        app: composer-frontend
+    spec:
+      containers:
+        - image: {{ .Values.composer_frontend.image }}
+          imagePullPolicy: {{ .Values.composer_frontend.imagePullPolicy }}
+          name: composer-frontend
+          ports:
+            - containerPort: {{ .Values.composer_frontend.port }}
+      restartPolicy: Always
 
 ---
 apiVersion: v1
@@ -21,7 +29,7 @@ metadata:
   name: composer-frontend
 spec:
   ports:
-    - port: 8188
+    - port: {{ .Values.composer_frontend.port }}
   selector:
     app: composer-frontend
   type: ClusterIP

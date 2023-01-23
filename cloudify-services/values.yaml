@@ -60,3 +60,80 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+composer_backend:
+  replicas: 1
+  image: docker.io/library/composer_backend
+  imagePullPolicy: IfNotPresent
+  port: 3000
+  restservice_address: nginx
+
+composer_frontend:
+  replicas: 1
+  image: docker.io/library/composer_frontend
+  imagePullPolicy: IfNotPresent
+  port: 8188
+
+execution_scheduler:
+  replicas: 1
+  image: docker.io/library/cloudify-manager-execution_scheduler
+  imagePullPolicy: IfNotPresent
+
+fileserver:
+  replicas: 1
+  image: docker.io/library/cloudify-manager-fileserver
+  imagePullPolicy: IfNotPresent
+  port:
+    - 9000
+    - 9090
+
+mgmtworker:
+  replicas: 1
+  image: docker.io/library/cloudify-manager-mgmtworker
+  imagePullPolicy: IfNotPresent
+
+nginx:
+  replicas: 1
+  image: docker.io/library/cloudify-manager-nginx
+  imagePullPolicy: IfNotPresent
+  port:
+    - 80
+    - 443
+    - 53333
+
+postgresql:
+  replicas: 1
+  image: docker.io/library/postgres
+  imagePullPolicy: IfNotPresent
+  port: 5432
+  postgres_db: cloudify_db
+  postgres_password: cloudify
+  postgres_user: cloudify
+
+rabbitmq:
+  replicas: 1
+  image: docker.io/library/cloudify-manager-rabbitmq
+  imagePullPolicy: IfNotPresent
+  port:
+    - 15671
+    - 15692
+    - 5671
+
+rest_service:
+  replicas: 1
+  image: docker.io/library/cloudify-manager-rest_service
+  imagePullPolicy: IfNotPresent
+  port: 8100
+
+stage_backend:
+  replicas: 1
+  image: docker.io/library/stage_backend
+  imagePullPolicy: IfNotPresent
+  port: 8088
+  restservice_address: nginx
+
+stage_frontend:
+  replicas: 1
+  image: docker.io/library/stage_frontend
+  imagePullPolicy: IfNotPresent
+  port: 8188

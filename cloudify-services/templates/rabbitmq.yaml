@@ -1,29 +1,37 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: rabbitmq
   name: rabbitmq
 spec:
-  containers:
-    - image: docker.io/library/cloudify-manager-rabbitmq
-      imagePullPolicy: IfNotPresent
-      name: rabbitmq
-      resources: {}
-      ports:
-        - containerPort: 15671
-        - containerPort: 15692
-        - containerPort: 5671
-      volumeMounts:
-        - mountPath: /etc/cloudify/ssl
-          name: ssl
-          readOnly: true
-  restartPolicy: Always
-  volumes:
-    - name: ssl
-      secret:
-        secretName: {{ template "cloudify-services.name" . }}-certs
-        optional: false
+  replicas: {{ .Values.rabbitmq.replicas }}
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - image: {{ .Values.rabbitmq.image }}
+          imagePullPolicy: {{ .Values.rabbitmq.imagePullPolicy }}
+          name: rabbitmq
+          ports:
+            {{- range .Values.rabbitmq.port }}
+            - containerPort: {{ . }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /etc/cloudify/ssl
+              name: ssl
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: ssl
+          secret:
+            secretName: {{ template "cloudify-services.name" . }}-certs
+            optional: false
 
 ---
 apiVersion: v1
@@ -32,10 +40,10 @@ metadata:
   name: rabbitmq
 spec:
   ports:
-    - name: "5671"
-      port: 5671
-    - name: "15671"
-      port: 15671
+    {{- range .Values.rabbitmq.port }}
+    - name: {{ . | quote }}
+      port: {{ . }}
+    {{- end }}
   selector:
     app: rabbitmq
   type: ClusterIP

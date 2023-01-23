@@ -1,26 +1,35 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: fileserver
   labels:
     app: fileserver
 spec:
-  containers:
-    - image: docker.io/library/cloudify-manager-fileserver
-      imagePullPolicy: IfNotPresent
-      name: fileserver
-      ports:
-        - containerPort: 9000
-        - containerPort: 9090
-      resources: {}
-      volumeMounts:
-        - mountPath: /data
-          name: fileserver-data
-  restartPolicy: Always
-  volumes:
-    - name: fileserver-data
-      persistentVolumeClaim:
-        claimName: fileserver-data
+  replicas: {{ .Values.fileserver.replicas }}
+  selector:
+    matchLabels:
+      app: fileserver
+  template:
+    metadata:
+      labels:
+        app: fileserver
+    spec:
+      containers:
+        - image: {{ .Values.fileserver.image }}
+          imagePullPolicy: {{ .Values.fileserver.imagePullPolicy }}
+          name: fileserver
+          ports:
+            {{- range .Values.fileserver.port }}
+            - containerPort: {{ . }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /data
+              name: fileserver-data
+      restartPolicy: Always
+      volumes:
+        - name: fileserver-data
+          persistentVolumeClaim:
+            claimName: fileserver-data
 
 ---
 apiVersion: v1
@@ -29,10 +38,10 @@ metadata:
   name: fileserver
 spec:
   ports:
-    - name: "9000"
-      port: 9000
-    - name: "9090"
-      port: 9090
+    {{- range .Values.fileserver.port }}
+    - name: {{ . | quote }}
+      port: {{ . }}
+    {{- end }}
   selector:
     app: fileserver
   type: ClusterIP

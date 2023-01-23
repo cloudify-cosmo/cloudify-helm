@@ -1,18 +1,26 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: stage-frontend
   name: stage-frontend
 spec:
-  containers:
-    - image: docker.io/library/stage_frontend
-      imagePullPolicy: IfNotPresent
-      name: stage-frontend
-      resources: {}
-      ports:
-        - containerPort: 8188
-  restartPolicy: Always
+  replicas: {{ .Values.stage_frontend.replicas }}
+  selector:
+    matchLabels:
+      app: stage-frontend
+  template:
+    metadata:
+      labels:
+        app: stage-frontend
+    spec:
+      containers:
+        - image: {{ .Values.stage_frontend.image }}
+          imagePullPolicy: {{ .Values.stage_frontend.imagePullPolicy }}
+          name: stage-frontend
+          ports:
+            - containerPort: {{ .Values.stage_frontend.port }}
+      restartPolicy: Always
 
 ---
 apiVersion: v1
@@ -21,7 +29,7 @@ metadata:
   name: stage-frontend
 spec:
   ports:
-    - port: 8188
+    - port: {{ .Values.stage_frontend.port }}
   selector:
     app: stage-frontend
   type: ClusterIP

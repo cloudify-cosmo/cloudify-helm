@@ -1,25 +1,33 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: postgresql
   name: postgresql
 spec:
-  containers:
-    - env:
-        - name: POSTGRES_DB
-          value: cloudify_db
-        - name: POSTGRES_PASSWORD
-          value: cloudify
-        - name: POSTGRES_USER
-          value: cloudify
-      image: docker.io/library/postgres
-      imagePullPolicy: IfNotPresent
-      name: postgresql
-      resources: {}
-      ports:
-        - containerPort: 5432
-  restartPolicy: Always
+  replicas: {{ .Values.postgresql.replicas }}
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.postgres_db }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresql.postgres_password }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.postgres_user }}
+          image: {{ .Values.postgresql.image }}
+          imagePullPolicy: {{ .Values.postgresql.imagePullPolicy }}
+          name: postgresql
+          ports:
+            - containerPort: {{ .Values.postgresql.port }}
+      restartPolicy: Always
 
 ---
 apiVersion: v1
@@ -28,7 +36,7 @@ metadata:
   name: postgresql
 spec:
   ports:
-    - port: 5432
+    - port: {{ .Values.postgresql.port }}
   selector:
     app: postgresql
   type: ClusterIP
