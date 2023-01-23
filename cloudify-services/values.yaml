@@ -60,3 +60,30 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+rabbitmq:
+  replicas: 1
+
+composer_backend:
+  replicas: 1
+
+composer_frontend:
+  replicas: 1
+
+fileserver:
+  replicas: 1
+
+nginx:
+  replicas: 1
+
+postgresql:
+  replicas: 1
+
+rest_service:
+  replicas: 1
+
+stage_backend:
+  replicas: 1
+
+stage_frontend:
+  replicas: 1

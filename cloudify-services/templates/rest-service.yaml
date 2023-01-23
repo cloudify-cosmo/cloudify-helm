@@ -1,51 +1,60 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: rest-service
   name: rest-service
 spec:
-  initContainers:
-    - name: rest-service-init
-      image: docker.io/library/cloudify-manager-rest_service
-      imagePullPolicy: IfNotPresent
-      command:
-        - /usr/bin/env
-        - -S
-        - bash
-        - -exuc
-        - |
-          /opt/rest-service/docker/prepare_secrets.sh
-          export CONFIG_FILE="${CONFIG_FILE_PATH:-/tmp/config.yaml}"
-          if [ ! -e "${CONFIG_FILE}" ] ; then
-            echo "
-            manager:
-              hostname: cloudify-manager
-              private_ip: ${ENTRYPOINT}
-            " > "${CONFIG_FILE}"
-          fi
-          python -m manager_rest.configure_manager --db-wait postgresql
-          cd /opt/rest-service/migrations
-          alembic upgrade head
-      env:
-        - name: ENTRYPOINT
-          value: localhost
-      volumeMounts:
-        - mountPath: /opt/manager
-          name: manager-volume
-  containers:
-    - name: rest-service
-      image: docker.io/library/cloudify-manager-rest_service
-      imagePullPolicy: IfNotPresent
-      ports:
-        - containerPort: 8100
-      volumeMounts:
-        - mountPath: /opt/manager
-          name: manager-volume
-  restartPolicy: Always
-  volumes:
-    - name: manager-volume
-      emptyDir: {}
+  replicas: {{ .Values.rest_service.replicas }}
+  selector:
+    matchLabels:
+      app: rest-service
+  template:
+    metadata:
+      labels:
+        app: rest-service
+    spec:
+      initContainers:
+        - name: rest-service-init
+          image: docker.io/library/cloudify-manager-rest_service
+          imagePullPolicy: IfNotPresent
+          command:
+            - /usr/bin/env
+            - -S
+            - bash
+            - -exuc
+            - |
+              /opt/rest-service/docker/prepare_secrets.sh
+              export CONFIG_FILE="${CONFIG_FILE_PATH:-/tmp/config.yaml}"
+              if [ ! -e "${CONFIG_FILE}" ] ; then
+                echo "
+                manager:
+                  hostname: cloudify-manager
+                  private_ip: ${ENTRYPOINT}
+                " > "${CONFIG_FILE}"
+              fi
+              python -m manager_rest.configure_manager --db-wait postgresql
+              cd /opt/rest-service/migrations
+              alembic upgrade head
+          env:
+            - name: ENTRYPOINT
+              value: localhost
+          volumeMounts:
+            - mountPath: /opt/manager
+              name: manager-volume
+      containers:
+        - name: rest-service
+          image: docker.io/library/cloudify-manager-rest_service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8100
+          volumeMounts:
+            - mountPath: /opt/manager
+              name: manager-volume
+      restartPolicy: Always
+      volumes:
+        - name: manager-volume
+          emptyDir: {}
 
 ---
 apiVersion: v1
