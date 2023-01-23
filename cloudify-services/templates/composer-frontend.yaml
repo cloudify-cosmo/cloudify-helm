@@ -18,7 +18,6 @@ spec:
         - image: {{ .Values.composer_frontend.image }}
           imagePullPolicy: {{ .Values.composer_frontend.imagePullPolicy }}
           name: composer-frontend
-          resources: {}
           ports:
             - containerPort: {{ .Values.composer_frontend.port }}
       restartPolicy: Always

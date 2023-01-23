@@ -19,11 +19,11 @@ spec:
           imagePullPolicy: {{ .Values.fileserver.imagePullPolicy }}
           name: fileserver
           ports:
-            - containerPort: 9000
-            - containerPort: 9090
-          resources: {}
+            {{- range .Values.fileserver.port }}
+            - containerPort: {{ . }}
+            {{- end }}
           volumeMounts:
-            - mountPath: {{ .Values.fileserver.fileserverDataPath }}
+            - mountPath: /data
               name: fileserver-data
       restartPolicy: Always
       volumes:
@@ -38,10 +38,10 @@ metadata:
   name: fileserver
 spec:
   ports:
-    - name: "9000"
-      port: 9000
-    - name: "9090"
-      port: 9090
+    {{- range .Values.fileserver.port }}
+    - name: {{ . | quote }}
+      port: {{ . }}
+    {{- end }}
   selector:
     app: fileserver
   type: ClusterIP

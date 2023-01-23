@@ -17,15 +17,14 @@ spec:
       containers:
         - env:
             - name: RESTSERVICE_ADDRESS
-              value: {{ .Values.stage_backend.env.RESTSERVICE_ADDRESS }}
+              value: {{ .Values.stage_backend.restservice_address }}
           image: {{ .Values.stage_backend.image }}
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           name: stage-backend
-          resources: {}
           ports:
             - containerPort: {{ .Values.stage_backend.port }}
           volumeMounts:
-            - mountPath: {{ .Values.resources.ssl }}
+            - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
       restartPolicy: Always

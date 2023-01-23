@@ -47,8 +47,7 @@ certs:
   rabbitmq_cert: ""
   rabbitmq_key: ""
 
-resources:
-  ssl: /etc/cloudify/ssl
+resources: {}
 
 autoscaling:
   enabled: false
@@ -67,8 +66,7 @@ composer_backend:
   image: docker.io/library/composer_backend
   imagePullPolicy: IfNotPresent
   port: 3000
-  env:
-    RESTSERVICE_ADDRESS: nginx
+  restservice_address: nginx
 
 composer_frontend:
   replicas: 1
@@ -85,39 +83,46 @@ fileserver:
   replicas: 1
   image: docker.io/library/cloudify-manager-fileserver
   imagePullPolicy: IfNotPresent
-  fileserverDataPath: /data
+  port:
+    - 9000
+    - 9090
 
 mgmtworker:
   replicas: 1
   image: docker.io/library/cloudify-manager-mgmtworker
   imagePullPolicy: IfNotPresent
-  workDirPath: /opt/mgmtworker/work
 
 nginx:
   replicas: 1
   image: docker.io/library/cloudify-manager-nginx
   imagePullPolicy: IfNotPresent
+  port:
+    - 80
+    - 443
+    - 53333
 
 postgresql:
   replicas: 1
   image: docker.io/library/postgres
   imagePullPolicy: IfNotPresent
   port: 5432
-  env:
-    POSTGRES_DB: cloudify_db
-    POSTGRES_PASSWORD: cloudify
-    POSTGRES_USER: cloudify
+  postgres_db: cloudify_db
+  postgres_password: cloudify
+  postgres_user: cloudify
 
 rabbitmq:
   replicas: 1
   image: docker.io/library/cloudify-manager-rabbitmq
   imagePullPolicy: IfNotPresent
+  port:
+    - 15671
+    - 15692
+    - 5671
 
 rest_service:
   replicas: 1
   image: docker.io/library/cloudify-manager-rest_service
   imagePullPolicy: IfNotPresent
-  managerDirPath: /opt/manager
   port: 8100
 
 stage_backend:
@@ -125,8 +130,7 @@ stage_backend:
   image: docker.io/library/stage_backend
   imagePullPolicy: IfNotPresent
   port: 8088
-  env:
-    RESTSERVICE_ADDRESS: nginx
+  restservice_address: nginx
 
 stage_frontend:
   replicas: 1

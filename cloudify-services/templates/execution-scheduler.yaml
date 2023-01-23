@@ -18,5 +18,4 @@ spec:
         - image: {{ .Values.execution_scheduler.image }}
           imagePullPolicy: {{ .Values.execution_scheduler.imagePullPolicy }}
           name: execution-scheduler
-          resources: {}
       restartPolicy: Always

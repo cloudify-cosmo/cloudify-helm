@@ -49,7 +49,7 @@ spec:
           ports:
             - containerPort: {{ .Values.rest_service.port }}
           volumeMounts:
-            - mountPath: {{ .Values.rest_service.managerDirPath }}
+            - mountPath: /opt/manager
               name: manager-volume
       restartPolicy: Always
       volumes:

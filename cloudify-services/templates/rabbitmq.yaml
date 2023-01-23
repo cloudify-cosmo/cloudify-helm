@@ -18,13 +18,12 @@ spec:
         - image: {{ .Values.rabbitmq.image }}
           imagePullPolicy: {{ .Values.rabbitmq.imagePullPolicy }}
           name: rabbitmq
-          resources: {}
           ports:
-            - containerPort: 15671
-            - containerPort: 15692
-            - containerPort: 5671
+            {{- range .Values.rabbitmq.port }}
+            - containerPort: {{ . }}
+            {{- end }}
           volumeMounts:
-            - mountPath: {{ .Values.resources.ssl }}
+            - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
       restartPolicy: Always
@@ -41,10 +40,10 @@ metadata:
   name: rabbitmq
 spec:
   ports:
-    - name: "5671"
-      port: 5671
-    - name: "15671"
-      port: 15671
+    {{- range .Values.rabbitmq.port }}
+    - name: {{ . | quote }}
+      port: {{ . }}
+    {{- end }}
   selector:
     app: rabbitmq
   type: ClusterIP

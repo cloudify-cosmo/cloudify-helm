@@ -18,7 +18,6 @@ spec:
         - image: {{ .Values.stage_frontend.image }}
           imagePullPolicy: {{ .Values.stage_frontend.imagePullPolicy }}
           name: stage-frontend
-          resources: {}
           ports:
             - containerPort: {{ .Values.stage_frontend.port }}
       restartPolicy: Always

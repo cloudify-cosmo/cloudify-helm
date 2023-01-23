@@ -17,15 +17,14 @@ spec:
       containers:
         - env:
             - name: RESTSERVICE_ADDRESS
-              value: {{ .Values.composer_backend.env.RESTSERVICE_ADDRESS }}
+              value: {{ .Values.composer_backend.restservice_address }}
           image: {{ .Values.composer_backend.image }}
           imagePullPolicy: {{ .Values.composer_backend.imagePullPolicy }}
           name: composer-backend
-          resources: {}
           ports:
             - containerPort: {{ .Values.composer_backend.port }}
           volumeMounts:
-            - mountPath: {{ .Values.resources.ssl}}
+            - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
       restartPolicy: Always

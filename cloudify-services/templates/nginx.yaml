@@ -19,12 +19,11 @@ spec:
           imagePullPolicy: {{ .Values.nginx.imagePullPolicy }}
           name: nginx
           ports:
-            - containerPort: 80
-            - containerPort: 443
-            - containerPort: 53333
-          resources: {}
+            {{- range .Values.nginx.port }}
+            - containerPort: {{ . }}
+            {{- end }}
           volumeMounts:
-            - mountPath: {{ .Values.resources.ssl }}
+            - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
       restartPolicy: Always
@@ -41,12 +40,10 @@ metadata:
   name: nginx
 spec:
   ports:
-    - name: "80"
-      port: 80
-    - name: "443"
-      port: 443
-    - name: "53333"
-      port: 53333
+    {{- range .Values.nginx.port }}
+    - name: {{ . | quote }}
+      port: {{ . }}
+    {{- end }}
   selector:
     app: nginx
   type: ClusterIP

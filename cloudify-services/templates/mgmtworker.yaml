@@ -37,21 +37,20 @@ spec:
             - name: ENTRYPOINT
               value: localhost
           volumeMounts:
-            - mountPath: {{ .Values.resources.ssl }}
+            - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
-            - mountPath: {{ .Values.mgmtworker.workDirPath }}
+            - mountPath: /opt/mgmtworker/work
               name: workdir-volume
       containers:
         - name: mgmtworker
           image: {{ .Values.mgmtworker.image }}
           imagePullPolicy: {{ .Values.mgmtworker.imagePullPolicy }}
-          resources: {}
           volumeMounts:
-            - mountPath: {{ .Values.resources.ssl }}
+            - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
-            - mountPath: {{ .Values.mgmtworker.workDirPath }}
+            - mountPath: /opt/mgmtworker/work
               name: workdir-volume
       restartPolicy: Always
       volumes:

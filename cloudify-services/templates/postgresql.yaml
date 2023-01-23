@@ -17,15 +17,14 @@ spec:
       containers:
         - env:
             - name: POSTGRES_DB
-              value: {{ .Values.postgresql.env.POSTGRES_DB }}
+              value: {{ .Values.postgresql.postgres_db }}
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.postgresql.env.POSTGRES_PASSWORD }}
+              value: {{ .Values.postgresql.postgres_password }}
             - name: POSTGRES_USER
-              value: {{ .Values.postgresql.env.POSTGRES_USER }}
+              value: {{ .Values.postgresql.postgres_user }}
           image: {{ .Values.postgresql.image }}
           imagePullPolicy: {{ .Values.postgresql.imagePullPolicy }}
           name: postgresql
-          resources: {}
           ports:
             - containerPort: {{ .Values.postgresql.port }}
       restartPolicy: Always
