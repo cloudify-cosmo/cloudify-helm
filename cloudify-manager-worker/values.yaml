@@ -295,11 +295,11 @@ readinessProbe:
   # -- readiness probe timeout in seconds
   timeoutSeconds: 5
   # -- readiness probe success threshold
-  successThreshold: 1
+  successThreshold: 2
   # -- readiness probe period in seconds
   periodSeconds: 10
   # -- readiness probe failure threshold
-  failureThreshold: 5
+  failureThreshold: 2
   # -- readiness probe initial delay in seconds
   initialDelaySeconds: 0
 
