@@ -1,7 +1,14 @@
 SHELL = /bin/bash
 export DOCKER_TAG ?= latest
 
-load-images:
+dev-cluster:
+	kind create cluster --config "dev-cluster/kind-config.yaml"
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+	# opt out of online validation, kind won't have access to the internet necessarily
+	kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+.PHONY: dev-cluster
+
+load-images: dev-cluster
 	kind load docker-image cloudify-manager-mgmtworker:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rest_service:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-execution_scheduler:$$DOCKER_TAG
@@ -14,7 +21,7 @@ load-images:
 	kind load docker-image composer_backend:$$DOCKER_TAG
 .PHONY: load-images
 
-deploy: load-images
+deploy: dev-cluster load-images
 	touch values-override.yaml
 	helm install cloudify-services ./cloudify-services --values values-override.yaml
 .PHONY: deploy
