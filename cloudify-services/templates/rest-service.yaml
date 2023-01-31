@@ -39,23 +39,13 @@ spec:
           env:
             - name: ENTRYPOINT
               value: localhost
-          volumeMounts:
-            - mountPath: /opt/manager
-              name: manager-volume
       containers:
         - name: rest-service
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.rest_service.port }}
-          volumeMounts:
-            - mountPath: /opt/manager
-              name: manager-volume
       restartPolicy: Always
-      volumes:
-        - name: manager-volume
-          emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service
