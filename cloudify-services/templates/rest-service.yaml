@@ -31,6 +31,7 @@ spec:
                 manager:
                   hostname: cloudify-manager
                   private_ip: ${ENTRYPOINT}
+                  file_server_type: s3
                 " > "${CONFIG_FILE}"
               fi
               python -m manager_rest.configure_manager --db-wait postgresql
