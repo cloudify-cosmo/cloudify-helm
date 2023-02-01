@@ -61,3 +61,7 @@ spec:
             optional: false
         - name: workdir-volume
           emptyDir: {}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}

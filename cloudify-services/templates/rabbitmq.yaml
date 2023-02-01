@@ -32,7 +32,10 @@ spec:
           secret:
             secretName: {{ template "cloudify-services.name" . }}-certs
             optional: false
-
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

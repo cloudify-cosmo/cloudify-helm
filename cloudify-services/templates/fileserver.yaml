@@ -31,7 +31,10 @@ spec:
         - name: fileserver-data
           persistentVolumeClaim:
             claimName: fileserver-data
-
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

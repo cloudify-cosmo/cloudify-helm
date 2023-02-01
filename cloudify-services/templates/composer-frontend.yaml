@@ -21,7 +21,10 @@ spec:
           ports:
             - containerPort: {{ .Values.composer_frontend.port }}
       restartPolicy: Always
-
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
