@@ -82,6 +82,7 @@ execution_scheduler:
 fileserver:
   replicas: 1
   image: docker.io/library/cloudify-manager-fileserver
+  client_image: docker.io/bitnami/minio-client
   imagePullPolicy: IfNotPresent
   port:
     - 9000
