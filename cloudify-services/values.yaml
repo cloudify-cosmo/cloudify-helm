@@ -80,6 +80,9 @@ execution_scheduler:
   imagePullPolicy: IfNotPresent
 
 fileserver:
+  install: yes
+  access_key: access_eg_username
+  secret_key: secret_eg_password
   replicas: 1
   image: docker.io/library/cloudify-manager-fileserver
   client_image: docker.io/bitnami/minio-client

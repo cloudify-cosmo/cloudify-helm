@@ -40,34 +40,30 @@ spec:
           env:
             - name: ENTRYPOINT
               value: localhost
+        {{ if .Values.fileserver.install }}
         - name: fileserver-create-resources-bucket
           image: {{ .Values.fileserver.client_image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
-          args:
-            - mb
-            - minio/resources
+          args: [mb, minio/resources, --ignore-existing]
           env:
             - name: MINIO_SERVER_HOST
               value: fileserver
             - name: MINIO_SERVER_ACCESS_KEY
-              value: admin
+              value: {{ .Values.fileserver.access_key }}
             - name: MINIO_SERVER_SECRET_KEY
-              value: admin123
+              value: {{ .Values.fileserver.secret_key }}
         - name: fileserver-make-resources-public
           image: {{ .Values.fileserver.client_image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
-          args:
-            - anonymous
-            - set
-            - public
-            - minio/resources
+          args: [anonymous, set, public, minio/resources]
           env:
             - name: MINIO_SERVER_HOST
               value: fileserver
             - name: MINIO_SERVER_ACCESS_KEY
-              value: admin
+              value: {{ .Values.fileserver.access_key }}
             - name: MINIO_SERVER_SECRET_KEY
-              value: admin123
+              value: {{ .Values.fileserver.secret_key }}
+        {{ end }}
       containers:
         - name: rest-service
           image: {{ .Values.rest_service.image }}
