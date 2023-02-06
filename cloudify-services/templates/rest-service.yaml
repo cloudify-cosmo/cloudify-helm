@@ -31,6 +31,7 @@ spec:
                 manager:
                   hostname: cloudify-manager
                   private_ip: ${ENTRYPOINT}
+                  file_server_type: s3
                 " > "${CONFIG_FILE}"
               fi
               python -m manager_rest.configure_manager --db-wait postgresql
@@ -39,23 +40,37 @@ spec:
           env:
             - name: ENTRYPOINT
               value: localhost
-          volumeMounts:
-            - mountPath: /opt/manager
-              name: manager-volume
+        {{ if .Values.fileserver.install }}
+        - name: fileserver-create-resources-bucket
+          image: {{ .Values.fileserver.client_image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          args: [mb, minio/resources, --ignore-existing]
+          env:
+            - name: MINIO_SERVER_HOST
+              value: fileserver
+            - name: MINIO_SERVER_ACCESS_KEY
+              value: {{ .Values.fileserver.access_key }}
+            - name: MINIO_SERVER_SECRET_KEY
+              value: {{ .Values.fileserver.secret_key }}
+        - name: fileserver-make-resources-public
+          image: {{ .Values.fileserver.client_image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          args: [anonymous, set, public, minio/resources]
+          env:
+            - name: MINIO_SERVER_HOST
+              value: fileserver
+            - name: MINIO_SERVER_ACCESS_KEY
+              value: {{ .Values.fileserver.access_key }}
+            - name: MINIO_SERVER_SECRET_KEY
+              value: {{ .Values.fileserver.secret_key }}
+        {{ end }}
       containers:
         - name: rest-service
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.rest_service.port }}
-          volumeMounts:
-            - mountPath: /opt/manager
-              name: manager-volume
       restartPolicy: Always
-      volumes:
-        - name: manager-volume
-          emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service

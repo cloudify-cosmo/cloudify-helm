@@ -29,13 +29,14 @@ spec:
                 manager:
                   hostname: cloudify-manager
                   private_ip: ${ENTRYPOINT}
+                  file_server_type: s3
                 " > "${CONFIG_FILE}"
               fi
               python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq
               python -m manager_rest.configure_manager -c /tmp/config.yaml --create-admin-token /opt/mgmtworker/work/admin_token
           env:
             - name: ENTRYPOINT
-              value: localhost
+              value: nginx
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
