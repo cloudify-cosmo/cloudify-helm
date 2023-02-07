@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: mgmtworker
 spec:
-  replicas: {{ .Values.rabbitmq.replicas }}
+  replicas: {{ .Values.mgmtworker.replicas }}
   selector:
     matchLabels:
       app: mgmtworker
