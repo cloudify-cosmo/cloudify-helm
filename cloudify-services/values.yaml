@@ -69,6 +69,8 @@ composer_backend:
   #     image: docker.io/library/composer_backend
   # and load the image to Kind by using:
   #     $ kind load docker-image composer_backend:latest
+  # (see dev-cluster/local-images-values.yaml for an example of using local images
+  # for development)
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-backend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 3000
