@@ -8,7 +8,11 @@ dev-cluster:
 	kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 .PHONY: dev-cluster
 
+regcred:
+	dev-cluster/aws_regcred.sh
+.PHONY: regcred
+
 deploy:
-	touch values-override.yaml
+	dev-cluster/default_values_override.sh
 	helm install cloudify-services ./cloudify-services --values values-override.yaml
 .PHONY: deploy
