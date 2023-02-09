@@ -24,6 +24,10 @@ load-images:
 	kind load docker-image composer_backend:$$DOCKER_TAG
 	docker pull bitnami/minio-client:latest
 	kind load docker-image bitnami/minio-client:latest
+	docker pull minio/minio:latest
+	kind load docker-image minio/minio:latest
+	docker pull postgres:latest
+	kind load docker-image postgres:latest
 .PHONY: load-images
 
 deploy:
