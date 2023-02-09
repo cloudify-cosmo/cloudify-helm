@@ -19,6 +19,17 @@ spec:
         - image: {{ .Values.fileserver.image }}
           imagePullPolicy: {{ .Values.fileserver.imagePullPolicy }}
           name: fileserver
+          command:
+            - minio
+            - server
+            - /data
+            - "--console-address"
+            - ":9090"
+          env:
+            - name: MINIO_ROOT_USER
+              value: "{{ .Values.fileserver.access_key }}"
+            - name: MINIO_ROOT_PASSWORD
+              value: "{{ .Values.fileserver.secret_key }}"
           ports:
             {{- range .Values.fileserver.port }}
             - containerPort: {{ . }}
@@ -31,7 +42,10 @@ spec:
         - name: fileserver-data
           persistentVolumeClaim:
             claimName: fileserver-data
-
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

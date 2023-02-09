@@ -8,22 +8,29 @@ dev-cluster:
 	kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 .PHONY: dev-cluster
 
+regcred:
+	dev-cluster/aws_regcred.sh
+.PHONY: regcred
+
 load-images:
-	docker pull bitnami/minio-client:latest
 	kind load docker-image cloudify-manager-mgmtworker:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rest_service:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-execution_scheduler:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-nginx:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rabbitmq:$$DOCKER_TAG
-	kind load docker-image cloudify-manager-fileserver:$$DOCKER_TAG
 	kind load docker-image stage_frontend:$$DOCKER_TAG
 	kind load docker-image stage_backend:$$DOCKER_TAG
 	kind load docker-image composer_frontend:$$DOCKER_TAG
 	kind load docker-image composer_backend:$$DOCKER_TAG
-        kind load docker-image bitnami/minio-client:latest
+	docker pull bitnami/minio-client:latest
+	kind load docker-image bitnami/minio-client:latest
+	docker pull minio/minio:latest
+	kind load docker-image minio/minio:latest
+	docker pull postgres:latest
+	kind load docker-image postgres:latest
 .PHONY: load-images
 
-deploy: dev-cluster load-images
-	touch values-override.yaml
+deploy:
+	dev-cluster/default_values_override.sh
 	helm install cloudify-services ./cloudify-services --values values-override.yaml
 .PHONY: deploy

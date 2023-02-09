@@ -19,3 +19,7 @@ spec:
           imagePullPolicy: {{ .Values.execution_scheduler.imagePullPolicy }}
           name: execution-scheduler
       restartPolicy: Always
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}

@@ -1,0 +1,22 @@
+# this is an example values.yaml file that sets all images to be loaded from
+# the local docker image registry;  with this, you can locally use Kind,
+# and have it use images loaded via `kind load docker-image`
+# (see Makefile - `load-images` for a way to load all of those automatically)
+composer_backend:
+  image: docker.io/library/composer_backend
+composer_frontend:
+  image: docker.io/library/composer_frontend
+execution_scheduler:
+  image: docker.io/library/cloudify-manager-execution_scheduler
+mgmtworker:
+  image: docker.io/library/cloudify-manager-mgmtworker
+nginx:
+  image: docker.io/library/cloudify-manager-nginx
+rabbitmq:
+  image: docker.io/library/cloudify-manager-rabbitmq
+rest_service:
+  image: docker.io/library/cloudify-manager-rest_service
+stage_backend:
+  image: docker.io/library/stage_backend
+stage_frontend:
+  image: docker.io/library/stage_frontend
