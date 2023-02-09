@@ -63,6 +63,12 @@ affinity: {}
 
 composer_backend:
   replicas: 1
+  # in development, it might be useful to use Kind, and load your locally-built docker
+  # images there.
+  # In that case, you can use something like:
+  #     image: docker.io/library/composer_backend
+  # and load the image to Kind by using:
+  #     $ kind load docker-image composer_backend:latest
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-backend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 3000
