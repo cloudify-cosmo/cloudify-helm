@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-service
+  name: api-service
+spec:
+  replicas: {{ .Values.api_service.replicas }}
+  selector:
+    matchLabels:
+      app: api-service
+  template:
+    metadata:
+      labels:
+        app: api-service
+    spec:
+      initContainers:
+        - name: api-service-init
+          image: {{ .Values.rest_service.image }}
+          imagePullPolicy: {{ .Values.api_service.imagePullPolicy }}
+          command:
+            - /usr/bin/env
+            - -S
+            - bash
+            - -exuc
+            - |
+
+              export CONFIG_FILE="${CONFIG_FILE_PATH:-/tmp/config.yaml}"
+              if [ ! -e "${CONFIG_FILE}" ] ; then
+                echo "
+                manager:
+                  hostname: cloudify-manager
+                  private_ip: ${ENTRYPOINT}
+                " > "${CONFIG_FILE}"
+                #postgresql_client:
+                #  host: postgresql
+                #  server_db_name: cloudify_db
+                #  server_username: cloudify
+                #  server_password: cloudify
+              fi
+              python -m manager_rest.configure_manager --db-wait postgresql
+          env:
+            - name: ENTRYPOINT
+              value: localhost
+      containers:
+        - name: api-service
+          image: {{ .Values.api_service.image }}
+          imagePullPolicy: {{ .Values.api_service.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.api_service.port }}
+      restartPolicy: Always
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  ports:
+    - port: {{ .Values.api_service.port }}
+  selector:
+    app: api-service
+  type: ClusterIP
