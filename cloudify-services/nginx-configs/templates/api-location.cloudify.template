@@ -1,0 +1,4 @@
+location /api/v3.1/audit {
+    auth_request /resources-auth;
+    include "/etc/nginx/conf.d/api-proxy.cloudify";
+}

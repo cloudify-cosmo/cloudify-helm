@@ -29,6 +29,8 @@ load-images:
 	kind load docker-image minio/minio:latest
 	docker pull postgres:latest
 	kind load docker-image postgres:latest
+	docker pull nginx:latest
+	kind load docker-image nginx:latest
 .PHONY: load-images
 
 deploy:

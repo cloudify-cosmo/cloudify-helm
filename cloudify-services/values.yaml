@@ -106,7 +106,7 @@ mgmtworker:
 
 nginx:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-nginx:latest-x86_64
+  image: docker.io/library/nginx
   imagePullPolicy: IfNotPresent
   port:
     - 80
