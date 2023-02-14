@@ -95,9 +95,8 @@ fileserver:
   image: docker.io/minio/minio
   client_image: docker.io/bitnami/minio-client
   imagePullPolicy: IfNotPresent
-  port:
-    - 9000
-    - 9090
+  api_port: 9000
+  console_port: 9090
 
 mgmtworker:
   replicas: 1
