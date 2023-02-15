@@ -1,0 +1,82 @@
+# Declares the size of a request's body. This is mainly used to allow large blueprints to be uploaded.
+client_max_body_size 0m;
+
+# Overcoming the renowned http://stackoverflow.com/questions/19238122/nginx-with-ubuntu-and-rails-on-digital-ocean
+types_hash_max_size 4096;
+
+upstream cloudify-rest {
+  server ${REST_SERVICE_HOST}:${REST_SERVICE_SERVICE_PORT};
+}
+
+upstream fileserver {
+  server ${FILESERVER_HOST}:${FILESERVER_SERVICE_PORT};
+}
+
+upstream cloudify-stage {
+  server ${STAGE_FRONTEND_HOST}:${STAGE_FRONTEND_SERVICE_PORT};
+}
+
+upstream cloudify-stage-backend {
+  server ${STAGE_BACKEND_HOST}:${STAGE_BACKEND_SERVICE_PORT};
+}
+
+upstream cloudify-composer {
+  server ${COMPOSER_FRONTEND_HOST}:${COMPOSER_FRONTEND_SERVICE_PORT};
+}
+
+upstream cloudify-composer-backend {
+  server ${COMPOSER_BACKEND_HOST}:${COMPOSER_BACKEND_SERVICE_PORT};
+}
+
+upstream cloudify-api {
+  server ${API_SERVICE_HOST}:${API_SERVICE_SERVICE_PORT};
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+# REST and UI external server
+server {
+  listen              443 ssl http2;
+  server_name         _;
+
+  ssl_certificate     /etc/cloudify/ssl/cloudify_external_cert.pem;
+  ssl_certificate_key /etc/cloudify/ssl/cloudify_external_key.pem;
+
+  include "/etc/nginx/conf.d/logs-conf.cloudify";
+  include "/etc/nginx/conf.d/rest-location.cloudify";
+  include "/etc/nginx/conf.d/fileserver.cloudify";
+  include "/etc/nginx/conf.d/ui-locations.cloudify";
+  include "/etc/nginx/conf.d/api-location.cloudify";
+}
+
+# like the above, but on 80, without ssl. While still in development, we'd like
+# this easy mode of accessing the manager (especially using cfy).
+server {
+  listen              80;
+  server_name         _;
+  include "/etc/nginx/conf.d/logs-conf.cloudify";
+  include "/etc/nginx/conf.d/rest-location.cloudify";
+  include "/etc/nginx/conf.d/fileserver.cloudify";
+  include "/etc/nginx/conf.d/ui-locations.cloudify";
+  include "/etc/nginx/conf.d/api-location.cloudify";
+}
+
+# REST and UI internal server - always SSL enabled
+server {
+  listen              53333 ssl default_server http2;
+
+  server_name         _;
+
+  ssl_certificate     /etc/cloudify/ssl/cloudify_internal_cert.pem;
+  ssl_certificate_key /etc/cloudify/ssl/cloudify_internal_key.pem;
+
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+  include "/etc/nginx/conf.d/logs-conf.cloudify";
+  include "/etc/nginx/conf.d/rest-location.cloudify";
+  include "/etc/nginx/conf.d/fileserver.cloudify";
+  include "/etc/nginx/conf.d/api-location.cloudify";
+}

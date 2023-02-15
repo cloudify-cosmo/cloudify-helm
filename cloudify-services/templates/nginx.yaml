@@ -1,3 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-master-config
+data:
+  nginx.conf: |
+{{ .Files.Get "nginx-configs/nginx.conf" | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-templates
+data:
+{{ (.Files.Glob "nginx-configs/templates/*").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-envvars
+data:
+  WORKER_PROCESS: auto
+  WORKER_CONNECTIONS: "4096"
+  REST_SERVICE_HOST: rest-service
+  REST_SERVICE_SERVICE_PORT: {{ .Values.rest_service.port | quote }}
+  API_SERVICE_HOST: api-service
+  API_SERVICE_SERVICE_PORT: {{ .Values.api_service.port | quote }}
+  FILESERVER_HOST: fileserver
+  FILESERVER_SERVICE_PORT: {{ .Values.fileserver.api_port | quote }}
+  STAGE_FRONTEND_HOST: stage-frontend
+  STAGE_FRONTEND_SERVICE_PORT: {{ .Values.stage_frontend.port | quote }}
+  STAGE_BACKEND_HOST: stage-backend
+  STAGE_BACKEND_SERVICE_PORT: {{ .Values.stage_backend.port | quote }}
+  COMPOSER_FRONTEND_HOST: composer-frontend
+  COMPOSER_FRONTEND_SERVICE_PORT: {{ .Values.composer_frontend.port | quote }}
+  COMPOSER_BACKEND_HOST: composer-backend
+  COMPOSER_BACKEND_SERVICE_PORT: {{ .Values.composer_backend.port | quote }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,12 +64,27 @@ spec:
             - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-master-config
+              subPath: nginx.conf
+            - mountPath: /etc/nginx/templates
+              name: nginx-templates
+          envFrom:
+            - configMapRef:
+                name: nginx-envvars
+
       restartPolicy: Always
       volumes:
         - name: ssl
           secret:
             secretName: {{ template "cloudify-services.name" . }}-certs
             optional: false
+        - name: nginx-master-config
+          configMap:
+            name: nginx-master-config
+        - name: nginx-templates
+          configMap:
+            name: nginx-templates
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}

@@ -14,6 +14,7 @@ regcred:
 
 load-images:
 	kind load docker-image cloudify-manager-mgmtworker:$$DOCKER_TAG
+	kind load docker-image cloudify-manager-apiservice:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-rest_service:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-execution_scheduler:$$DOCKER_TAG
 	kind load docker-image cloudify-manager-nginx:$$DOCKER_TAG
@@ -28,6 +29,8 @@ load-images:
 	kind load docker-image minio/minio:latest
 	docker pull postgres:latest
 	kind load docker-image postgres:latest
+	docker pull nginx:latest
+	kind load docker-image nginx:latest
 .PHONY: load-images
 
 deploy:
