@@ -125,10 +125,24 @@ rabbitmq:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-rabbitmq:latest-x86_64
   imagePullPolicy: IfNotPresent
-  port:
-    - 15671
-    - 15692
-    - 5671
+  ssl_port: 5671
+  management_port: 15671
+  metrics_port: 15692
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 30
+      timeoutSeconds: 15
+      successThreshold: 1
+      failureThreshold: 3
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
 
 rest_service:
   replicas: 1
