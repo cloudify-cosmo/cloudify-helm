@@ -135,6 +135,14 @@ postgresql:
   postgres_db: cloudify_db
   postgres_password: cloudify
   postgres_user: cloudify
+  probes:
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
 
 rabbitmq:
   replicas: 1
