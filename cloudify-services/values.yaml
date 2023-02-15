@@ -97,6 +97,21 @@ fileserver:
   imagePullPolicy: IfNotPresent
   api_port: 9000
   console_port: 9090
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
 
 mgmtworker:
   replicas: 1
