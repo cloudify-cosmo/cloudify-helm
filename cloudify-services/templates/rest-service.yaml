@@ -70,6 +70,17 @@ spec:
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.rest_service.port }}
+          {{- if .Values.rest_service.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.rest_service.port}}
+              path: /api/v3.1/ok
+            initialDelaySeconds: {{ .Values.rest_service.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.rest_service.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.rest_service.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.rest_service.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.rest_service.probes.liveness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:

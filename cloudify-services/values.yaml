@@ -75,12 +75,30 @@ composer_backend:
   imagePullPolicy: IfNotPresent
   port: 3000
   restservice_address: nginx
+  probes:
+    liveness:
+      enabled: false
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
 
 composer_frontend:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-frontend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8188
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
 
 execution_scheduler:
   replicas: 1
@@ -97,6 +115,21 @@ fileserver:
   imagePullPolicy: IfNotPresent
   api_port: 9000
   console_port: 9090
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
 
 mgmtworker:
   replicas: 1
@@ -107,10 +140,17 @@ nginx:
   replicas: 1
   image: docker.io/library/nginx
   imagePullPolicy: IfNotPresent
-  port:
-    - 80
-    - 443
-    - 53333
+  http_port: 80
+  https_port: 443
+  internal_port: 53333
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 postgresql:
   replicas: 1
@@ -120,27 +160,65 @@ postgresql:
   postgres_db: cloudify_db
   postgres_password: cloudify
   postgres_user: cloudify
+  probes:
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
 
 rabbitmq:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-rabbitmq:latest-x86_64
   imagePullPolicy: IfNotPresent
-  port:
-    - 15671
-    - 15692
-    - 5671
+  ssl_port: 5671
+  management_port: 15671
+  metrics_port: 15692
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 30
+      timeoutSeconds: 15
+      successThreshold: 1
+      failureThreshold: 3
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
 
 rest_service:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-restservice:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8100
+  probes:
+    liveness:
+      enabled: false
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 api_service:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-apiservice:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8101
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 stage_backend:
   replicas: 1
@@ -148,9 +226,25 @@ stage_backend:
   imagePullPolicy: IfNotPresent
   port: 8088
   restservice_address: nginx
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 stage_frontend:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-frontend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8188
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3

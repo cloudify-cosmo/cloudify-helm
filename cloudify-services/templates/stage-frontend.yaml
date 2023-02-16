@@ -20,6 +20,17 @@ spec:
           name: stage-frontend
           ports:
             - containerPort: {{ .Values.stage_frontend.port }}
+          {{- if .Values.stage_frontend.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.stage_frontend.port}}
+              path: "/static/"
+            initialDelaySeconds: {{ .Values.stage_frontend.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.stage_frontend.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.stage_frontend.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.stage_frontend.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.stage_frontend.probes.liveness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:

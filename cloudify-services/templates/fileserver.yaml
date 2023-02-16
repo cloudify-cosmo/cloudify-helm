@@ -36,6 +36,27 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: fileserver-data
+          {{- if .Values.fileserver.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.fileserver.console_port}}
+            initialDelaySeconds: {{ .Values.fileserver.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.fileserver.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.fileserver.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.fileserver.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.fileserver.probes.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.fileserver.probes.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.fileserver.api_port}}
+              path: "/minio/health/live"
+            initialDelaySeconds: {{ .Values.fileserver.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.fileserver.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.fileserver.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.fileserver.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.fileserver.probes.readiness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       volumes:
         - name: fileserver-data

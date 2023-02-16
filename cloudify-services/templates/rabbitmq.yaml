@@ -19,13 +19,43 @@ spec:
           imagePullPolicy: {{ .Values.rabbitmq.imagePullPolicy }}
           name: rabbitmq
           ports:
-            {{- range .Values.rabbitmq.port }}
-            - containerPort: {{ . }}
-            {{- end }}
+            - containerPort: {{ .Values.rabbitmq.ssl_port }}
+            - containerPort: {{ .Values.rabbitmq.management_port }}
+            - containerPort: {{ .Values.rabbitmq.metrics_port }}
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
+          {{- if .Values.rabbitmq.probes.liveness.enabled }}
+          livenessProbe:
+            # See https://www.rabbitmq.com/monitoring.html#health-checks
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  rabbitmq-diagnostics -q ping && \
+                  rabbitmq-diagnostics -q status && \
+                  rabbitmq-diagnostics -q check_running && \
+                  rabbitmq-diagnostics -q check_local_alarms && \
+                  rabbitmq-diagnostics -q listeners && \
+                  rabbitmq-diagnostics -q check_virtual_hosts
+            initialDelaySeconds: {{ .Values.rabbitmq.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.rabbitmq.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.rabbitmq.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.rabbitmq.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.rabbitmq.probes.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.rabbitmq.probes.readiness.enabled }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.rabbitmq.ssl_port}}
+            initialDelaySeconds: {{ .Values.rabbitmq.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.rabbitmq.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.rabbitmq.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.rabbitmq.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.rabbitmq.probes.readiness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       volumes:
         - name: ssl
@@ -43,10 +73,12 @@ metadata:
   name: rabbitmq
 spec:
   ports:
-    {{- range .Values.rabbitmq.port }}
-    - name: {{ . | quote }}
-      port: {{ . }}
-    {{- end }}
+    - name: ssl
+      port: {{ .Values.rabbitmq.ssl_port }}
+    - name: management
+      port: {{ .Values.rabbitmq.management_port }}
+    - name: metrics
+      port: {{ .Values.rabbitmq.metrics_port }}
   selector:
     app: rabbitmq
   type: ClusterIP

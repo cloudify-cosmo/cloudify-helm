@@ -27,6 +27,16 @@ spec:
           name: postgresql
           ports:
             - containerPort: {{ .Values.postgresql.port }}
+          {{- if .Values.postgresql.probes.readiness.enabled }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.postgresql.port}}
+            initialDelaySeconds: {{ .Values.postgresql.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.postgresql.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.postgresql.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.postgresql.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.postgresql.probes.readiness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
