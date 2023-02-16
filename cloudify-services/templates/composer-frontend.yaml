@@ -20,6 +20,16 @@ spec:
           name: composer-frontend
           ports:
             - containerPort: {{ .Values.composer_frontend.port }}
+          {{- if .Values.composer_frontend.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.composer_frontend.port}}
+            initialDelaySeconds: {{ .Values.composer_frontend.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.composer_frontend.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.composer_frontend.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.composer_frontend.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.composer_frontend.probes.liveness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:

@@ -27,6 +27,17 @@ spec:
             - mountPath: /etc/cloudify/ssl
               name: ssl
               readOnly: true
+          {{- if .Values.composer_backend.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.composer_backend.port}}
+              path: "/composer/backend/"
+            initialDelaySeconds: {{ .Values.composer_backend.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.composer_backend.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.composer_backend.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.composer_backend.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.composer_backend.probes.liveness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       volumes:
         - name: ssl

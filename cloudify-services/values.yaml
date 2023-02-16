@@ -75,12 +75,30 @@ composer_backend:
   imagePullPolicy: IfNotPresent
   port: 3000
   restservice_address: nginx
+  probes:
+    liveness:
+      enabled: false
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
 
 composer_frontend:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-frontend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8188
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
 
 execution_scheduler:
   replicas: 1
@@ -208,9 +226,25 @@ stage_backend:
   imagePullPolicy: IfNotPresent
   port: 8088
   restservice_address: nginx
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 stage_frontend:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-frontend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8188
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
