@@ -179,6 +179,14 @@ rest_service:
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-restservice:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8100
+  probes:
+    liveness:
+      enabled: false
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 api_service:
   replicas: 1
