@@ -57,9 +57,9 @@ spec:
           imagePullPolicy: {{ .Values.nginx.imagePullPolicy }}
           name: nginx
           ports:
-            {{- range .Values.nginx.port }}
-            - containerPort: {{ . }}
-            {{- end }}
+            - containerPort: {{ .Values.nginx.http_port }}
+            - containerPort: {{ .Values.nginx.https_port }}
+            - containerPort: {{ .Values.nginx.internal_port }}
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
@@ -72,7 +72,16 @@ spec:
           envFrom:
             - configMapRef:
                 name: nginx-envvars
-
+          {{- if .Values.nginx.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.nginx.http_port}}
+            initialDelaySeconds: {{ .Values.nginx.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.nginx.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.nginx.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.nginx.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.nginx.probes.liveness.failureThreshold }}
+          {{- end }}
       restartPolicy: Always
       volumes:
         - name: ssl
@@ -96,10 +105,12 @@ metadata:
   name: nginx
 spec:
   ports:
-    {{- range .Values.nginx.port }}
-    - name: {{ . | quote }}
-      port: {{ . }}
-    {{- end }}
+    - name: http
+      port: {{ .Values.nginx.http_port }}
+    - name: https
+      port: {{ .Values.nginx.https_port }}
+    - name: internal
+      port: {{ .Values.nginx.internal_port }}
   selector:
     app: nginx
   type: ClusterIP

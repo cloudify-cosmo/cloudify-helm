@@ -122,10 +122,17 @@ nginx:
   replicas: 1
   image: docker.io/library/nginx
   imagePullPolicy: IfNotPresent
-  port:
-    - 80
-    - 443
-    - 53333
+  http_port: 80
+  https_port: 443
+  internal_port: 53333
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
 
 postgresql:
   replicas: 1
