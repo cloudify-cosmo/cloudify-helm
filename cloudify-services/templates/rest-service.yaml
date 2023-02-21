@@ -38,7 +38,6 @@ spec:
               manager:
                 hostname: cloudify-manager
                 private_ip: ${ENTRYPOINT}
-                internal_rest_port: 443
                 file_server_type: s3
               " > "${CONFIG_FILE}"
 
