@@ -24,7 +24,8 @@ spec:
             - |
               /opt/rest-service/docker/prepare_secrets.sh
               python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq
-              python -m manager_rest.configure_manager -c /tmp/config.yaml --create-admin-token /opt/mgmtworker/work/admin_token
+              python -m manager_rest.configure_manager --db-wait postgresql
+              python -m manager_rest.configure_manager --create-admin-token /opt/mgmtworker/work/admin_token
           env:
             - name: ENTRYPOINT
               value: nginx
