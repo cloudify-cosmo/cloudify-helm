@@ -24,19 +24,7 @@ spec:
             - bash
             - -exuc
             - |
-              export CONFIG_FILE="${CONFIG_FILE_PATH:-/tmp/config.yaml}"
-              if [ ! -e "${CONFIG_FILE}" ] ; then
-                echo "
-                manager:
-                  hostname: cloudify-manager
-                  private_ip: ${ENTRYPOINT}
-                " > "${CONFIG_FILE}"
-                #postgresql_client:
-                #  host: postgresql
-                #  server_db_name: cloudify_db
-                #  server_username: cloudify
-                #  server_password: cloudify
-              fi
+              /opt/rest-service/docker/prepare_secrets.sh
               python -m manager_rest.configure_manager --db-wait postgresql
           env:
             - name: ENTRYPOINT
