@@ -46,6 +46,10 @@ spec:
           env:
             - name: ENTRYPOINT
               value: localhost
+          volumeMounts:
+            - mountPath: /etc/cloudify/ssl
+              name: ssl
+              readOnly: true
         {{ if .Values.fileserver.install }}
         - name: fileserver-create-resources-bucket
           image: {{ .Values.fileserver.client_image }}
@@ -92,6 +96,11 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
+      volumes:
+        - name: ssl
+          secret:
+            secretName: {{ template "cloudify-services.name" . }}-certs
+            optional: false
 ---
 apiVersion: v1
 kind: Service
