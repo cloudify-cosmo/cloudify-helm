@@ -25,21 +25,30 @@ spec:
             - -exuc
             - |
               /opt/rest-service/docker/prepare_secrets.sh
-              export CONFIG_FILE="${CONFIG_FILE_PATH:-/tmp/config.yaml}"
-              if [ ! -e "${CONFIG_FILE}" ] ; then
-                echo "
-                manager:
-                  hostname: cloudify-manager
-                  private_ip: ${ENTRYPOINT}
-                  file_server_type: s3
-                " > "${CONFIG_FILE}"
-              fi
               python -m manager_rest.configure_manager --db-wait postgresql
+
               cd /opt/rest-service/migrations
               alembic upgrade head
+
+              CONFIG_FILE="/tmp/config.yaml"
+              echo "
+              restservice:
+                log:
+                  level: DEBUG
+              manager:
+                hostname: cloudify-manager
+                private_ip: ${ENTRYPOINT}
+                file_server_type: s3
+              " > "${CONFIG_FILE}"
+
+              python -m manager_rest.configure_manager -c "${CONFIG_FILE}"
           env:
             - name: ENTRYPOINT
               value: localhost
+          volumeMounts:
+            - mountPath: /etc/cloudify/ssl
+              name: ssl
+              readOnly: true
         {{ if .Values.fileserver.install }}
         - name: fileserver-create-resources-bucket
           image: {{ .Values.fileserver.client_image }}
@@ -86,6 +95,11 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
+      volumes:
+        - name: ssl
+          secret:
+            secretName: {{ template "cloudify-services.name" . }}-certs
+            optional: false
 ---
 apiVersion: v1
 kind: Service
