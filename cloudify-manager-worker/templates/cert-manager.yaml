@@ -47,6 +47,7 @@ spec:
     - "{{ .Values.db.host }}"
     - "{{ .Values.queue.host }}"
     - "{{ .Values.service.host }}"
+    - "localhost"
   issuerRef:
     name: cfy-ca-issuer
 {{- end }}

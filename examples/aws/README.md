@@ -19,7 +19,6 @@ $ eksctl create cluster \
 
 https://docs.aws.amazon.com/efs/latest/ug/creating-using-create-fs.html
 
-
 ```bash
 $  aws efs create-file-system \
 --creation-token efs-storage \
@@ -39,6 +38,7 @@ Please deploy Amazon EFS CSI driver using official AWS documentation: https://do
 ### Create storage class
 
 Example of manifest for "cm-efs" storage class, please replace **EFS_ID** to ID of the previously created AWS EFS file system:
+
 ```yaml
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -57,6 +57,7 @@ parameters:
 The same manifest can be found there: [efs/storageclass.yaml](efs/storageclass.yaml)
 
 Apply the manifest:
+
 ```bash
 kubectl apply -f efs/storageclass.yaml
 ```
@@ -64,11 +65,13 @@ kubectl apply -f efs/storageclass.yaml
 ## Deploy helm chart
 
 ### Create Namespace
+
 ```bash
 kubectl create ns cfy-demo
 ```
 
 ### Create needed certificates and store as k8s secret
+
 ```bash
 $ docker pull cloudifyplatform/community-cloudify-manager-aio:latest
 $ docker run --name cfy_manager_local -d --restart unless-stopped --tmpfs /run --tmpfs /run/lock -p 8000:8000 cloudifyplatform/community-cloudify-manager-aio
@@ -84,8 +87,8 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 
 ```yaml
 volume:
-  storageClass: 'cm-efs'
-  accessMode: 'ReadWriteMany'
+  storageClass: "cm-efs"
+  accessMode: "ReadWriteMany"
   size: "15Gi"
 
 service:
@@ -115,7 +118,6 @@ config:
 
 readinessProbe:
   enabled: true
-  port: 80
   path: /console
   successThreshold: 3
   initialDelaySeconds: 10
@@ -143,6 +145,4 @@ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f values.yaml
 ```
 
-You can find this values.yaml in /examples/aws folder. 
-
-
+You can find this values.yaml in /examples/aws folder.

@@ -21,7 +21,7 @@ https://docs.microsoft.com/en-us/azure/storage/files/storage-files-how-to-create
 ```bash
 # Connect your Azure CLI to your Azure account, if you have not already done so.
 az login
-# Provide the subscription ID for the subscription where you would like to 
+# Provide the subscription ID for the subscription where you would like to
 # register the feature
 subscriptionId="<yourSubscriptionIDHere>"
 az feature register \
@@ -59,6 +59,7 @@ az storage account create \
     --sku Premium_LRS \
     --kind FileStorage
 ```
+
 You can create it using UI via Azure portal, look [here](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal) for explanation of how to do it
 
 ## Create an NFS share
@@ -75,12 +76,13 @@ az storage share-rm create \
 
 You can create it using UI via Azure portal, look [here](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal) for explanation of how to do it
 
-After provision is over your nfs server url looks like: https://cfynfsstorage.file.core.windows.net/cfynfsstorage/nfsshare 
+After provision is over your nfs server url looks like: https://cfynfsstorage.file.core.windows.net/cfynfsstorage/nfsshare
 
 Great explanation of how to provision FileStorage
 https://www.youtube.com/watch?v=MXXS4n-Tk4o&t=0s&ab_channel=WintellectNOW
 
 ## Deploy nfs provisioner
+
 You need dynamic 'nfs client provisoner' to dynamically deploy new PV from nfs storage every time PV needed
 
 ```bash
@@ -95,10 +97,9 @@ kubectl get storageclass
 
 Problems I encountered:
 
-* Check nfsshare you created attached to virtual network through azure portal
+- Check nfsshare you created attached to virtual network through azure portal
 
-* Check 'Secure transfer required' is disabled in configuration
-
+- Check 'Secure transfer required' is disabled in configuration
 
 ### Alternative is to create PV manually every time:
 
@@ -124,11 +125,13 @@ spec:
 ## Deploy helm chart
 
 ### Create Namespace
+
 ```bash
 kubectl create ns cfy-demo
 ```
 
 ### Create needed certificates and store as k8s secret
+
 ```bash
 $ docker pull cloudifyplatform/community-cloudify-manager-aio:latest
 $ docker run --name cfy_manager_local -d --restart unless-stopped --tmpfs /run --tmpfs /run/lock -p 8000:8000 cloudifyplatform/community-cloudify-manager-aio
@@ -144,8 +147,8 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 
 ```yaml
 volume:
-  storageClass: 'nfs-client'
-  accessMode: 'ReadWriteMany'
+  storageClass: "nfs-client"
+  accessMode: "ReadWriteMany"
   size: "15Gi"
 
 service:
@@ -175,7 +178,6 @@ config:
 
 readinessProbe:
   enabled: true
-  port: 80
   path: /console
   successThreshold: 3
   initialDelaySeconds: 10
@@ -203,6 +205,4 @@ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f values.yaml
 ```
 
-You can find this values.yaml in /examples/azure folder. 
-
-
+You can find this values.yaml in /examples/azure folder.

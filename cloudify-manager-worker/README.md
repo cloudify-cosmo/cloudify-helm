@@ -1,4 +1,4 @@
-[//]: # (-*- markdown -*-)
+[//]: # "-*- markdown -*-"
 
 # Cloudify manager worker helm chart ( Premium Version )
 
@@ -80,7 +80,7 @@ Exec to the manager and generate certificates
 $ docker exec -it cfy_manager_local bash
 
 # NAMESPACE to which cloudify-manager deployed, must be changed accordingly
-$ cfy_manager generate-test-cert -s 'cloudify-manager-worker.NAMESPACE.svc.cluster.local,rabbitmq.NAMESPACE.svc.cluster.local,postgres-postgresql.NAMESPACE.svc.cluster.local'
+$ cfy_manager generate-test-cert -s 'cloudify-manager-worker.NAMESPACE.svc.cluster.local,rabbitmq.NAMESPACE.svc.cluster.local,postgres-postgresql.NAMESPACE.svc.cluster.local,localhost'
 ```
 
 You can change the name of the created certificates (inside the container):
@@ -157,6 +157,7 @@ spec:
     - "postgres-postgresql"
     - "rabbitmq"
     - "cloudify-manager-worker"
+    - "localhost"
   issuerRef:
     name: cfy-ca-issuer
 ```
@@ -262,7 +263,7 @@ Update following parameters in your helm values file:
 ```yaml
 db:
   serverExistingPasswordSecret: "SECRET_NAME"
- 
+
 postgresql:
   existingSecret: "SECRET_NAME"
 ```
@@ -296,7 +297,7 @@ Update following parameters in your helm values file:
 ```yaml
 queue:
   existingPasswordSecret: "SECRET_NAME"
- 
+
 rabbitmq:
   auth:
     existingPasswordSecret: "SECRET_NAME"
@@ -409,7 +410,7 @@ service:
 
 That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer).
 
-Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager  load balancer endpoint, for example:
+Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager load balancer endpoint, for example:
 
 ```yaml
 config:
@@ -507,7 +508,6 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | `8` | liveness probe failure threshold |
 | livenessProbe.httpGet.path | string | `"/api/v3.1/ok"` | liveness probe HTTP GET path |
-| livenessProbe.httpGet.port | int | `80` | liveness probe HTTP port |
 | livenessProbe.initialDelaySeconds | int | `600` | liveness probe initial delay in seconds |
 | livenessProbe.periodSeconds | int | `30` | liveness probe period in seconds |
 | livenessProbe.successThreshold | int | `1` | liveness probe success threshold |
@@ -531,12 +531,11 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | rabbitmq | object | object | Parameters group for bitnami/rabbitmq helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/README.md |
 | readinessProbe | object | object | Parameters group for pod readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readiness probe |
-| readinessProbe.failureThreshold | int | `5` | readiness probe failure threshold |
+| readinessProbe.failureThreshold | int | `2` | readiness probe failure threshold |
 | readinessProbe.httpGet.path | string | `"/console"` | readiness probe HTTP GET path |
-| readinessProbe.httpGet.port | int | `80` | readiness probe HTTP port |
 | readinessProbe.initialDelaySeconds | int | `0` | readiness probe initial delay in seconds |
 | readinessProbe.periodSeconds | int | `10` | readiness probe period in seconds |
-| readinessProbe.successThreshold | int | `1` | readiness probe success threshold |
+| readinessProbe.successThreshold | int | `2` | readiness probe success threshold |
 | readinessProbe.timeoutSeconds | int | `5` | readiness probe timeout in seconds |
 | resources | object | object | Parameters group for resources requests and limits |
 | resources.limits | object | `{"cpu":3,"memory":"4.5Gi"}` | resources limits for Cloudify Manager container |
@@ -553,7 +552,6 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | startupProbe.enabled | bool | `true` | Enable startup probe |
 | startupProbe.failureThreshold | int | `30` | startup probe failure threshold |
 | startupProbe.httpGet.path | string | `"/console"` | startup probe HTTP GET path |
-| startupProbe.httpGet.port | int | `80` | startup probe HTTP port |
 | startupProbe.initialDelaySeconds | int | `30` | startup probe initial delay in seconds |
 | startupProbe.periodSeconds | int | `10` | startup probe period in seconds |
 | startupProbe.successThreshold | int | `1` | startup probe success threshold |
@@ -624,22 +622,20 @@ on the data in the Manager's database in order to use it in the new version.
 It is handled in the `config.after_bash` value.
 
 Change the following in values.yaml:
+
 ```yaml
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 7.0.0
-...
-
+---
 rabbitmq:
- 
   image:
     tag: 3.10.13-debian-11-r9
-...
-
+---
 config:
- 
   after_bash: "if [[ $(/opt/manager/env/bin/python --version) == *'3.10'* ]]; then opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/populate_deployment_statuses.py; opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/migrate_pickle_to_json.py; fi"
 ```
+
 Alternatively these can be set directly through the `helm upgrade` command
 (notice the `--set` of the erlang cookie, see above):
 
@@ -717,8 +713,8 @@ tls:
   # Parameters for PostgreSQL SSL certificates, required for external postgresql database only
   pgsqlSslSecretName: pgsql-external-cert # k8s secret name with psql ssl certs
   pgsqlSslCaName: postgres_ca.crt # subPath name for ssl CA cert in k8s secret
-  pgsqlSslCertName: '' # subPath name for ssl cert in k8s secret, isn't required
-  pgsqlSslKeyName: '' # subPath name for ssl key in k8s secret, isn't required
+  pgsqlSslCertName: "" # subPath name for ssl cert in k8s secret, isn't required
+  pgsqlSslKeyName: "" # subPath name for ssl key in k8s secret, isn't required
 ```
 
 ### Additional secrets to mount onto cloudify-manager-worker pod
@@ -772,7 +768,6 @@ volume:
 ```yaml
 readinessProbe:
   enabled: true
-  port: 80
   path: /console
   initialDelaySeconds: 10
 ```
@@ -813,6 +808,18 @@ ingress:
   tls:
     enabled: false
     secretName: cfy-secret-name
+```
+
+If you have parameter config.security.sslEnabled set to "true", you need configure ingress for use HTTPS backend protocol. In case of nginx ingress, you need to add additional annotation "nginx.ingress.kubernetes.io/backend-protocol" set to "HTTPS", so in your values file it should looks like:
+
+```
+ingress:
+  enabled: true
+  host: cloudify-manager.app.cloudify.co
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
 ```
 
 ### Create secret for okta-license - required if using Okta/SSO
