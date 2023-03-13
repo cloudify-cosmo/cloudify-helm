@@ -23,7 +23,7 @@ Provides a release information for each version splitted by the next sections
 
 ## Fixed
 
-- Fixes in probes and cert-manager for support deploy with parameter config.security.sslEnabled=true ;
+- Fixes in service, ingress, probes and cert-manager for support deploy with parameter config.security.sslEnabled=true ;
 
 ## Removed
 
