@@ -248,3 +248,9 @@ stage_frontend:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
+
+prometheus:
+  replicas: 1
+  image: prom/prometheus
+  imagePullPolicy: IfNotPresent
+  api_port: 9090
