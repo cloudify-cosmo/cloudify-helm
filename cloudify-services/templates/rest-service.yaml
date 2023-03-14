@@ -39,6 +39,7 @@ spec:
                 hostname: cloudify-manager
                 private_ip: ${ENTRYPOINT}
                 file_server_type: s3
+                prometheus_url: http://prometheus:{{ .Values.prometheus.api_port }}
               " > "${CONFIG_FILE}"
 
               python -m manager_rest.configure_manager -c "${CONFIG_FILE}"
@@ -90,9 +91,6 @@ spec:
             successThreshold: {{ .Values.rest_service.probes.liveness.successThreshold }}
             failureThreshold: {{ .Values.rest_service.probes.liveness.failureThreshold }}
           {{- end }}
-          envFrom:
-            - configMapRef:
-                name: rest-service-envvars
       restartPolicy: Always
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -114,11 +112,3 @@ spec:
   selector:
     app: rest-service
   type: ClusterIP
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: rest-service-envvars
-data:
-  PROMETHEUS_HOST: prometheus
-  PROMETHEUS_SERVICE_PORT: {{ .Values.prometheus.api_port | quote }}
