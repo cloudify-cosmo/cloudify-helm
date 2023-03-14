@@ -39,6 +39,7 @@ spec:
                 hostname: cloudify-manager
                 private_ip: ${ENTRYPOINT}
                 file_server_type: s3
+                prometheus_url: http://prometheus:{{ .Values.prometheus.api_port }}
               " > "${CONFIG_FILE}"
 
               python -m manager_rest.configure_manager -c "${CONFIG_FILE}"
