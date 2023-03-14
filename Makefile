@@ -31,6 +31,8 @@ load-images:
 	kind load docker-image postgres:latest
 	docker pull nginx:latest
 	kind load docker-image nginx:latest
+	docker pull prom/prometheus:latest
+	kind load docker-image prom/prometheus:latest
 .PHONY: load-images
 
 deploy:
