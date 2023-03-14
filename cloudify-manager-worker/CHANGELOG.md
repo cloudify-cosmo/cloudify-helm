@@ -11,12 +11,33 @@ Provides a release information for each version splitted by the next sections
 - **Upgrade notes** - instruction about upgrage from previous helm chart version
 
 </br>
+# [v0.4.4]
+
+## Changed
+
+-
+
+## Added
+
+-
+
+## Fixed
+
+- Fixes in service, ingress, probes and cert-manager for support deploy with parameter config.security.sslEnabled=true ;
+
+## Removed
+
+-
+
+## Upgrade notes
+
+-
 
 # [v0.4.3]
 
 ## Changed
 
-- 
+-
 
 ## Added
 
@@ -29,7 +50,7 @@ Provides a release information for each version splitted by the next sections
 
 ## Removed
 
-- 
+-
 
 ## Upgrade notes
 
@@ -40,18 +61,18 @@ $ kubectl get secret --namespace "NAMESPACE" rabbitmq -o jsonpath="{.data.rabbit
 ```
 
 and then please add erlang cookie parameter value, got on the previous step, into your values file:
+
 ```
 rabbitmq:
   auth:
     erlangCookie: "ERLANG_COOKIE"
 ```
 
-
 # [v0.4.2]
 
 ## Changed
 
-- 
+-
 
 ## Added
 
@@ -65,12 +86,11 @@ rabbitmq:
 
 ## Removed
 
-- 
+-
 
 ## Upgrade notes
 
 -
-
 
 # [v0.4.1] - 2022-12-12
 
@@ -92,16 +112,15 @@ rabbitmq:
 
 ## Fixed
 
-- 
+-
 
 ## Removed
 
-- 
+-
 
 ## Upgrade notes
 
 If you have some manual customizations in the main or user config files (config.yaml or userConfig.json) of Cloudify Manager worker you need to migrate them in helm values (new parameters "mainConfig" and "userConfig") before upgrade. To do that, please copy parameters "mainConfig" and "userConfig" with values from default values.yaml of this helm chart and customize necessary parameters.
-
 
 # [v0.4.0] - 2022-11-08
 
@@ -128,7 +147,7 @@ If you have some manual customizations in the main or user config files (config.
 
 ## Upgrade notes
 
-For upgrade from version 0.3.* to 0.4.0 and keep data on Cloudify Manager Worker persistance volume please execute following command **before** upgrade:
+For upgrade from version 0.3.\* to 0.4.0 and keep data on Cloudify Manager Worker persistance volume please execute following command **before** upgrade:
 
 ```bash
 kubectl -n NAMESPACE annotate --overwrite persistentvolumeclaims cfy-worker-pvc helm.sh/resource-policy=keep

@@ -128,7 +128,13 @@ spec:
         livenessProbe:
           httpGet:
             path: {{ .Values.livenessProbe.httpGet.path }}
-            port: {{ .Values.livenessProbe.httpGet.port }}
+            {{- if .Values.config.security.sslEnabled }}
+            port: 443
+            scheme: HTTPS
+            {{- else }}
+            port: 80
+            scheme: HTTP
+            {{- end }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.livenessProbe.successThreshold }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
@@ -139,7 +145,13 @@ spec:
         readinessProbe:
           httpGet:
             path: {{ .Values.readinessProbe.httpGet.path }}
-            port: {{ .Values.readinessProbe.httpGet.port }}
+            {{- if .Values.config.security.sslEnabled }}
+            port: 443
+            scheme: HTTPS
+            {{- else }}
+            port: 80
+            scheme: HTTP
+            {{- end }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
@@ -150,7 +162,13 @@ spec:
         startupProbe:
           httpGet:
             path: {{ .Values.startupProbe.httpGet.path }}
-            port: {{ .Values.startupProbe.httpGet.port }}
+            {{- if .Values.config.security.sslEnabled }}
+            port: 443
+            scheme: HTTPS
+            {{- else }}
+            port: 80
+            scheme: HTTP
+            {{- end }}
           timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
           successThreshold: {{ .Values.startupProbe.successThreshold }}
           periodSeconds: {{ .Values.startupProbe.periodSeconds }}

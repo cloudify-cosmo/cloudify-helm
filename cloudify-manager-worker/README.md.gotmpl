@@ -1,4 +1,4 @@
-[//]: # (-*- markdown -*-)
+[//]: # "-*- markdown -*-"
 
 # Cloudify manager worker helm chart ( Premium Version )
 
@@ -80,7 +80,7 @@ Exec to the manager and generate certificates
 $ docker exec -it cfy_manager_local bash
 
 # NAMESPACE to which cloudify-manager deployed, must be changed accordingly
-$ cfy_manager generate-test-cert -s 'cloudify-manager-worker.NAMESPACE.svc.cluster.local,rabbitmq.NAMESPACE.svc.cluster.local,postgres-postgresql.NAMESPACE.svc.cluster.local'
+$ cfy_manager generate-test-cert -s 'cloudify-manager-worker.NAMESPACE.svc.cluster.local,rabbitmq.NAMESPACE.svc.cluster.local,postgres-postgresql.NAMESPACE.svc.cluster.local,localhost'
 ```
 
 You can change the name of the created certificates (inside the container):
@@ -157,6 +157,7 @@ spec:
     - "postgres-postgresql"
     - "rabbitmq"
     - "cloudify-manager-worker"
+    - "localhost"
   issuerRef:
     name: cfy-ca-issuer
 ```
@@ -182,7 +183,6 @@ $ git clone https://github.com/cloudify-cosmo/cloudify-helm.git && cd cloudify-h
 ### Create secret/configMap with premium license - required if using Cloudify premium version
 
 Create license.yaml file and populate it with license data
-
 
 ```yaml
 apiVersion: v1
@@ -263,7 +263,7 @@ Update following parameters in your helm values file:
 ```yaml
 db:
   serverExistingPasswordSecret: "SECRET_NAME"
-  
+
 postgresql:
   existingSecret: "SECRET_NAME"
 ```
@@ -297,7 +297,7 @@ Update following parameters in your helm values file:
 ```yaml
 queue:
   existingPasswordSecret: "SECRET_NAME"
-  
+
 rabbitmq:
   auth:
     existingPasswordSecret: "SECRET_NAME"
@@ -305,7 +305,6 @@ rabbitmq:
 ```
 
 #### Cloudify Manager worker admin password
-
 
 Create k8s secret:
 
@@ -411,7 +410,7 @@ service:
 
 That will create a load balancer depending on your K8S infrastructure (e.g. EKS will create a Classic Load Balancer).
 
-Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager  load balancer endpoint, for example:
+Also please add parameter **config.public_ip** with DNS name which you are going to configure for you Cloudify Manager load balancer endpoint, for example:
 
 ```yaml
 config:
@@ -478,38 +477,36 @@ If DB schema was changed in newer version, needed migration will be running firs
 
 #### Upgrading to Cloudify manager worker 7.X [UNRELEASED]
 
-In Cloudify Manager 7 we upgraded the version of PostgreSQL to 14 and of 
-RabbitMQ to 3.10. 
+In Cloudify Manager 7 we upgraded the version of PostgreSQL to 14 and of
+RabbitMQ to 3.10.
 
-In Cloudify-Helm we use the bitnami/postgresql chart 
-(which deploys PostgreSQL version 11 for Cloudify Manager 6.X, also compatible 
-with Cloudify Manager 7.X). The bitnami/postgresql chart does not support 
-database version upgrade, so if the user likes to upgrade PostgreSQL they'll 
+In Cloudify-Helm we use the bitnami/postgresql chart
+(which deploys PostgreSQL version 11 for Cloudify Manager 6.X, also compatible
+with Cloudify Manager 7.X). The bitnami/postgresql chart does not support
+database version upgrade, so if the user likes to upgrade PostgreSQL they'll
 need to do so manually using the [pg_upgrade](https://www.postgresql.org/docs/current/pgupgrade.html) tool.
 
-Additionally, coming from Cloudify Manager 6.X, the 
-_populate_deployment_statuses_ and _migrate_pickle_to_json_ scripts must run 
+Additionally, coming from Cloudify Manager 6.X, the
+_populate_deployment_statuses_ and _migrate_pickle_to_json_ scripts must run
 on the data in the Manager's database in order to use it in the new version.
 It is handled in the `config.after_bash` value.
 
 Change the following in values.yaml:
+
 ```yaml
 image:
   repository: cloudifyplatform/premium-cloudify-manager-worker
   tag: 7.0.0
-...
-
+---
 rabbitmq:
-  
   image:
     tag: 3.10.13-debian-11-r9
-...
-
+---
 config:
-  
   after_bash: "if [[ $(/opt/manager/env/bin/python --version) == *'3.10'* ]]; then opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/populate_deployment_statuses.py; opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/migrate_pickle_to_json.py; fi"
 ```
-Alternatively these can be set directly through the `helm upgrade` command 
+
+Alternatively these can be set directly through the `helm upgrade` command
 (notice the `--set` of the erlang cookie, see above):
 
 ```bash
@@ -518,7 +515,6 @@ $ helm upgrade cloudify-manager-worker cloudify-helm/cloudify-manager-worker \
 --set config.after_bash="if [[ \$(/opt/manager/env/bin/python --version) == *'3.10'* ]]; then opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/populate_deployment_statuses.py; opt/manager/env/bin/python /opt/mgmtworker/env/lib/python3.10/site-packages/cloudify_system_workflows/snapshots/migrate_pickle_to_json.py; fi" \
 --set rabbitmq.auth.erlangCookie=$RABBITMQ_ERLANG_COOKIE -n NAMESPACE
 ```
-
 
 ### Image:
 
@@ -587,8 +583,8 @@ tls:
   # Parameters for PostgreSQL SSL certificates, required for external postgresql database only
   pgsqlSslSecretName: pgsql-external-cert # k8s secret name with psql ssl certs
   pgsqlSslCaName: postgres_ca.crt # subPath name for ssl CA cert in k8s secret
-  pgsqlSslCertName: '' # subPath name for ssl cert in k8s secret, isn't required
-  pgsqlSslKeyName: '' # subPath name for ssl key in k8s secret, isn't required
+  pgsqlSslCertName: "" # subPath name for ssl cert in k8s secret, isn't required
+  pgsqlSslKeyName: "" # subPath name for ssl key in k8s secret, isn't required
 ```
 
 ### Additional secrets to mount onto cloudify-manager-worker pod
@@ -642,7 +638,6 @@ volume:
 ```yaml
 readinessProbe:
   enabled: true
-  port: 80
   path: /console
   initialDelaySeconds: 10
 ```
@@ -683,6 +678,18 @@ ingress:
   tls:
     enabled: false
     secretName: cfy-secret-name
+```
+
+If you have parameter config.security.sslEnabled set to "true", you need configure ingress for use HTTPS backend protocol. In case of nginx ingress, you need to add additional annotation "nginx.ingress.kubernetes.io/backend-protocol" set to "HTTPS", so in your values file it should looks like:
+
+```
+ingress:
+  enabled: true
+  host: cloudify-manager.app.cloudify.co
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
 ```
 
 ### Create secret for okta-license - required if using Okta/SSO

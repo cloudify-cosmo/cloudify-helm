@@ -46,5 +46,6 @@ spec:
     - "postgres-postgresql"
     - "rabbitmq"
     - "cloudify-manager-worker"
+    - "localhost"
   issuerRef:
     name: cfy-ca-issuer

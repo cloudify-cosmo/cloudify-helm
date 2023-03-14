@@ -1,6 +1,5 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "cloudify-manager-worker.fullname" . -}}
-{{- $httpPort := .Values.service.http.port -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -30,6 +29,10 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
-                  number: {{ .servicePort | default $httpPort }}
+                port:
+                  {{- if .Values.config.security.sslEnabled }}
+                  number: {{ .Values.service.https.port }}
+                  {{- else }}
+                  number: {{ .Values.service.http.port }}
+                  {{- end }}
 {{- end }}

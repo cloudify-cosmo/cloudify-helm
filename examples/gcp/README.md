@@ -47,6 +47,7 @@ FSADDR=$(gcloud beta filestore instances describe cfy-fs \
 ```
 
 ## Deploy nfs provisioner
+
 You need dynamic 'nfs client provisoner' to dynamically deploy new PV from nfs storage every time PV needed
 
 ```bash
@@ -58,7 +59,6 @@ Validate that new 'storageclass' nfs-client available:
 ```bash
 kubectl get storageclass
 ```
-
 
 ### Alternative is to create PV manually every time:
 
@@ -84,11 +84,13 @@ spec:
 ## Deploy helm chart
 
 ### Create Namespace
+
 ```bash
 kubectl create ns cfy-demo
 ```
 
 ### Create needed certificates and store as k8s secret
+
 ```bash
 $ docker pull cloudifyplatform/community-cloudify-manager-aio:latest
 $ docker run --name cfy_manager_local -d --restart unless-stopped --tmpfs /run --tmpfs /run/lock -p 8000:8000 cloudifyplatform/community-cloudify-manager-aio
@@ -104,8 +106,8 @@ $ kubectl create secret generic cfy-certs --from-file=./tls.crt --from-file=./tl
 
 ```yaml
 volume:
-  storageClass: 'nfs-client'
-  accessMode: 'ReadWriteMany'
+  storageClass: "nfs-client"
+  accessMode: "ReadWriteMany"
   size: "15Gi"
 
 service:
@@ -135,7 +137,6 @@ config:
 
 readinessProbe:
   enabled: true
-  port: 80
   path: /console
   successThreshold: 3
   initialDelaySeconds: 10
@@ -163,6 +164,4 @@ helm repo add cloudify-helm https://cloudify-cosmo.github.io/cloudify-helm
 helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker -f values.yaml
 ```
 
-You can find this values.yaml in /examples/gcp folder. 
-
-
+You can find this values.yaml in /examples/gcp folder.

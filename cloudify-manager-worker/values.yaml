@@ -269,8 +269,6 @@ livenessProbe:
   httpGet:
     # -- liveness probe HTTP GET path
     path: /api/v3.1/ok
-    # -- liveness probe HTTP port
-    port: 80
   # -- liveness probe timeout in seconds
   timeoutSeconds: 15
   # -- liveness probe success threshold
@@ -290,8 +288,6 @@ readinessProbe:
   httpGet:
     # -- readiness probe HTTP GET path
     path: /console
-    # -- readiness probe HTTP port
-    port: 80
   # -- readiness probe timeout in seconds
   timeoutSeconds: 5
   # -- readiness probe success threshold
@@ -311,8 +307,6 @@ startupProbe:
   httpGet:
     # -- startup probe HTTP GET path
     path: /console
-    # -- startup probe HTTP port
-    port: 80
   # -- startup probe timeout in seconds
   timeoutSeconds: 5
   # -- startup probe success threshold
