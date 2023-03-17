@@ -1,9 +1,14 @@
 nameOverride: ""
 fullnameOverride: ""
 
+# -- Parameters group for Docker images
+# @default -- object
 image:
+  # -- Docker image repository
   repository: "cloudifyplatform/community-cloudify-manager-aio"
+  # -- Docker image tag
   tag: "6.4.2"
+  # -- Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   pullPolicy: IfNotPresent
 
 # -- Parameters group for ingress (managed external access to service)
@@ -29,20 +34,32 @@ ingress:
     # -- k8s secret name with TLS certificates for ingress
     secretName: cfy-tls-ingress
 
+# -- Parameters group for k8s service
+# @default -- object
 service:
+  # -- k8s service type. If you plan to use Ingress, you can use ClusterIP there.
   type: LoadBalancer
+  # -- k8s service name
   name: cloudify-manager-aio
   rabbitmq:
+    # -- k8s service rabbitmq port
     port: 5671
   http:
+    # -- k8s service http port
     port: 80
   https:
+    # -- k8s service https port
     port: 443
   internalRest:
+    # -- k8s service internal rest port
     port: 53333
 
+# -- Node labels for default backend pod assignment.
+# Ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
 
+# -- Parameters group for resources requests and limits
+# @default -- object
 resources:
   requests:
     memory: 1Gi
@@ -108,11 +125,15 @@ livenessProbe:
   # -- liveness probe initial delay in seconds
   initialDelaySeconds: 600
 
+# -- Parameters group for k8s pod security context
+# @default -- object
 podSecurityContext:
   runAsNonRoot: false
   seccompProfile:
     type: RuntimeDefault
 
+# -- Parameters group for k8s containers security context
+# @default -- object
 containerSecurityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: false
