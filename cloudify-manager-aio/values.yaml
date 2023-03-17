@@ -6,6 +6,29 @@ image:
   tag: "6.4.2"
   pullPolicy: IfNotPresent
 
+# -- Parameters group for ingress (managed external access to service)
+# @default -- object
+ingress:
+  # -- Enable ingress
+  enabled: false
+  # -- Hostname for ingress connection
+  host: cfy-efs-app.eks.cloudify.co
+  # -- Ingress Class Name
+  ingressClassName: nginx
+  # -- Ingress annotation object. Please see an example in values.yaml file
+  # @default -- object
+  annotations:
+    # Ingress proxy body size. Use this annotation to allow upload of resources up to 50mb (e.g. plugins).
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    # cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+  # -- Ingress TLS parameters
+  # @default -- object
+  tls:
+    # -- Enabled TLS connections for Ingress
+    enabled: false
+    # -- k8s secret name with TLS certificates for ingress
+    secretName: cfy-tls-ingress
+
 service:
   type: LoadBalancer
   name: cloudify-manager-aio
