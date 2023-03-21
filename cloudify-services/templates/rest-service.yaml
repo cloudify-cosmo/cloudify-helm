@@ -108,7 +108,10 @@ metadata:
   name: rest-service
 spec:
   ports:
-    - port: {{ .Values.rest_service.port }}
+    - name: web
+      port: {{ .Values.rest_service.port }}
+    - name: metrics
+      port: 9100
   selector:
     app: rest-service
   type: ClusterIP
