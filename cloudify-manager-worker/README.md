@@ -521,6 +521,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | okta.portalUrl | string | `""` | Portal URL |
 | okta.secretName | string | `"okta-license"` | k8s secret name containing the OKTA certificates. |
 | okta.ssoUrl | string | `""` | SSO URL |
+| podAnnotations | object | `{}` | Additional annotations for Cloudify Manager Worker pods. |
 | podSecurityContext | object | object | Parameters group for k8s pod security context |
 | postgresql | object | object | Parameters group for bitnami/postgresql helm chart. Details: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/README.md |
 | queue | object | object | Parameters group for connection to RabbitMQ (Message Broker) |

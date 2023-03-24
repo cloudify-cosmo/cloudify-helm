@@ -131,6 +131,9 @@ service:
 # Ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
 
+# -- Additional annotations for Cloudify Manager Worker pods.
+podAnnotations: {}
+
 ## -- Parameters group for TLS/SSL configuration.
 # @default -- object
 tls:

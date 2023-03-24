@@ -16,6 +16,7 @@ spec:
   {{- end }}
   template:
     metadata:
+      annotations: {{- toYaml .Values.podAnnotations | nindent 8 }}
       labels:
         app: {{ template "cloudify-manager-worker.name" . }}
         {{- if .Values.config.labels }}
