@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,12 +15,41 @@ spec:
       labels:
         app: prometheus
     spec:
+      serviceAccountName: prometheus-sa
       containers:
         - image: {{ .Values.prometheus.image }}
           imagePullPolicy: {{ .Values.prometheus.imagePullPolicy }}
           name: prometheus
           ports:
             - containerPort: {{ .Values.prometheus.api_port }}
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus
+        # to fetch the status of all local pods, run a separate "exporter"
+        # container, running a script that will serve http on localhost,
+        # reporting all the pods fetched from the local k8s namespace.
+        # In order to be able to fetch the pods, this pod must be run
+        # using a ServiceAccount that is allowed to list pods.
+        # Currently, there doesn't seem to be a simpler way to expose
+        # "which pods are ready" to prometheus.
+        - name: cloudify-exporter
+          # we need any image that has python3.8+ on it; the restservice
+          # image is OK, and we'll avoid downloading additional images
+          image: {{ .Values.rest_service.image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          command: ['python3', '/exporter.py']
+          volumeMounts:
+            - name: services-exporter
+              mountPath: /exporter.py
+              subPath: exporter.py
+              readOnly: true
+      volumes:
+        - name: services-exporter
+          configMap:
+            name: cloudify-services-exporter-source
+        - name: prometheus-config-volume
+          configMap:
+            name: prometheus-config
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -32,3 +62,53 @@ spec:
   selector:
     app: prometheus
   type: ClusterIP
+
+# define ServiceAccount, Role, and a binding, so that the exporter container
+# is allowed to list pods
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-user-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-role
+subjects:
+- kind: ServiceAccount
+  name: prometheus-sa
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |-
+{{ .Files.Get "monitoring-configs/prometheus.yml" | indent 4}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudify-services-exporter-source
+data:
+  exporter.py: |
+{{ .Files.Get "monitoring-configs/exporter.py" | indent 4 }}
+
