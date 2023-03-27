@@ -1,0 +1,27 @@
+groups:
+  - name: services
+    rules:
+      - record: mgmtworker_up
+        expr: up{job="mgmtworker"}
+      - record: rest_service_up
+        expr: up{job="rest-service"}
+      - record: api_service_up
+        expr: up{job="api-service"}
+      - record: execution_scheduler_up
+        expr: up{job="execution-scheduler"}
+      - record: nginx_up
+        expr: up{job="nginx"}
+      - record: rabbitmq_up
+        expr: up{job="rabbitmq"}
+      - record: postgresql_up
+        expr: up{job="postgresql"}
+      - record: fileserver_up
+        expr: up{job="fileserver"}
+      - record: stage_frontend_up
+        expr: up{job="stage-frontend"}
+      - record: stage_backend_up
+        expr: up{job="stage-backend"}
+      - record: composer_frontend_up
+        expr: up{job="composer-frontend"}
+      - record: composer_backend_up
+        expr: up{job="composer-backend"}

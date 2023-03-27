@@ -103,6 +103,8 @@ metadata:
 data:
   prometheus.yml: |-
 {{ .Files.Get "monitoring-configs/prometheus.yml" | indent 4}}
+  rules.yml: |-
+{{ .Files.Get "monitoring-configs/rules.yml" | indent 4}}
 ---
 apiVersion: v1
 kind: ConfigMap
