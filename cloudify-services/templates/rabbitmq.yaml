@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: rabbitmq
+        cloudify-name: cloudify-rabbitmq
     spec:
       containers:
         - image: {{ .Values.rabbitmq.image }}

@@ -42,7 +42,7 @@ def get_metrics():
     parts = []
     for pod in pods['items']:
         try:
-            app = pod['metadata']['labels']['app']
+            cloudify_name = pod['metadata']['labels']['cloudify-name']
             pod_ip = pod['status']['podIP']
             is_up = all(
                 cs['ready'] for cs in pod['status']['containerStatuses']
@@ -50,7 +50,8 @@ def get_metrics():
         except KeyError:
             continue
         parts.append(
-            f'up{{job="{app}", instance="{pod_ip}"}} {1 if is_up else 0}'
+            f'manager_service{{name="{cloudify_name}", instance="{pod_ip}"}}'
+            f' {1 if is_up else 0}'
         )
     return '\n'.join(parts).encode()
 

@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: execution-scheduler
+        cloudify-name: cloudify-execution-scheduler
     spec:
       containers:
         - image: {{ .Values.execution_scheduler.image }}

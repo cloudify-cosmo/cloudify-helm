@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: stage-frontend
+        cloudify-name: stage-frontend
     spec:
       containers:
         - image: {{ .Values.stage_frontend.image }}
