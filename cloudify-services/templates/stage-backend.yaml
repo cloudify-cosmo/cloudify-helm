@@ -18,7 +18,11 @@ spec:
       containers:
         - env:
             - name: RESTSERVICE_ADDRESS
-              value: {{ .Values.stage_backend.restservice_address }}
+              value: cloudify-entrypoint
+            - name: RESTSERVICE_PROTOCOL
+              value: http
+            - name: RESTSERVICE_PORT
+              value: "80"
           image: {{ .Values.stage_backend.image }}
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           name: stage-backend
