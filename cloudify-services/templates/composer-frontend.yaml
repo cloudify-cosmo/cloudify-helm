@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: composer-frontend
+        cloudify-name: composer-frontend
     spec:
       containers:
         - image: {{ .Values.composer_frontend.image }}

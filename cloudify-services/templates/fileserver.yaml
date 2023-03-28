@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         app: fileserver
+        cloudify-name: fileserver
     spec:
       containers:
         - image: {{ .Values.fileserver.image }}

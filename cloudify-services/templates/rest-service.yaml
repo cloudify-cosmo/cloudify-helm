@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: rest-service
+        cloudify-name: cloudify-restservice
     spec:
       initContainers:
         - name: rest-service-init

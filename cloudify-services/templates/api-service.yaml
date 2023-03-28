@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: api-service
+        cloudify-name: cloudify-api
     spec:
       initContainers:
         - name: api-service-init

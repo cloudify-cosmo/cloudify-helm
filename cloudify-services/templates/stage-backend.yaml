@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: stage-backend
+        cloudify-name: stage-backend
     spec:
       containers:
         - env:
