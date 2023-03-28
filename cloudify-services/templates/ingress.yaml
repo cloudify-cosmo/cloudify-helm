@@ -29,7 +29,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: nginx
+                name: cloudify-entrypoint
                 port:
                   number: {{ .servicePort | default $httpPort }}
 {{- end }}
