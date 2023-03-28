@@ -102,7 +102,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: cloudify-entrypoint
 spec:
   ports:
     - name: http
