@@ -51,6 +51,7 @@ spec:
     metadata:
       labels:
         app: nginx
+        cloudify-name: nginx
     spec:
       containers:
         - image: {{ .Values.nginx.image }}

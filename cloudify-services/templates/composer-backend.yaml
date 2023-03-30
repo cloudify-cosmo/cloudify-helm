@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app: composer-backend
-        cloudify-name: composer-backend
+        cloudify-name: cloudify-composer
     spec:
       containers:
         - env:
