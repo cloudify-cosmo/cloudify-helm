@@ -2,3 +2,4 @@ cloudify-manager-worker/caas-policies/
 cloudify-manager-worker/certs
 cloudify-manager-worker/scripts
 cloudify-manager-worker/charts/
+values-override.yaml
