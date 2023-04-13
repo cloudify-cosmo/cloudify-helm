@@ -74,6 +74,30 @@ spec:
               value: {{ .Values.fileserver.access_key }}
             - name: MINIO_SERVER_SECRET_KEY
               value: {{ .Values.fileserver.secret_key }}
+        - name: local-agent-packages-fetch
+          image: alpine/curl
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          args:
+            - sh
+            - -c
+            - mkdir -p /tmp/packages/agents && {{ ( include "cloudify-services.curl-download" ( list "/tmp/packages/agents" .Values.resources.packages.agents ) ) }}
+          volumeMounts:
+            - mountPath: /tmp/packages
+              name: packages
+        - name: fileserver-upload-agent-packages
+          image: {{ .Values.fileserver.client_image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          args: [cp, --recursive, /tmp/packages/, minio/resources/packages/]
+          env:
+            - name: MINIO_SERVER_HOST
+              value: fileserver
+            - name: MINIO_SERVER_ACCESS_KEY
+              value: {{ .Values.fileserver.access_key }}
+            - name: MINIO_SERVER_SECRET_KEY
+              value: {{ .Values.fileserver.secret_key }}
+          volumeMounts:
+            - mountPath: /tmp/packages
+              name: packages
         {{ end }}
       containers:
         - name: rest-service
@@ -102,6 +126,10 @@ spec:
           secret:
             secretName: {{ template "cloudify-services.name" . }}-certs
             optional: false
+        - name: packages
+          emptyDir:
+            sizeLimit: 500Mi
+
 ---
 apiVersion: v1
 kind: Service

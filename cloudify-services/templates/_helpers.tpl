@@ -91,3 +91,21 @@ cloudify_internal_key.pem: {{ $internalCert.Key | b64enc }}
 rabbitmq-cert.pem: {{ $rabbitmqCert.Cert | b64enc }}
 rabbitmq-key.pem: {{ $rabbitmqCert.Key | b64enc }}
 {{- end -}}
+
+{{/*
+Generate list of curl commands to download resources.  Argument to this function
+is a list of two elements:
+  - base directory for downloads
+  - map of destination file names to download urls
+Output is a string like:
+  curl -o /dir/f1 -L ftp://files.com/1 && curl -o /dir/f2 -L http://files.org/2
+*/}}
+{{- define "cloudify-services.curl-download" -}}
+{{- $destination := index . 0 -}}
+{{- $curls := list -}}
+{{- range $artifact, $url := (index . 1) -}}
+{{- $cmd := printf "curl -o %s/%s -L %s" $destination $artifact $url -}}
+{{- $curls = append $curls $cmd -}}
+{{- end -}}
+{{- printf (join " && " $curls ) -}}
+{{- end -}}
