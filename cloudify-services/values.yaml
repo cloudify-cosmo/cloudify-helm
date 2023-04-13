@@ -47,7 +47,12 @@ certs:
   rabbitmq_cert: ""
   rabbitmq_key: ""
 
-resources: {}
+resources:
+  packages:
+    agents:
+      manylinux-x86_64-agent.tar.gz: https://cloudify-release-eu.s3.amazonaws.com/cloudify/7.0.0/ga-release/manylinux-x86_64-agent_7.0.0-ga.tar.gz
+      manylinux-aarch64-agent.tar.gz: https://cloudify-release-eu.s3.amazonaws.com/cloudify/7.0.0/ga-release/manylinux-aarch64-agent_7.0.0-ga.tar.gz
+      cloudify-windows-agent.exe: https://cloudify-release-eu.s3.amazonaws.com/cloudify/7.0.0/ga-release/cloudify-windows-agent_7.0.0-ga.exe
 
 autoscaling:
   enabled: false
