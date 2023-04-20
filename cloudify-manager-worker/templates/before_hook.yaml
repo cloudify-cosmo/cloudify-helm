@@ -87,11 +87,7 @@ data:
       # Version-specific operations
       case ${WORKER_VERSION[0]} in
       7)
-        # Config authorization.conf isn't necessary for CM>=7.1.x
-        if ((WORKER_VERSION[1] < 1)); then
-          rm -f --verbose /opt/manager/authorization.conf
-          ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/authorization.conf" /opt/manager/authorization.conf
-        fi
+        # Config authorization.conf isn't necessary for CM>=7.x
         ;;
       *)
         rm -f --verbose /opt/manager/authorization.conf
