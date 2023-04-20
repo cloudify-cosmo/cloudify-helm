@@ -243,7 +243,19 @@ config:
     # -- Maximum manager forwarded request size.
     maxBodySize: 2gb
 
-# -- Parameters group for OKTA
+# -- Parameters group for auth (for CM worker version >= 7.0)
+# @default -- object
+auth:
+  # -- Auth type
+  type: local
+  # -- Path to SSL certificate
+  certPath: ""
+  # -- Login page URL
+  loginPageUrl: /console/login
+  # -- After logout page URL
+  afterLogoutUrl: /console/login
+
+# -- Parameters group for OKTA (for CM worker version < 7.0)
 # @default -- object
 okta:
   # -- Enable OKTA support.
@@ -502,6 +514,12 @@ userConfig: |
         "delete": 10000
       },
       "maxBodySize": "{{ .Values.config.userConfig.maxBodySize | default "2gb" }}"
+    },
+    "auth":{
+      "type": "{{ .Values.auth.type }}",
+      "certPath": "{{ .Values.auth.certPath }}",
+      "loginPageUrl": "{{ .Values.auth.loginPageUrl }}",
+      "afterLogoutUrl": "{{ .Values.auth.afterLogoutUrl }}"
     },
     "saml": {
       "enabled": {{ .Values.okta.enabled }},

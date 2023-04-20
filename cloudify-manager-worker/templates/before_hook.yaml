@@ -8,6 +8,23 @@ data:
     #!/usr/bin/env bash
     set -eux
 
+    function parse_semver() {
+      local token="$1"
+      local major=0
+      local minor=0
+      local patch=0
+      if egrep '^[0-9]+\.[0-9]+\.[0-9]+' <<<"$token" >/dev/null 2>&1 ; then
+        # It has the correct syntax.
+        local n=${token//[!0-9]/ }
+        local a=(${n//\./ })
+              major=${a[0]}
+              minor=${a[1]}
+              patch=${a[2]}
+      fi
+      echo "$major $minor $patch"
+    }
+    WORKER_VERSION=($(parse_semver "$IMAGE_TAG"))
+
     FILE=/mnt/cloudify-data/init-completed
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"
     OKTA=/mnt/cloudify-data/ssl/okta_certificate.pem
@@ -44,7 +61,6 @@ data:
 
       echo "Remove unused files"
       rm -f --verbose /opt/mgmtworker/work/admin_token
-      rm -f --verbose /opt/manager/authorization.conf
       rm -f --verbose /opt/manager/rest-security.conf
       rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
       rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
@@ -53,7 +69,6 @@ data:
 
       echo "Making symbolic links for files"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/authorization.conf" /opt/manager/authorization.conf
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/rest-security.conf" /opt/manager/rest-security.conf
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/prod.json" /opt/cloudify-composer/backend/conf/prod.json
       ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
@@ -68,6 +83,18 @@ data:
       echo "Set proper permissions for stage/composer files"
       chown composer_user /opt/cloudify-composer/backend/conf/prod.json
       chown stage_user /opt/cloudify-stage/conf/manager.json
+
+      # Version-specific operations
+      case ${WORKER_VERSION[0]} in
+      7)
+        # Config authorization.conf isn't necessary for CM>=7.x
+        ;;
+      *)
+        rm -f --verbose /opt/manager/authorization.conf
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/authorization.conf" /opt/manager/authorization.conf
+        ;;
+      esac
+      
     else
       echo "Copy config"
       if [ -f "$OKTA" ]; then

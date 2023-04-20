@@ -442,6 +442,11 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | additionalSecrets | object | `{}` | Additional secrets to mount on the manager worker pod, make sure the 'name' is also the secret name in the cluster. uncomment secrets and define your mounts More than one secret can be added and more than one mount+sub Path can defined for each secret. (below is an example), . secrets need to be base64 encoded |
+| auth | object | object | Parameters group for auth (for CM worker version >= 7.0) |
+| auth.afterLogoutUrl | string | `"/console/login"` | After logout page URL |
+| auth.certPath | string | `""` | Path to SSL certificate |
+| auth.loginPageUrl | string | `"/console/login"` | Login page URL |
+| auth.type | string | `"local"` | Auth type |
 | config | object | object | Parameters group for Cloudify Manager configuration |
 | config.after_bash | string | `""` | bash commands for execute after main startup script |
 | config.caCertPath | string | `"/mnt/cloudify-data/ssl/ca.crt"` | Path to CA certificate. |
@@ -515,7 +520,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | mainConfig | string | config.yaml template | Content of the main configuration file for cloudify manager (config.yaml). |
 | nameOverride | string | `"cloudify-manager-worker"` |  |
 | nodeSelector | object | `{}` | Node labels for default backend pod assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/ |
-| okta | object | object | Parameters group for OKTA |
+| okta | object | object | Parameters group for OKTA (for CM worker version < 7.0) |
 | okta.certPath | string | `""` | SSL certificate path |
 | okta.enabled | bool | `false` | Enable OKTA support. |
 | okta.portalUrl | string | `""` | Portal URL |

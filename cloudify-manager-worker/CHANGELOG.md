@@ -11,7 +11,7 @@ Provides a release information for each version splitted by the next sections
 - **Upgrade notes** - instruction about upgrage from previous helm chart version
 
 </br>
-# [v0.4.5] UNRELEASED
+# [v0.4.5]
 
 ## Changed
 
@@ -23,7 +23,8 @@ Provides a release information for each version splitted by the next sections
 
 ## Fixed
 
--
+- Cloudify Internal - under development: added version-specific sections in before/after hook scripts (for CM worker v7.1.\* operations with authorization.conf file isn't necessary);
+- Cloudify Internal - under development: fixed userConfig.json for support CM worker versions >=7.0;
 
 ## Removed
 
