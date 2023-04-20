@@ -23,7 +23,7 @@ Provides a release information for each version splitted by the next sections
 
 ## Fixed
 
--
+- added version-specific sections in before/after hook scripts (for CM worker v7.1.\* operations with authorization.conf file isn't necessary);
 
 ## Removed
 
