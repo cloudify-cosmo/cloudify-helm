@@ -31,25 +31,14 @@ spec:
               cd /opt/rest-service/migrations
               alembic upgrade head
 
-              CONFIG_FILE="/tmp/config.yaml"
-              echo "
-              restservice:
-                log:
-                  level: DEBUG
-              manager:
-                hostname: cloudify-manager
-                private_ip: ${ENTRYPOINT}
-                file_server_type: s3
-                prometheus_url: http://prometheus:{{ .Values.prometheus.api_port }}
-              " > "${CONFIG_FILE}"
-
-              python -m manager_rest.configure_manager -c "${CONFIG_FILE}"
-          env:
-            - name: ENTRYPOINT
-              value: localhost
+              python -m manager_rest.configure_manager -c "{{ .Values.rest_service.configPath }}"
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
+              readOnly: true
+            - name: config
+              mountPath: {{ .Values.rest_service.configPath }}
+              subPath: config.yaml
               readOnly: true
         {{ if .Values.fileserver.install }}
         - name: fileserver-create-resources-bucket
@@ -129,7 +118,9 @@ spec:
         - name: packages
           emptyDir:
             sizeLimit: 500Mi
-
+        - name: config
+          configMap:
+            name: rest-service-config
 ---
 apiVersion: v1
 kind: Service
@@ -141,3 +132,11 @@ spec:
   selector:
     app: rest-service
   type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rest-service-config
+data:
+  config.yaml: |
+    {{ .Values.rest_service.config | toYaml | nindent 4 }}
