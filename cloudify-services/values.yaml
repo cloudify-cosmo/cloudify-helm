@@ -209,6 +209,13 @@ rest_service:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
+  configPath: /tmp/config.yaml
+  config:
+    manager:
+      private_ip: localhost
+      public_ip: localhost
+      file_server_type: s3
+      prometheus_url: http://prometheus:9090
 
 api_service:
   replicas: 1
