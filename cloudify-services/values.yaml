@@ -212,6 +212,7 @@ rest_service:
   configPath: /tmp/config.yaml
   config:
     manager:
+      hostname: cloudify-manager
       private_ip: localhost
       public_ip: localhost
       file_server_type: s3
