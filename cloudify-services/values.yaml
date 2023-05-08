@@ -42,7 +42,7 @@ resources:
 
 composer_backend:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-backend:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-backend:7.0.0
   imagePullPolicy: IfNotPresent
   port: 3000
   probes:
@@ -56,7 +56,7 @@ composer_backend:
 
 composer_frontend:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-frontend:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-frontend:7.0.0
   imagePullPolicy: IfNotPresent
   port: 8188
   probes:
@@ -70,7 +70,7 @@ composer_frontend:
 
 execution_scheduler:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-execution-scheduler:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-execution-scheduler:7.0.0
   imagePullPolicy: IfNotPresent
 
 fileserver:
@@ -101,7 +101,7 @@ fileserver:
 
 mgmtworker:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-mgmtworker:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-mgmtworker:7.0.0
   imagePullPolicy: IfNotPresent
 
 nginx:
@@ -139,7 +139,7 @@ postgresql:
 
 rabbitmq:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-rabbitmq:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-rabbitmq:7.0.0
   imagePullPolicy: IfNotPresent
   ssl_port: 5671
   management_port: 15671
@@ -162,7 +162,7 @@ rabbitmq:
 
 rest_service:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-restservice:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-restservice:7.0.0
   imagePullPolicy: IfNotPresent
   port: 8100
   probes:
@@ -184,7 +184,7 @@ rest_service:
 
 api_service:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-apiservice:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-apiservice:7.0.0
   imagePullPolicy: IfNotPresent
   port: 8101
   probes:
@@ -198,7 +198,7 @@ api_service:
 
 stage_backend:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-backend:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-backend:7.0.0
   imagePullPolicy: IfNotPresent
   port: 8088
   probes:
@@ -212,7 +212,7 @@ stage_backend:
 
 stage_frontend:
   replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-frontend:latest-x86_64
+  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-frontend:7.0.0
   imagePullPolicy: IfNotPresent
   port: 8188
   probes:
