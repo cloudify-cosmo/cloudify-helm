@@ -1,24 +1,11 @@
-replicaCount: 1
-
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  tag: ""
-
-imagePullSecrets: []
+imagePullSecrets: [ ]
 nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
   create: true
-  annotations: {}
+  annotations: { }
   name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-
-securityContext: {}
 
 service:
   type: ClusterIP
@@ -36,7 +23,6 @@ ingress:
     enabled: false
     secretName: cfy-secret-name
 
-# These should be base64-encoded TLS certificates and keys
 certs:
   ca_cert: ""
   ca_key: ""
@@ -54,28 +40,8 @@ resources:
       manylinux-aarch64-agent.tar.gz: https://cloudify-release-eu.s3.amazonaws.com/cloudify/7.0.0/ga-release/manylinux-aarch64-agent_7.0.0-ga.tar.gz
       cloudify-windows-agent.exe: https://cloudify-release-eu.s3.amazonaws.com/cloudify/7.0.0/ga-release/cloudify-windows-agent_7.0.0-ga.exe
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
 composer_backend:
   replicas: 1
-  # in development, it might be useful to use Kind, and load your locally-built docker
-  # images there.
-  # In that case, you can use something like:
-  #     image: docker.io/library/composer_backend
-  # and load the image to Kind by using:
-  #     $ kind load docker-image composer_backend:latest
-  # (see dev-cluster/local-images-values.yaml for an example of using local images
-  # for development)
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-composer-backend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 3000
@@ -87,7 +53,6 @@ composer_backend:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
-
 
 composer_frontend:
   replicas: 1
@@ -103,7 +68,6 @@ composer_frontend:
       successThreshold: 1
       failureThreshold: 3
 
-
 execution_scheduler:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-execution-scheduler:latest-x86_64
@@ -111,8 +75,8 @@ execution_scheduler:
 
 fileserver:
   install: yes
-  access_key: admin  # e.g. username
-  secret_key: admin123  # e.g. password
+  access_key: admin
+  secret_key: admin123
   replicas: 1
   image: docker.io/minio/minio
   client_image: docker.io/bitnami/minio-client
