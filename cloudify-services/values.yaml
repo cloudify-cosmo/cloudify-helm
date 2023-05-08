@@ -75,8 +75,8 @@ execution_scheduler:
 
 fileserver:
   install: yes
-  access_key: admin
-  secret_key: admin123
+  access_key: admin  # e.g. username
+  secret_key: admin123  # e.g. password
   replicas: 1
   image: docker.io/minio/minio
   client_image: docker.io/bitnami/minio-client
