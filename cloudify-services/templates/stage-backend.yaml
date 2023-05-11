@@ -25,6 +25,13 @@ spec:
               value: "80"
           image: {{ .Values.stage_backend.image }}
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: stage-backend
           ports:
             - containerPort: {{ .Values.stage_backend.port }}

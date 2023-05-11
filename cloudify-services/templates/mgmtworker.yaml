@@ -50,6 +50,15 @@ spec:
         - name: mgmtworker
           image: {{ .Values.mgmtworker.image }}
           imagePullPolicy: {{ .Values.mgmtworker.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           envFrom:
             - configMapRef:
                 name: mgmtworker-envvars

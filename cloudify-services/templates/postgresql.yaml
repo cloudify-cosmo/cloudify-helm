@@ -25,6 +25,18 @@ spec:
               value: {{ .Values.postgresql.postgres_user }}
           image: {{ .Values.postgresql.image }}
           imagePullPolicy: {{ .Values.postgresql.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - DAC_OVERRIDE
+                - FOWNER
+                - SETGID
+                - SETUID
           name: postgresql
           ports:
             - containerPort: {{ .Values.postgresql.port }}

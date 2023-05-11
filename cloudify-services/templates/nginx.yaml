@@ -56,6 +56,16 @@ spec:
       containers:
         - image: {{ .Values.nginx.image }}
           imagePullPolicy: {{ .Values.nginx.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - NET_BIND_SERVICE
           name: nginx
           ports:
             - containerPort: {{ .Values.nginx.http_port }}

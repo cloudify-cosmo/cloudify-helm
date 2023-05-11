@@ -18,6 +18,14 @@ spec:
       containers:
         - image: {{ .Values.composer_frontend.image }}
           imagePullPolicy: {{ .Values.composer_frontend.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: composer-frontend
           ports:
             - containerPort: {{ .Values.composer_frontend.port }}

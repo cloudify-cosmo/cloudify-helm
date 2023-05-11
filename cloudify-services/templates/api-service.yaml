@@ -34,6 +34,14 @@ spec:
         - name: api-service
           image: {{ .Values.api_service.image }}
           imagePullPolicy: {{ .Values.api_service.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: {{ .Values.api_service.port }}
           {{- if .Values.api_service.probes.liveness.enabled }}

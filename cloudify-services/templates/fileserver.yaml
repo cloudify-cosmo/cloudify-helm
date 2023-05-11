@@ -19,6 +19,14 @@ spec:
       containers:
         - image: {{ .Values.fileserver.image }}
           imagePullPolicy: {{ .Values.fileserver.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: fileserver
           command:
             - minio
