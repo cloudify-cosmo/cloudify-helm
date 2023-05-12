@@ -20,6 +20,13 @@ spec:
       containers:
         - image: {{ .Values.prometheus.image }}
           imagePullPolicy: {{ .Values.prometheus.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: prometheus
           ports:
             - containerPort: {{ .Values.prometheus.api_port }}

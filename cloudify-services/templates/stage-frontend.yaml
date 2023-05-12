@@ -18,6 +18,15 @@ spec:
       containers:
         - image: {{ .Values.stage_frontend.image }}
           imagePullPolicy: {{ .Values.stage_frontend.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: stage-frontend
           ports:
             - containerPort: {{ .Values.stage_frontend.port }}

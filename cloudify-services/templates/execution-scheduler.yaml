@@ -18,6 +18,14 @@ spec:
       containers:
         - image: {{ .Values.execution_scheduler.image }}
           imagePullPolicy: {{ .Values.execution_scheduler.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: execution-scheduler
       restartPolicy: Always
       {{- if .Values.imagePullSecrets }}

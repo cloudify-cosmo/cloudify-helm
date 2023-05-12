@@ -25,6 +25,14 @@ spec:
               value: "80"
           image: {{ .Values.composer_backend.image }}
           imagePullPolicy: {{ .Values.composer_backend.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           name: composer-backend
           ports:
             - containerPort: {{ .Values.composer_backend.port }}

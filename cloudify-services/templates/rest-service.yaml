@@ -92,6 +92,14 @@ spec:
         - name: rest-service
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: {{ .Values.rest_service.port }}
           {{- if .Values.rest_service.probes.liveness.enabled }}

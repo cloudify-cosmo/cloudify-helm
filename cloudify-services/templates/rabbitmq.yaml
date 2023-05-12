@@ -18,6 +18,16 @@ spec:
       containers:
         - image: {{ .Values.rabbitmq.image }}
           imagePullPolicy: {{ .Values.rabbitmq.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - SETUID
+                - SETGID
           name: rabbitmq
           ports:
             - containerPort: {{ .Values.rabbitmq.ssl_port }}
