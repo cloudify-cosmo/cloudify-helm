@@ -79,7 +79,7 @@ fileserver:
   secret_key: admin123  # e.g. password
   replicas: 1
   image: docker.io/minio/minio
-  client_image: docker.io/bitnami/minio-client
+  client_image: docker.io/bitnami/minio-client:2023.4.12
   imagePullPolicy: IfNotPresent
   api_port: 9000
   console_port: 9090

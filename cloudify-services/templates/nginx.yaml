@@ -66,6 +66,8 @@ spec:
               add:
                 - CHOWN
                 - NET_BIND_SERVICE
+                - SETGID
+                - SETUID
           name: nginx
           ports:
             - containerPort: {{ .Values.nginx.http_port }}

@@ -33,10 +33,12 @@ spec:
               drop:
                 - ALL
               add:
+                - CHOWN
                 - DAC_OVERRIDE
                 - FOWNER
-                - SETGID
+                - FSETID
                 - SETUID
+                - SETGID
           name: postgresql
           ports:
             - containerPort: {{ .Values.postgresql.port }}
