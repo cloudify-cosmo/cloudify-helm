@@ -11,6 +11,33 @@ data:
   STAGE_BACKEND_HOST: stage-backend
   STAGE_BACKEND_SERVICE_PORT: {{ .Values.stage_backend.port | quote }}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mgmtworker-serviceaccount
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mgmtworker-role
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "pods" ]
+    verbs: [ "create", "get", "watch", "list" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mgmtworker-binding
+subjects:
+  - kind: ServiceAccount
+    name: mgmtworker-serviceaccount
+    namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mgmtworker-role
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,6 +53,12 @@ spec:
         app: mgmtworker
         cloudify-name: cloudify-mgmtworker
     spec:
+      {{- if .Values.mgmtworker.access.local_cluster }}
+      automountServiceAccountToken: true
+      serviceAccountName: mgmtworker-serviceaccount
+      {{- else }}
+      automountServiceAccountToken: false
+      {{- end }}
       initContainers:
         - name: mgmtworker-init
           image: {{ .Values.rest_service.image }}
