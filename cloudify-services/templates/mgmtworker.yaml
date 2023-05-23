@@ -53,10 +53,11 @@ spec:
         app: mgmtworker
         cloudify-name: cloudify-mgmtworker
     spec:
-      automountServiceAccountToken: false
       {{- if .Values.mgmtworker.access.local_cluster }}
       automountServiceAccountToken: true
       serviceAccountName: mgmtworker-serviceaccount
+      {{- else }}
+      automountServiceAccountToken: false
       {{- end }}
       initContainers:
         - name: mgmtworker-init
