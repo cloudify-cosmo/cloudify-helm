@@ -12,7 +12,7 @@ kind: ConfigMap
 metadata:
   name: nginx-templates
 data:
-{{ (.Files.Glob "nginx-configs/templates/*").AsConfig | indent 2 }}
+{{ (tpl (.Files.Glob "nginx-configs/templates/*").AsConfig .) | indent 2 }}
 ---
 apiVersion: v1
 kind: ConfigMap
