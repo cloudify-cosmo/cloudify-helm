@@ -554,6 +554,7 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | service.internalRest.port | int | `53333` | k8s service internal rest port |
 | service.name | string | `"cloudify-manager-worker"` | k8s service name |
 | service.type | string | `"ClusterIP"` | k8s service type |
+| serviceAccount | string | `nil` | Name of the serviceAccount for attach to Cloudify Manager Worker pods. |
 | startupProbe | object | object | Parameters group for pod startup probe |
 | startupProbe.enabled | bool | `true` | Enable startup probe |
 | startupProbe.failureThreshold | int | `30` | startup probe failure threshold |

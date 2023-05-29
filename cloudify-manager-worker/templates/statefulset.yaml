@@ -23,6 +23,9 @@ spec:
         {{- toYaml .Values.config.labels | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.serviceAccount }}
+      serviceAccount: {{ .Values.serviceAccount }}
+      {{- end }}
       automountServiceAccountToken: false
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
