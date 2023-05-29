@@ -11,6 +11,29 @@ Provides a release information for each version splitted by the next sections
 - **Upgrade notes** - instruction about upgrage from previous helm chart version
 
 </br>
+
+# [v0.4.6]
+
+## Changed
+
+-
+
+## Added
+
+- parameter "serviceAccount" for attach custom k8s service account to cloudify-manager-worker pods;
+
+## Fixed
+
+-
+
+## Removed
+
+-
+
+## Upgrade notes
+
+-
+
 # [v0.4.5]
 
 ## Changed

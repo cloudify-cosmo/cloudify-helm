@@ -134,6 +134,9 @@ nodeSelector: {}
 # -- Additional annotations for Cloudify Manager Worker pods.
 podAnnotations: {}
 
+# -- Name of the serviceAccount for attach to Cloudify Manager Worker pods.
+serviceAccount:
+
 ## -- Parameters group for TLS/SSL configuration.
 # @default -- object
 tls:
