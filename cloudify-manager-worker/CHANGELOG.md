@@ -12,6 +12,28 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
+# [v0.4.7]
+
+## Changed
+
+-
+
+## Added
+
+-
+
+## Fixed
+
+- fixed get version for version-specific actions in before/after hook scripts (for now version getting from "cfy --version" command instead of image tag);
+
+## Removed
+
+-
+
+## Upgrade notes
+
+-
+
 # [v0.4.6]
 
 ## Changed
