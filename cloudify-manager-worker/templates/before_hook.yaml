@@ -23,7 +23,8 @@ data:
       fi
       echo "$major $minor $patch"
     }
-    WORKER_VERSION=($(parse_semver "$IMAGE_TAG"))
+    WORKER_VERSION_RAW=$(cfy --version | grep "Cloudify CLI" | sed -e 's|^.*Cloudify CLI \([0-9]*\.[0-9]*\.[0-9]*\).*$|\1|g')
+    WORKER_VERSION=($(parse_semver "${WORKER_VERSION_RAW}"))
 
     FILE=/mnt/cloudify-data/init-completed
     CLOUDIFY_DATA_DIR="/mnt/cloudify-data"

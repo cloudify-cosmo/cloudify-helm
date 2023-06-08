@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cloudify-manager-worker
 description: Cloudify manager worker
-version: 0.4.6
+version: 0.4.7
 dependencies:
   - name: rabbitmq
     version: "8.29.0"
