@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: blueprint
+  name: blueprint
+spec:
+  replicas: {{ .Values.blueprint.replicas }}
+  selector:
+    matchLabels:
+      app: blueprint
+  template:
+    metadata:
+      labels:
+        app: blueprint
+        cloudify-name: fusion-blueprint-service
+    spec:
+      initContainers:
+        - name: blueprint-init
+          image: {{ .Values.blueprint.image }}
+          imagePullPolicy: {{ .Values.blueprint.imagePullPolicy }}
+          command:
+            - /usr/bin/env
+            - -S
+            - bash
+            - -exuc
+            - |
+              /opt/blueprint/docker/prepare_secrets.sh
+              python -m blueprint.configure_manager --db-wait postgresql
+
+              cd /opt/blueprint/migrations
+              alembic upgrade head
+
+              python -m blueprint.configure_manager -c "{{ .Values.blueprint.configPath }}"
+          volumeMounts:
+            - mountPath: /etc/cloudify/ssl
+              name: ssl
+              readOnly: true
+            - name: config
+              mountPath: {{ .Values.blueprint.configPath }}
+              subPath: config.yaml
+              readOnly: true
+      containers:
+        - name: blueprint
+          image: {{ .Values.blueprint.image }}
+          imagePullPolicy: {{ .Values.blueprint.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - containerPort: {{ .Values.blueprint.port }}
+          {{- if .Values.blueprint.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.blueprint.port}}
+              path: /api/v3.1/ok
+            initialDelaySeconds: {{ .Values.blueprint.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.blueprint.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.blueprint.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.blueprint.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.blueprint.probes.liveness.failureThreshold }}
+          {{- end }}
+      restartPolicy: Always
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: ssl
+          secret:
+            secretName: {{ template "cloudify-services.name" . }}-certs
+            optional: false
+        - name: packages
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: config
+          configMap:
+            name: blueprint-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blueprint
+spec:
+  ports:
+    - port: {{ .Values.blueprint.port }}
+  selector:
+    app: blueprint
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blueprint-config
+data:
+  config.yaml: |
+    {{ .Values.blueprint.config | toYaml | nindent 4 }}

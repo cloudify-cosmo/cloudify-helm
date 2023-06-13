@@ -248,3 +248,25 @@ prometheus:
   image: prom/prometheus
   imagePullPolicy: IfNotPresent
   api_port: 9090
+
+blueprint:
+  replicas: 1
+  image: fusion-blueprint-service
+  imagePullPolicy: IfNotPresent
+  port: 8100
+  probes:
+    liveness:
+      enabled: false
+      initialDelaySeconds: 20
+      periodSeconds: 20
+      timeoutSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+  configPath: /tmp/config.yaml
+  config:
+    manager:
+      hostname: cloudify-manager
+      private_ip: localhost
+      public_ip: localhost
+      file_server_type: s3
+      prometheus_url: http://prometheus:9090
