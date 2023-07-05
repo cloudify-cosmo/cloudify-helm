@@ -1,0 +1,98 @@
+[//]: # "-*- markdown -*-"
+
+# Cloudify services helm chart
+
+## Description
+
+It's a helm chart for deploy cloudify-services stack, including following microservices:
+
+- api-service
+- composer-backend
+- composer-frontend
+- execution-scheduler
+- fileserver
+- mgmtworker
+- nginx
+- postgresql
+- prometheus
+- rabbitmq
+- rest-service
+- stage-backend
+- stage-frontend
+
+## Configuration options of cloudify-services values.yaml
+
+{{ template "chart.valuesTable" . }}
+
+## Prerequisites
+
+- Helm installed >=3.7 (https://helm.sh/docs/intro/install/).
+- AWS CLI tool installed (https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+- Running Kubernetes cluster.
+- Sufficient resources on Kubernetes worker nodes.
+- Access to ECR registry with helm chart package.
+- Cloudify Services valid license.
+
+## How to create and deploy such a setup?
+
+1. [Deployment of Cloudify services](#install-cloudify-services-worker)
+
+2. [(Optional) Ensure UI access to the manager upon installation](#optional-ensure-ui-access-upon-installation)
+
+3. [(Optional) Extra configuration options](#configuration-options-of-cloudify-services-valuesyaml)
+
+4. [Uninstallation of helm charts](#uninstallation)
+
+## (optional) Clone cloudify-helm repo
+
+This step isn't necessary but can be useful if you want to get default values.yaml file for customize it.
+
+- In case you don't have Git installed - https://github.com/git-guides/install-git
+
+```bash
+$ git clone https://github.com/cloudify-cosmo/cloudify-helm.git && cd cloudify-helm
+```
+
+## Install cloudify services
+
+### Authenticate in the ECR registry
+
+You need to have installed AWS CLI tool and have access to "cloudify-automation" AWS account (AWS account ID: 163877087245).
+Then you need to execute following for get ECR temporary credentials and authenticate helm in it:
+
+```bash
+$ aws --profile cloudify-automation ecr get-login-password --region eu-west-1 | helm registry login --username AWS --password-stdin 163877087245.dkr.ecr.eu-west-1.amazonaws.com
+```
+
+### (optional) Ensure UI access upon installation
+
+You can use k8s ingress for expose UI outside the k8s cluster. Make sure you have one of the ingress controllers installed and confiogured inside your k8s cluster.
+
+Example of the "ingress" configuration section in the values.yaml file:
+
+```YAML
+ingress:
+  enabled: true
+  host: cloudify-services.example.com
+  ingressClassName: alb
+  annotations:
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/scheme: "internal"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+```
+
+In this example we using "alb" ingress class (provided by "AWS Load Balancer Controller), which creates private Application Load Balancer, listening on port 80/HTTP and forwarding all the traffic for host "cloudify-services.example.com" to cloudify-services stack.
+
+### After values are verified, install the manager worker chart
+
+```bash
+$ helm install cloudify-services oci://163877087245.dkr.ecr.eu-west-1.amazonaws.com/cloudify-services-helm --version 0.1.0 -f VALUES_FILE -n NAMESPACE
+```
+
+## Uninstallation
+
+Uninstall helm release:
+
+```bash
+$ helm uninstall cloudify-services -n NAMESPACE
+```
