@@ -1,4 +1,0 @@
-apiVersion: v2
-name: cloudify-manager-aio
-description: Cloudify manager aio
-version: 0.1.2
