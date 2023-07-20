@@ -126,6 +126,8 @@ service:
   #   port: 33221
   #   protocol: TCP
   #   targetPort: 33221
+  # -- k8s service annotations
+  annotations: {}
 
 # -- Node labels for default backend pod assignment.
 # Ref: https://kubernetes.io/docs/user-guide/node-selection/

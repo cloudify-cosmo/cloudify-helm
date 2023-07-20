@@ -12,6 +12,28 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
+# [v0.4.8]
+
+## Changed
+
+-
+
+## Added
+
+-
+
+## Fixed
+
+- added parameter service.annotations for allow add custom annotations to service resource;
+
+## Removed
+
+-
+
+## Upgrade notes
+
+-
+
 # [v0.4.7]
 
 ## Changed
