@@ -92,6 +92,13 @@ spec:
         - name: rest-service
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "TODO"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "TODO"
+            - name: AWS_SESSION_TOKEN
+              value: "TODO"
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
