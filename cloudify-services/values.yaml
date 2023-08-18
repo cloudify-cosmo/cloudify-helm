@@ -199,6 +199,7 @@ rest_service:
       private_ip: localhost
       public_ip: localhost
       file_server_type: s3
+      s3_server_url: http://minio.default.svc.cluster.local:9000
       prometheus_url: http://prometheus:9090
 
 api_service:
