@@ -25,8 +25,6 @@ data:
   REST_SERVICE_SERVICE_PORT: {{ .Values.rest_service.port | quote }}
   API_SERVICE_HOST: api-service
   API_SERVICE_SERVICE_PORT: {{ .Values.api_service.port | quote }}
-  FILESERVER_HOST: fileserver
-  FILESERVER_SERVICE_PORT: {{ .Values.fileserver.api_port | quote }}
   STAGE_FRONTEND_HOST: stage-frontend
   STAGE_FRONTEND_SERVICE_PORT: {{ .Values.stage_frontend.port | quote }}
   STAGE_BACKEND_HOST: stage-backend

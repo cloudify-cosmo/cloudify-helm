@@ -8,10 +8,6 @@ upstream cloudify-rest {
   server ${REST_SERVICE_HOST}:${REST_SERVICE_SERVICE_PORT};
 }
 
-upstream fileserver {
-  server ${FILESERVER_HOST}:${FILESERVER_SERVICE_PORT};
-}
-
 upstream cloudify-stage {
   server ${STAGE_FRONTEND_HOST}:${STAGE_FRONTEND_SERVICE_PORT};
 }
