@@ -25,7 +25,7 @@ location /resources-s3 {
     proxy_http_version 1.1;
     chunked_transfer_encoding off;
 
-    resolver 10.96.0.10;
+    resolver ${S3_RESOLVER};
     set $resource_url $upstream_http_x_s3_uri;
     proxy_pass $resource_url;
 }

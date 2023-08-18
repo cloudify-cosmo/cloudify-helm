@@ -138,6 +138,7 @@ nginx:
     # total, will receive 503.
     burst: 30
     delay: 20
+  s3_resolver: "10.96.0.10"
 
 postgresql:
   replicas: 1

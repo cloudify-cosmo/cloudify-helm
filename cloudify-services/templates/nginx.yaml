@@ -35,6 +35,7 @@ data:
   COMPOSER_FRONTEND_SERVICE_PORT: {{ .Values.composer_frontend.port | quote }}
   COMPOSER_BACKEND_HOST: composer-backend
   COMPOSER_BACKEND_SERVICE_PORT: {{ .Values.composer_backend.port | quote }}
+  S3_RESOLVER: {{ .Values.nginx.s3_resolver | quote }}
 ---
 apiVersion: apps/v1
 kind: Deployment
