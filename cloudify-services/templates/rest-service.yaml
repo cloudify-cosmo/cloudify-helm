@@ -94,11 +94,20 @@ spec:
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           env:
             - name: AWS_ACCESS_KEY_ID
-              value: "TODO"
+              valueFrom:
+                secretKeyRef:
+                  name: clouodify-fileserver-credentials
+                  key: AWS_ACCESS_KEY_ID
             - name: AWS_SECRET_ACCESS_KEY
-              value: "TODO"
+              valueFrom:
+                secretKeyRef:
+                  name: clouodify-fileserver-credentials
+                  key: AWS_SECRET_ACCESS_KEY
             - name: AWS_SESSION_TOKEN
-              value: "TODO"
+              valueFrom:
+                secretKeyRef:
+                  name: clouodify-fileserver-credentials
+                  key: AWS_SESSION_TOKEN
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

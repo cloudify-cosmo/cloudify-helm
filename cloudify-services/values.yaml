@@ -194,6 +194,10 @@ rest_service:
       successThreshold: 1
       failureThreshold: 3
   configPath: /tmp/config.yaml
+  s3:
+    access_key_id: ""
+    access_key_secret: ""
+    session_token: ""
   config:
     manager:
       hostname: cloudify-manager
