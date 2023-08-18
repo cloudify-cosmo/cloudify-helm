@@ -41,6 +41,37 @@ spec:
               subPath: config.yaml
               readOnly: true
         {{ if .Values.fileserver.install }}
+        - name: fileserver-create-service-account
+          image: {{ .Values.fileserver.client_image }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          args:
+            - admin
+            - user
+            - svcacct
+            - add
+            - "--access-key"
+            - "$(ACCESS_KEY)"
+            - "--secret-key"
+            - "$(SECRET_KEY)"
+            - "restservice"
+            - "admin"
+          env:
+            - name: ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: clouodify-fileserver-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: clouodify-fileserver-credentials
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: MINIO_SERVER_HOST
+              value: fileserver
+            - name: MINIO_SERVER_ACCESS_KEY
+              value: {{ .Values.fileserver.access_key }}
+            - name: MINIO_SERVER_SECRET_KEY
+              value: {{ .Values.fileserver.secret_key }}
         - name: fileserver-create-resources-bucket
           image: {{ .Values.fileserver.client_image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
