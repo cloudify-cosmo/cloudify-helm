@@ -53,7 +53,7 @@ spec:
             - "$(ACCESS_KEY)"
             - "--secret-key"
             - "$(SECRET_KEY)"
-            - "restservice"
+            - "minio"
             - "admin"
           env:
             - name: ACCESS_KEY
