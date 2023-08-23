@@ -1,7 +1,3 @@
-# The configuration comes from
-# https://min.io/docs/minio/linux/
-#   integrations/setup-nginx-proxy-with-minio.html
-
 location /resources {
     auth_request /resources-auth;
 
