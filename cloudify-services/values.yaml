@@ -289,7 +289,4 @@ seaweedfs:
     nodeSelector: ""
   # -- Parameters group for awscli containers (using as init containers)
   # @default -- object
-  clientImage:
-    registry: docker.io
-    repository: amazon/aws-cli
-    tag: 2.13.9
+  clientImage: docker.io/amazon/aws-cli:2.13.9

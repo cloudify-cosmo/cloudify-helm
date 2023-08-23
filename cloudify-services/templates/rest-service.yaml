@@ -42,8 +42,8 @@ spec:
               readOnly: true
         {{ if .Values.seaweedfs.enabled }}
         - name: seaweedfs-create-resources-bucket
-          image: {{ include "fusion-services.images.image" ( dict "imageRoot" .Values.seaweedfs.clientImage "root" $ ) }}
-          imagePullPolicy: {{ default .Values.global.image.pullPolicy .Values.seaweedfs.clientImage.pullPolicy }}
+          image: {{ .Values.seaweedfs.clientImage }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           command: ['sh', '-c', "aws s3 ls s3://resources || aws s3 mb s3://resources"]
           env:
             - name: AWS_ENDPOINT_URL
@@ -77,12 +77,12 @@ spec:
               memory: 100Mi
               cpu: 0.5
         - name: local-agent-packages-fetch
-          image: {{ include "fusion-services.images.image" ( dict "imageRoot" .Values.helper_images.curlImage "root" $ ) }}
-          imagePullPolicy: {{ default .Values.global.image.pullPolicy .Values.rest_service.image.pullPolicy }}
+          image: alpine/curl
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           args:
             - sh
             - -c
-            - mkdir -p /tmp/packages/agents && {{ ( include "fusion-services.curl-download" ( list "/tmp/packages/agents" .Values.resources.packages.agents ) ) }}
+            - mkdir -p /tmp/packages/agents && {{ ( include "cloudify-services.curl-download" ( list "/tmp/packages/agents" .Values.resources.packages.agents ) ) }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
@@ -105,8 +105,8 @@ spec:
               memory: 100Mi
               cpu: 0.2
         - name: seaweedfs-upload-agent-packages
-          image: {{ include "fusion-services.images.image" ( dict "imageRoot" .Values.seaweedfs.clientImage "root" $ ) }}
-          imagePullPolicy: {{ default .Values.global.image.pullPolicy .Values.seaweedfs.clientImage.pullPolicy }}
+          image: {{ .Values.seaweedfs.clientImage }}
+          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           args: [s3, cp, --recursive, --no-progress, /tmp/packages/, s3://resources/packages/]
           securityContext:
             allowPrivilegeEscalation: false
