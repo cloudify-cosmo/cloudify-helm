@@ -254,3 +254,69 @@ prometheus:
   image: prom/prometheus
   imagePullPolicy: IfNotPresent
   api_port: 9090
+
+# -- Parameters group for seaweed helm chart.
+# Details: https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
+# @default -- object
+seaweedfs:
+  enabled: true
+  master:
+    resources: |
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    data:
+      type: "persistentVolumeClaim"
+      size: "1Gi"
+    affinity: ""
+    nodeSelector: ""
+  filer:
+    resources: |
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    data:
+      type: "persistentVolumeClaim"
+      size: "1Gi"
+    affinity: ""
+    nodeSelector: ""
+  s3:
+    skipAuthSecretCreation: false
+    enabled: true
+    enableAuth: false
+    port: 8333
+    resources: |
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    affinity: ""
+    nodeSelector: ""
+  volume:
+    maxVolumes: "50"
+    resources: |
+      requests:
+        memory: 256Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    data:
+      type: "persistentVolumeClaim"
+      size: "10Gi"
+    affinity: ""
+    nodeSelector: ""
+  # -- Parameters group for awscli containers (using as init containers)
+  # @default -- object
+  clientImage:
+    registry: docker.io
+    repository: amazon/aws-cli
+    tag: 2.13.9

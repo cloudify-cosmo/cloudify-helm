@@ -7,3 +7,9 @@ type: application
 version: 0.1.0
 
 appVersion: "7.0.0"
+
+dependencies:
+  - condition: seaweedfs.enabled
+    name: seaweedfs
+    version: 3.55
+    repository: https://seaweedfs.github.io/seaweedfs/helm
