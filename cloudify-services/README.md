@@ -268,6 +268,7 @@ By default, Cloudify installs a SeaweedFS instance as its fileserver. In order t
 1. Set `rest_service.s3.credentials_secret_name` to the name of the above secret (you can use the default name of `seaweedfs-s3-secret` even when not using SeaweedFS)
 1. If a session token is necessary, create a secret containing it under the key `session_token`, and set `rest_service.s3.session_token_secret_name` to the name of that secret
 
+For easy creation of that secret in local development, you can use the template in `dev-cluster/s3-secrets-template.yaml`
 
 ### After values are verified, install the manager worker chart
 
