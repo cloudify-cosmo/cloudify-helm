@@ -40,29 +40,42 @@ spec:
               mountPath: {{ .Values.rest_service.configPath }}
               subPath: config.yaml
               readOnly: true
-        {{ if .Values.fileserver.install }}
-        - name: fileserver-create-resources-bucket
-          image: {{ .Values.fileserver.client_image }}
+        {{ if .Values.seaweedfs.enabled }}
+        - name: seaweedfs-create-resources-bucket
+          image: {{ .Values.seaweedfs.clientImage }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
-          args: [mb, minio/resources, --ignore-existing]
+          command: ['sh', '-c', "aws s3 ls s3://resources || aws s3 mb s3://resources"]
           env:
-            - name: MINIO_SERVER_HOST
-              value: fileserver
-            - name: MINIO_SERVER_ACCESS_KEY
-              value: {{ .Values.fileserver.access_key }}
-            - name: MINIO_SERVER_SECRET_KEY
-              value: {{ .Values.fileserver.secret_key }}
-        - name: fileserver-make-resources-public
-          image: {{ .Values.fileserver.client_image }}
-          imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
-          args: [anonymous, set, public, minio/resources]
-          env:
-            - name: MINIO_SERVER_HOST
-              value: fileserver
-            - name: MINIO_SERVER_ACCESS_KEY
-              value: {{ .Values.fileserver.access_key }}
-            - name: MINIO_SERVER_SECRET_KEY
-              value: {{ .Values.fileserver.secret_key }}
+            - name: AWS_ENDPOINT_URL
+              value: {{ .Values.rest_service.config.manager.s3_server_url }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.credentials_secret_name }}
+                  key: admin_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.credentials_secret_name }}
+                  key: admin_secret_access_key
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 0.1
+            limits:
+              memory: 100Mi
+              cpu: 0.5
         - name: local-agent-packages-fetch
           image: alpine/curl
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
@@ -70,28 +83,88 @@ spec:
             - sh
             - -c
             - mkdir -p /tmp/packages/agents && {{ ( include "cloudify-services.curl-download" ( list "/tmp/packages/agents" .Values.resources.packages.agents ) ) }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           volumeMounts:
             - mountPath: /tmp/packages
               name: packages
-        - name: fileserver-upload-agent-packages
-          image: {{ .Values.fileserver.client_image }}
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 0.1
+            limits:
+              memory: 100Mi
+              cpu: 0.2
+        - name: seaweedfs-upload-agent-packages
+          image: {{ .Values.seaweedfs.clientImage }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
-          args: [cp, --recursive, /tmp/packages/, minio/resources/packages/]
+          args: [s3, cp, --recursive, --no-progress, /tmp/packages/, s3://resources/packages/]
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           env:
-            - name: MINIO_SERVER_HOST
-              value: fileserver
-            - name: MINIO_SERVER_ACCESS_KEY
-              value: {{ .Values.fileserver.access_key }}
-            - name: MINIO_SERVER_SECRET_KEY
-              value: {{ .Values.fileserver.secret_key }}
+            - name: AWS_ENDPOINT_URL
+              value: {{ .Values.rest_service.config.manager.s3_server_url }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.credentials_secret_name }}
+                  key: admin_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.credentials_secret_name }}
+                  key: admin_secret_access_key
           volumeMounts:
             - mountPath: /tmp/packages
               name: packages
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 0.1
+            limits:
+              memory: 100Mi
+              cpu: 0.5
         {{ end }}
       containers:
         - name: rest-service
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.credentials_secret_name }}
+                  key: admin_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.credentials_secret_name }}
+                  key: admin_secret_access_key
+            {{- if .Values.rest_service.s3.session_token_secret_name }}
+            - name: AWS_SESSION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rest_service.s3.session_token_secret_name }}
+                  key: session_token
+            {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

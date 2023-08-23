@@ -255,6 +255,22 @@ ingress:
 
 In this example we using "alb" ingress class (provided by "AWS Load Balancer Controller), which creates private Application Load Balancer, listening on port 80/HTTP and forwarding all the traffic for host "cloudify-services.example.com" to cloudify-services stack.
 
+### (optional) Use a S3 bucket as the fileserver
+
+By default, Cloudify installs a SeaweedFS instance as its fileserver. In order to use a pre-existing S3 bucket instead, follow these steps:
+
+1. Set `seaweedfs.enabled` fo false
+1. Set `rest_service.config.manager.s3_server_url` to the empty string
+1. Set `rest_service.config.manager.s3_resources_bucket` to the name of your S3 bucket (just the name, not the ARN, not the URL)
+1. Create a secret containing your S3 credentials. The keys in the secret must be the same as the keys used by SeaweedFS, even though no admin access is required:
+  - `admin_access_key_id` contaning the access key ID
+  - `admin_secret_access_key` contaning the access key secret
+1. Set `rest_service.s3.credentials_secret_name` to the name of the above secret (you can use the default name of `seaweedfs-s3-secret` even when not using SeaweedFS)
+1. If a session token is necessary, create a secret containing it under the key `session_token`, and set `rest_service.s3.session_token_secret_name` to the name of that secret
+1. If using agents, pre-upload the agent packages to the bucket: fetch the URLs from `resources.packages.agents`, and put them under the `packages/` subdirectory in the bucket.
+
+For easy creation of that secret in local development, you can use the template in `dev-cluster/s3-secrets-template.yaml`
+
 ### After values are verified, install the manager worker chart
 
 ```bash

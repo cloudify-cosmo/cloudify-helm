@@ -73,32 +73,6 @@ execution_scheduler:
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-execution-scheduler:latest-x86_64
   imagePullPolicy: IfNotPresent
 
-fileserver:
-  install: yes
-  access_key: admin  # e.g. username
-  secret_key: admin123  # e.g. password
-  replicas: 1
-  image: docker.io/minio/minio
-  client_image: docker.io/bitnami/minio-client:2023.4.12
-  imagePullPolicy: IfNotPresent
-  api_port: 9000
-  console_port: 9090
-  probes:
-    liveness:
-      enabled: true
-      initialDelaySeconds: 20
-      periodSeconds: 20
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
-    readiness:
-      enabled: true
-      initialDelaySeconds: 10
-      periodSeconds: 10
-      timeoutSeconds: 5
-      successThreshold: 1
-      failureThreshold: 3
-
 mgmtworker:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-mgmtworker:latest-x86_64
@@ -193,12 +167,17 @@ rest_service:
       successThreshold: 1
       failureThreshold: 3
   configPath: /tmp/config.yaml
+  s3:
+    credentials_secret_name: seaweedfs-s3-secret
+    session_token_secret_name: ""
   config:
     manager:
       hostname: cloudify-manager
       private_ip: localhost
       public_ip: localhost
       file_server_type: s3
+      s3_resources_bucket: resources
+      s3_server_url: http://seaweedfs-s3.default.svc.cluster.local:8333
       prometheus_url: http://prometheus:9090
 
 api_service:
@@ -248,3 +227,66 @@ prometheus:
   image: prom/prometheus
   imagePullPolicy: IfNotPresent
   api_port: 9090
+
+# -- Parameters group for seaweed helm chart.
+# Details: https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
+# @default -- object
+seaweedfs:
+  enabled: true
+  master:
+    resources: |
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    data:
+      type: "persistentVolumeClaim"
+      size: "1Gi"
+    affinity: ""
+    nodeSelector: ""
+  filer:
+    resources: |
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    data:
+      type: "persistentVolumeClaim"
+      size: "1Gi"
+    affinity: ""
+    nodeSelector: ""
+  s3:
+    skipAuthSecretCreation: false
+    enabled: true
+    enableAuth: false
+    port: 8333
+    resources: |
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    affinity: ""
+    nodeSelector: ""
+  volume:
+    maxVolumes: "50"
+    resources: |
+      requests:
+        memory: 256Mi
+        cpu: 0.1
+      limits:
+        memory: 512Mi
+        cpu: 0.5
+    data:
+      type: "persistentVolumeClaim"
+      size: "10Gi"
+    affinity: ""
+    nodeSelector: ""
+  # -- Parameters group for awscli containers (using as init containers)
+  # @default -- object
+  clientImage: docker.io/amazon/aws-cli:2.13.9
