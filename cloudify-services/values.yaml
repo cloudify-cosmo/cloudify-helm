@@ -194,9 +194,8 @@ rest_service:
       failureThreshold: 3
   configPath: /tmp/config.yaml
   s3:
-    access_key_id: ""
-    access_key_secret: ""
-    session_token: ""
+    credentials_secret_name: seaweedfs-s3-secret
+    session_token_secret_name: ""
   config:
     manager:
       hostname: cloudify-manager
@@ -204,7 +203,7 @@ rest_service:
       public_ip: localhost
       file_server_type: s3
       s3_resources_bucket: resources
-      s3_server_url: http://fileserver.default.svc.cluster.local:9000
+      s3_server_url: http://seaweedfs-s3.default.svc.cluster.local:8333
       prometheus_url: http://prometheus:9090
 
 api_service:
