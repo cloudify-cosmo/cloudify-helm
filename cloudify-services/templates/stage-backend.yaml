@@ -27,7 +27,6 @@ spec:
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
             capabilities:

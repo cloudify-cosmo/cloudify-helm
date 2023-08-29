@@ -20,7 +20,6 @@ spec:
           imagePullPolicy: {{ .Values.composer_frontend.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             readOnlyRootFilesystem: true
             seccompProfile:
               type: RuntimeDefault
