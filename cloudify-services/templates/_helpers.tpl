@@ -70,11 +70,11 @@ Generate certificates for cloudify-services
 {{- if and (.Values.certs.ca_cert) (.Values.certs.ca_key) }}
 {{- $ca = buildCustomCert .Values.certs.ca_cert .Values.certs.ca_key }}
 {{- end }}
-{{- $externalCert := genSignedCert "nginx" nil nil 3650 $ca -}}
+{{- $externalCert := genSignedCert "cloudify-entrypoint" nil nil 3650 $ca -}}
 {{- if and (.Values.certs.external_cert) (.Values.certs.external_key) }}
 {{- $externalCert = buildCustomCert .Values.certs.external_cert .Values.certs.external_key }}
 {{- end }}
-{{- $internalCert := genSignedCert "nginx" nil nil 3650 $ca -}}
+{{- $internalCert := genSignedCert "cloudify-entrypoint" nil nil 3650 $ca -}}
 {{- if and (.Values.certs.internal_cert) (.Values.certs.internal_key) }}
 {{- $internalCert = buildCustomCert .Values.certs.internal_cert .Values.certs.internal_key }}
 {{- end }}
