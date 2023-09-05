@@ -76,6 +76,7 @@ spec:
             limits:
               memory: 100Mi
               cpu: 0.5
+        {{ if ((.Values.resources).packages).agents }}
         - name: local-agent-packages-fetch
           image: alpine/curl
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
@@ -142,6 +143,7 @@ spec:
             limits:
               memory: 100Mi
               cpu: 0.5
+        {{ end }}
         {{ end }}
       containers:
         - name: rest-service
