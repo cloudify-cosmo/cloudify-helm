@@ -19,6 +19,9 @@ data:
       touch /tmp/before_hook_completed
     fi
 
+    {{ if (.Values.hotfix).rnd1267 }}
+    sed -ie 's|if os.path.ismount(path)|if os.path.isdir(path) and os.path.ismount(path)|' /opt/cloudify/cfy_manager/lib/python3.11/site-packages/cfy_manager/utils/files.py
+    {{ end }}
     echo 'Run cloudify manager'
     /usr/bin/cfy_manager image-starter
 
