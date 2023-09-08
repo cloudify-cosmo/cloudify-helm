@@ -489,6 +489,8 @@ mainConfig: |
   composer:
     # If set to true, Cloudify Composer will not be installed
     skip_installation: false
+  stage:
+    skip_installation: false
   restservice:
     gunicorn:
       worker_count: {{ .Values.config.workerCount }}
