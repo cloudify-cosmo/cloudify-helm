@@ -482,6 +482,8 @@ $ helm install cloudify-manager-worker cloudify-helm/cloudify-manager-worker --v
 | db.serverUsername | string | `"postgres"` | Username for initial DB connection |
 | db.useExternalDB | bool | `false` | When switched to true, it will take the FQDN for the pgsql database in host, and require CA cert in secret inputs under TLS section |
 | fullnameOverride | string | `"cloudify-manager-worker"` |  |
+| hotfix | object | `{"rnd1267":true}` | Parameters group for enabling hotfixes/patches for various issues |
+| hotfix.rnd1267 | bool | `true` | Hotfix for RND-1267: in the 7.0.x branch, on some k8s setups, the manager can't be installed and throws a "/tmp/tmp<random> is not a directory". If that happens, make sure this is enabled.) |
 | image | object | object | Parameters group for Docker images |
 | image.pullPolicy | string | `"IfNotPresent"` | Specify a imagePullPolicy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'. ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images |
 | image.pullSecrets | list | `[]` | Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |

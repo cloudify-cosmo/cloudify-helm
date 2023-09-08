@@ -12,17 +12,19 @@ data:
     
     ( umask 0 && truncate -s0 $LOGS/manager/cfy_manager.log )
     ( umask 0 && truncate -s0 $LOGS/amqp-postgres/amqp_postgres.log )
-    ( umask 0 && truncate -s0 $LOGS/composer/{app,errors}.log )
     ( umask 0 && truncate -s0 $LOGS/execution-scheduler/schedule r.log )
     ( umask 0 && truncate -s0 $LOGS/mgmtworker/mgmtworker.log )
     ( umask 0 && truncate -s0 $LOGS/nginx/{cloudify.access,access,cloudify.error,error,monitoring.access,monitoring.error}.log )
     ( umask 0 && truncate -s0 $LOGS/rest/{api-audit,api-gunicorn,audit,cloudify-rest-service,cloudify-api-service,gunicorn}.log )
-    ( umask 0 && truncate -s0 $LOGS/stage/server-{error,output}.log )
+    if [ -d "/opt/cloudify-composer" ]; then
+      ( umask 0 && truncate -s0 $LOGS/composer/{app,errors}.log )
+    fi
+    if [ -d "/opt/cloudify-stage" ]; then
+      ( umask 0 && truncate -s0 $LOGS/stage/server-{error,output}.log )
+    fi
 
     tail -F --quiet $LOGS/manager/cfy_manager.log | sed "s|^|cfy_manager.log: |" & \
-    tail -F --quiet $LOGS/amqp-postgres/amqp_postgres.log | sed "s|^|amqp_postgres.log: |" &  \
-    tail -F --quiet $LOGS/composer/app.log | sed "s|^|app.log: |" & \
-    tail -F --quiet $LOGS/composer/errors.log | sed "s|^|errors.log: |" & \
+    tail -F --quiet $LOGS/amqp-postgres/amqp_postgres.log | sed "s|^|amqp_postgres.log: |" & \
     tail -F --quiet $LOGS/execution-scheduler/scheduler.log  | sed "s|^|scheduler.log: |" & \
     tail -F --quiet $LOGS/mgmtworker/mgmtworker.log  | sed "s|^|mgmtworker.log: |" & \
     tail -F --quiet $LOGS/nginx/cloudify.access.log | sed "s|^|cloudify.access.log: |" & \
@@ -37,6 +39,11 @@ data:
     tail -F --quiet $LOGS/rest/cloudify-rest-service.log | sed "s|^|cloudify-rest-service.log: |" & \
     tail -F --quiet $LOGS/rest/cloudify-api-service.log | sed "s|^|cloudify-api-service.log: |" & \
     tail -F --quiet $LOGS/rest/gunicorn.log | sed "s|^|gunicorn.log: |" & \
-    tail -F --quiet $LOGS/stage/server-error.log | sed "s|^|server-errors.log: |" & \
-    tail -F --quiet $LOGS/stage/server-output.log | sed "s|^|server-output.log: |"
-
+    if [ -d "/opt/cloudify-composer" ]; then
+      tail -F --quiet $LOGS/composer/app.log | sed "s|^|app.log: |" &
+      tail -F --quiet $LOGS/composer/errors.log | sed "s|^|errors.log: |" &
+    fi
+    if [ -d "/opt/cloudify-stage" ]; then
+      tail -F --quiet $LOGS/stage/server-error.log | sed "s|^|server-errors.log: |" &
+      tail -F --quiet $LOGS/stage/server-output.log | sed "s|^|server-output.log: |"
+    fi
