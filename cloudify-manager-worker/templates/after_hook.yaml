@@ -54,45 +54,63 @@ data:
         echo "Copy necessary files to Persistent Volume"
         cp -a --verbose /opt/mgmtworker/work/admin_token $CLOUDIFY_DATA_DIR/mgmtworker
         cp -a --verbose /opt/manager/rest-security.conf $CLOUDIFY_DATA_DIR/manager
-        cp -a --verbose /opt/cloudify-composer/backend/conf/prod.json $CLOUDIFY_DATA_DIR/cloudify-composer
-        cp -a --verbose /opt/cloudify-composer/backend/conf/db_ca.crt $CLOUDIFY_DATA_DIR/cloudify-composer
-        cp -a --verbose /opt/cloudify-stage/conf/db_ca.crt $CLOUDIFY_DATA_DIR/cloudify-stage
-        cp -a --verbose /opt/cloudify-stage/conf/manager.json $CLOUDIFY_DATA_DIR/cloudify-stage
+        if [ -d "/opt/cloudify-composer" ]; then
+          cp -a --verbose /opt/cloudify-composer/backend/conf/prod.json $CLOUDIFY_DATA_DIR/cloudify-composer
+          cp -a --verbose /opt/cloudify-composer/backend/conf/db_ca.crt $CLOUDIFY_DATA_DIR/cloudify-composer
+        fi
+        if [ -d "/opt/cloudify-stage" ]; then
+          cp -a --verbose /opt/cloudify-stage/conf/db_ca.crt $CLOUDIFY_DATA_DIR/cloudify-stage
+          cp -a --verbose /opt/cloudify-stage/conf/manager.json $CLOUDIFY_DATA_DIR/cloudify-stage
+        fi
 
         echo "Copy necessary directories to Persistent Volume"
         cp -a --verbose /opt/manager/resources $CLOUDIFY_DATA_DIR/manager
         cp -a --verbose /opt/mgmtworker/env/plugins $CLOUDIFY_DATA_DIR/mgmtworker
-        cp -a --verbose /opt/cloudify-stage/dist/userData $CLOUDIFY_DATA_DIR/cloudify-stage
+        if [ -d "/opt/cloudify-stage" ]; then
+          cp -a --verbose /opt/cloudify-stage/dist/userData $CLOUDIFY_DATA_DIR/cloudify-stage
+        fi
         
         touch "$CLOUDIFY_DATA_DIR/init-completed"
 
         echo "Removed unused directory"
         rm -rf --verbose /opt/manager/resources
         rm -rf --verbose /opt/mgmtworker/env/plugins
-        rm -rf --verbose /opt/cloudify-stage/dist/userData
+        if [ -d "/opt/cloudify-stage" ]; then
+          rm -rf --verbose /opt/cloudify-stage/dist/userData
+        fi
 
         echo "Removed unused files"
         rm -f --verbose /opt/mgmtworker/work/admin_token
 
         rm -f --verbose /opt/manager/rest-security.conf
-        rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
-        rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
-        rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
-        rm -f --verbose /opt/cloudify-stage/conf/manager.json
+        if [ -d "/opt/cloudify-composer" ]; then
+          rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
+          rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
+        fi
+        if [ -d "/opt/cloudify-stage" ]; then
+          rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
+          rm -f --verbose /opt/cloudify-stage/conf/manager.json
+        fi
 
         echo "Making symbolic links for directory"
         ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
         ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
+        if [ -d "/opt/cloudify-stage" ]; then
+          ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
+        fi
 
         echo "Making symbolic links for files"
         ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token
 
         ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/rest-security.conf" /opt/manager/rest-security.conf
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/prod.json" /opt/cloudify-composer/backend/conf/prod.json
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
-        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
+        if [ -d "/opt/cloudify-composer" ]; then
+          ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/prod.json" /opt/cloudify-composer/backend/conf/prod.json
+          ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
+        fi
+        if [ -d "/opt/cloudify-composer" ]; then
+          ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
+          ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
+        fi
 
         # Version-specific operations
         case ${WORKER_VERSION[0]} in
