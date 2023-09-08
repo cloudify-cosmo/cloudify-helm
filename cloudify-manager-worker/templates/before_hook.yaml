@@ -32,16 +32,21 @@ data:
 
     mkdir -p /mnt/cloudify-data/manager
     mkdir -p /mnt/cloudify-data/mgmtworker
-    mkdir -p /mnt/cloudify-data/cloudify-composer
-    mkdir -p /mnt/cloudify-data/cloudify-stage
     mkdir -p /mnt/cloudify-data/latest
+    if [ -d "/opt/cloudify-composer" ]; then
+      mkdir -p /mnt/cloudify-data/cloudify-composer
+    fi
 
     echo "Creating symbolic link for configs"
     rm -f --verbose /etc/cloudify/config.yaml
     ln -s --verbose "$CLOUDIFY_DATA_DIR/etc/config.yaml" /etc/cloudify/config.yaml
     chown cfyuser "$CLOUDIFY_DATA_DIR/etc/config.yaml"
-    rm -f --verbose /opt/cloudify-stage/conf/userConfig.json
-    ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userConfig.json" /opt/cloudify-stage/conf/userConfig.json
+
+    if [ -d "/opt/cloudify-stage" ]; then
+      mkdir -p /mnt/cloudify-data/cloudify-stage
+      rm -f --verbose /opt/cloudify-stage/conf/userConfig.json
+      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userConfig.json" /opt/cloudify-stage/conf/userConfig.json
+    fi
 
     if [ -f "$FILE" ]; then
       echo "The Data exists on PV - creating symbolic links to files and folders on PV"
@@ -63,27 +68,41 @@ data:
       echo "Remove unused files"
       rm -f --verbose /opt/mgmtworker/work/admin_token
       rm -f --verbose /opt/manager/rest-security.conf
-      rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
-      rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
-      rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
-      rm -f --verbose /opt/cloudify-stage/conf/manager.json
+      if [ -d "/opt/cloudify-composer" ]; then
+        rm -f --verbose /opt/cloudify-composer/backend/conf/prod.json
+        rm -f --verbose /opt/cloudify-composer/backend/conf/db_ca.crt
+      fi
+      if [ -d "/opt/cloudify-stage" ]; then
+        rm -f --verbose /opt/cloudify-stage/conf/db_ca.crt
+        rm -f --verbose /opt/cloudify-stage/conf/manager.json
+      fi
 
       echo "Making symbolic links for files"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/admin_token" /opt/mgmtworker/work/admin_token
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/rest-security.conf" /opt/manager/rest-security.conf
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/prod.json" /opt/cloudify-composer/backend/conf/prod.json
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
+      if [ -d "/opt/cloudify-composer" ]; then
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/prod.json" /opt/cloudify-composer/backend/conf/prod.json
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-composer/db_ca.crt" /opt/cloudify-composer/backend/conf/db_ca.crt
+      fi
+      if [ -d "/opt/cloudify-stage" ]; then
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/db_ca.crt" /opt/cloudify-stage/conf/db_ca.crt
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/manager.json" /opt/cloudify-stage/conf/manager.json
+      fi
 
       echo "Making symbolic links for directory"
       ln -s --verbose "$CLOUDIFY_DATA_DIR/manager/resources" /opt/manager/resources
       ln -s --verbose "$CLOUDIFY_DATA_DIR/mgmtworker/plugins" /opt/mgmtworker/env/plugins
-      ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
+      if [ -d "/opt/cloudify-stage" ]; then
+        ln -s --verbose "$CLOUDIFY_DATA_DIR/cloudify-stage/userData" /opt/cloudify-stage/dist/userData
+      fi
 
       echo "Set proper permissions for stage/composer files"
-      chown composer_user /opt/cloudify-composer/backend/conf/prod.json
-      chown stage_user /opt/cloudify-stage/conf/manager.json
+      if [ -d "/opt/cloudify-composer" ]; then
+        chown composer_user /opt/cloudify-composer/backend/conf/prod.json
+      fi
+      if [ -d "/opt/cloudify-stage" ]; then
+        chown stage_user /opt/cloudify-stage/conf/manager.json
+      fi
 
       # Version-specific operations
       case ${WORKER_VERSION[0]} in

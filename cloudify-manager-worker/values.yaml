@@ -489,6 +489,8 @@ mainConfig: |
   composer:
     # If set to true, Cloudify Composer will not be installed
     skip_installation: false
+  stage:
+    skip_installation: false
   restservice:
     gunicorn:
       worker_count: {{ .Values.config.workerCount }}
@@ -717,3 +719,10 @@ postgresql:
   metrics:
     image:
       tag: 0.8.0-debian-10-r278
+
+# -- Parameters group for enabling hotfixes/patches for various issues
+hotfix:
+  # -- Hotfix for RND-1267: in the 7.0.x branch, on some k8s setups, the manager
+  # can't be installed and throws a "/tmp/tmp<random> is not a directory".
+  # If that happens, make sure this is enabled.)
+  rnd1267: true
