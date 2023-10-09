@@ -167,6 +167,8 @@ spec:
                   name: {{ .Values.rest_service.s3.session_token_secret_name }}
                   key: session_token
             {{- end }}
+            - name: RUNTIME_ENVIRONMENT
+              value: "k8s"
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
