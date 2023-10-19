@@ -324,3 +324,6 @@ seaweedfs:
       storageClass: ""
     affinity: ""
     nodeSelector: ""
+  # -- Parameters group for awscli containers (using as init containers)
+  # @default -- object
+  clientImage: docker.io/amazon/aws-cli:2.13.9
