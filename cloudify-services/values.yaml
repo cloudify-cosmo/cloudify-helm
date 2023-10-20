@@ -130,6 +130,12 @@ postgresql:
       successThreshold: 1
       failureThreshold: 3
 
+pvc:
+  storageClassName: ""
+  accessModes: 
+    - ReadWriteOnce
+
+
 rabbitmq:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-rabbitmq:latest-x86_64
@@ -244,6 +250,13 @@ seaweedfs:
     data:
       type: "persistentVolumeClaim"
       size: "1Gi"
+      storageClass: ""
+      hostPathPrefix: ""
+    logs:
+      type: "hostPath"
+      size: ""
+      hostPathPrefix: /var/log
+      storageClass: ""
     affinity: ""
     nodeSelector: ""
   filer:
@@ -257,6 +270,13 @@ seaweedfs:
     data:
       type: "persistentVolumeClaim"
       size: "1Gi"
+      hostPathPrefix: /var/log
+      storageClass: ""
+    logs:
+      type: "hostPath"
+      size: ""
+      hostPathPrefix: /var/log
+      storageClass: ""
     affinity: ""
     nodeSelector: ""
   s3:
@@ -271,6 +291,11 @@ seaweedfs:
       limits:
         memory: 512Mi
         cpu: 0.5
+    logs:
+      type: "hostPath"
+      size: ""
+      storageClass: ""
+      hostPathPrefix: /var/log
     affinity: ""
     nodeSelector: ""
   volume:
@@ -285,6 +310,18 @@ seaweedfs:
     data:
       type: "persistentVolumeClaim"
       size: "10Gi"
+      hostPathPrefix: /var/log
+      storageClass: ""
+    logs:
+      type: "hostPath"
+      size: ""
+      hostPathPrefix: /var/log
+      storageClass: ""
+    idx:
+      type: "hostPath"
+      size: ""
+      hostPathPrefix: ""
+      storageClass: ""
     affinity: ""
     nodeSelector: ""
   # -- Parameters group for awscli containers (using as init containers)
