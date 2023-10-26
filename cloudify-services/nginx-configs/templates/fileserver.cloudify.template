@@ -23,5 +23,11 @@ location /resources-s3 {
 
     resolver kube-dns.kube-system.svc.cluster.local;
     set $resource_url $upstream_http_x_s3_uri;
+
+    # hide content-disposition coming from the s3 backend, because the
+    # restservice already sets it, with the correct filename
+    # (e.g. based on the blueprint id)
+    proxy_hide_header Content-Disposition;
+
     proxy_pass $resource_url;
 }
