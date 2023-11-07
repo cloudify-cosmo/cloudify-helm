@@ -13,3 +13,7 @@ dependencies:
     name: seaweedfs
     version: 3.55
     repository: https://seaweedfs.github.io/seaweedfs/helm
+  - condition: postgresql.enabled
+    name: postgresql
+    version: 12.6.5
+    repository: https://charts.bitnami.com/bitnami
