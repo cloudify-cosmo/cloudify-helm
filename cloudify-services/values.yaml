@@ -111,24 +111,41 @@ nginx:
     # will be delayed according to the rate, and if there's more than 30 queued
     # total, will receive 503.
     burst: 30
+
     delay: 20
+db:
+  host: "postgresql"
+  dbName: &postgresqlDB "cloudify_db"
+  user: &postgresqlUser "cloudify"
+  password: &postgresqlPassword "cloudify"
+  k8sSecret:
+    name: "cloudify-db-creds"
+    key: "password"
+
 
 postgresql:
-  replicas: 1
-  image: docker.io/library/postgres
-  imagePullPolicy: IfNotPresent
-  port: 5432
-  postgres_db: cloudify_db
-  postgres_password: cloudify
-  postgres_user: cloudify
-  probes:
-    readiness:
-      enabled: true
-      initialDelaySeconds: 10
-      periodSeconds: 10
-      timeoutSeconds: 5
-      successThreshold: 1
-      failureThreshold: 3
+  fullnameOverride: postgresql
+  auth:
+    username: *postgresqlUser
+    database: *postgresqlDB
+    password: *postgresqlPassword
+  image:
+    tag: 15.3.0-debian-11-r17
+    pullPolicy: IfNotPresent
+  containerPorts:
+    postgresql: 5432
+  primary:
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 2
+      requests:
+        memory: 256Mi
+        cpu: 0.5
+  podLabels: {}
+  enableNetworkPolicy: true
+  metrics:
+    enabled: true
 
 rabbitmq:
   replicas: 1
