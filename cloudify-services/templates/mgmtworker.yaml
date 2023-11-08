@@ -93,6 +93,9 @@ spec:
                 - ALL
               add:
                 - NET_BIND_SERVICE
+          env:
+            - name: RUNTIME_ENVIRONMENT
+              value: "k8s"
           envFrom:
             - configMapRef:
                 name: mgmtworker-envvars
