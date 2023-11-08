@@ -1,3 +1,4 @@
+{{- $certs := include "cloudify-services.gen-certs" . -}}
 apiVersion: v1
 kind: Secret
 type: opaque
@@ -12,4 +13,23 @@ metadata:
     "helm.sh/hook": "pre-install"
     "helm.sh/hook-delete-policy": "before-hook-creation"
 data:
-{{ ( include "cloudify-services.gen-certs" . ) | indent 2 }}
+  {{ $certs | indent 2}}
+
+{{- if .Values.rabbitmq.enabled }}
+---
+apiVersion: v1
+kind: Secret
+type: opaque
+metadata:
+  name: rabbitmq-ssl-certs
+  labels:
+    app: {{ template "cloudify-services.name" . }}
+    chart: {{ template "cloudify-services.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+data:
+  {{ regexReplaceAll "cloudify_.*" ( regexReplaceAll "rabbitmq-key.pem" ( regexReplaceAll "rabbitmq-cert.pem" ( regexReplaceAll "cloudify_internal_ca_cert.pem" $certs "ca.crt" ) "tls.crt" ) "tls.key" ) "" | indent 2 }}
+{{- end }}

@@ -124,6 +124,7 @@ db:
 
 
 postgresql:
+  enabled: true
   fullnameOverride: postgresql
   auth:
     username: *postgresqlUser
@@ -148,27 +149,167 @@ postgresql:
     enabled: true
 
 rabbitmq:
-  replicas: 1
-  image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-rabbitmq:latest-x86_64
-  imagePullPolicy: IfNotPresent
-  ssl_port: 5671
-  management_port: 15671
-  metrics_port: 15692
-  probes:
-    liveness:
+  enabled: true
+  image:
+    tag: 3.12.2-debian-11-r8
+    pullPolicy: IfNotPresent
+  fullnameOverride: rabbitmq
+  plugins: "rabbitmq_management rabbitmq_prometheus rabbitmq_tracing rabbitmq_peer_discovery_k8s"
+  auth:
+    username: cloudify
+    password: c10udify
+    erlangCookie: "cloudify-erlang-cookie"
+    tls:
       enabled: true
-      initialDelaySeconds: 20
-      periodSeconds: 30
-      timeoutSeconds: 15
-      successThreshold: 1
-      failureThreshold: 3
-    readiness:
-      enabled: true
-      initialDelaySeconds: 10
-      periodSeconds: 10
-      timeoutSeconds: 5
-      successThreshold: 1
-      failureThreshold: 3
+      failIfNoPeerCert: false
+      existingSecret: rabbitmq-ssl-certs
+  advancedConfiguration: |-
+    [
+      {rabbit, [
+        {consumer_timeout, undefined}
+      ]}
+    ].
+  extraConfiguration: |-
+    management.ssl.port       = 15671
+    management.ssl.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
+    management.ssl.certfile   = /opt/bitnami/rabbitmq/certs/server_certificate.pem
+    management.ssl.keyfile    = /opt/bitnami/rabbitmq/certs/server_key.pem
+  loadDefinition:
+    enabled: true
+    existingSecret: rabbitmq-load-definition
+  extraSecrets:
+    rabbitmq-load-definition:
+      load_definition.json: |
+        {
+            "vhosts": [
+                {
+                    "name": "/"
+                }
+            ],
+            "users": [
+                {
+                    "hashing_algorithm": "rabbit_password_hashing_sha256",
+                    "name": "{{ .Values.auth.username }}",
+                    "password": "{{ .Values.auth.password }}",
+                    "tags": "administrator"
+                }
+            ],
+            "permissions": [
+                {
+                    "user": "{{ .Values.auth.username }}",
+                    "vhost": "/",
+                    "configure": ".*",
+                    "write": ".*",
+                    "read": ".*"
+                }
+            ],
+            "policies": [
+                {
+                    "name": "logs_queue_message_policy",
+                    "vhost": "/",
+                    "pattern": "^cloudify-log$",
+                    "priority": 100,
+                    "apply-to": "queues",
+                    "definition": {
+                        "message-ttl": 1200000,
+                        "max-length": 1000000,
+                        "ha-mode": "all",
+                        "ha-sync-mode": "automatic",
+                        "ha-sync-batch-size": 50
+                    }
+                },
+                {
+                    "name": "events_queue_message_policy",
+                    "vhost": "/",
+                    "pattern": "^cloudify-events$",
+                    "priority": 100,
+                    "apply-to": "queues",
+                    "definition": {
+                        "message-ttl": 1200000,
+                        "max-length": 1000000,
+                        "ha-mode": "all",
+                        "ha-sync-mode": "automatic",
+                        "ha-sync-batch-size": 50
+                    }
+                },
+                {
+                    "name": "default_policy",
+                    "vhost": "/",
+                    "pattern": "^",
+                    "priority": 1,
+                    "apply-to": "queues",
+                    "definition": {
+                        "ha-mode": "all",
+                        "ha-sync-mode": "automatic",
+                        "ha-sync-batch-size": 50
+                    }
+                }
+            ],
+            "queues": [
+                {
+                    "arguments": {},
+                    "auto_delete": false,
+                    "durable": true,
+                    "name": "cloudify.management_operation",
+                    "type": "classic",
+                    "vhost": "/"
+                },
+                {
+                    "arguments": {},
+                    "auto_delete": false,
+                    "durable": true,
+                    "name": "cloudify.management_workflow",
+                    "type": "classic",
+                    "vhost": "/"
+                }
+            ],
+            "bindings": [
+                {
+                    "arguments": {},
+                    "destination": "cloudify.management_operation",
+                    "destination_type": "queue",
+                    "routing_key": "operation",
+                    "source": "cloudify.management",
+                    "vhost": "/"
+                },
+                {
+                    "arguments": {},
+                    "destination": "cloudify.management_workflow",
+                    "destination_type": "queue",
+                    "routing_key": "workflow",
+                    "source": "cloudify.management",
+                    "vhost": "/"
+                }
+            ],
+            "exchanges": [
+                {
+                    "arguments": {},
+                    "auto_delete": false,
+                    "durable": true,
+                    "name": "cloudify.management",
+                    "type": "direct",
+                    "vhost": "/"
+                }
+            ]
+        }
+  service:
+    ports:
+      metrics: 15692
+    extraPorts:
+      - name: manager-ssl
+        port: 15671
+        targetPort: 15671
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 0.5
+    limits:
+      memory: 1Gi
+      cpu: 4
+  podLabels: {}
+  enableNetworkPolicy: true
+  metrics:
+    enabled: true
 
 rest_service:
   replicas: 1
