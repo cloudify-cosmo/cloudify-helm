@@ -39,7 +39,7 @@ roleRef:
   name: mgmtworker-role
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mgmtworker
 spec:
@@ -119,3 +119,12 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mgmtworker
+spec:
+  selector:
+    app: mgmtworker
+  clusterIP: None
