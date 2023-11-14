@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
         - env:
+            {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
             - name: RESTSERVICE_ADDRESS
               value: cloudify-entrypoint
             - name: RESTSERVICE_PROTOCOL
@@ -27,7 +28,7 @@ spec:
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            runAsNonRoot: {{ .Values.stage_backend.securityContext.runAsNonRoot }}
             seccompProfile:
               type: RuntimeDefault
             capabilities:

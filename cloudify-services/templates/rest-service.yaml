@@ -32,12 +32,14 @@ spec:
             - -exuc
             - |
               /opt/rest-service/docker/prepare_secrets.sh
-              python -m manager_rest.configure_manager --db-wait postgresql
+              python -m manager_rest.configure_manager --db-wait $POSTGRES_HOST
 
               cd /opt/rest-service/migrations
               alembic upgrade head
 
               python -m manager_rest.configure_manager -c "{{ .Values.rest_service.configPath }}"
+          env:
+            {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
@@ -156,6 +158,7 @@ spec:
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           env:
+            {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

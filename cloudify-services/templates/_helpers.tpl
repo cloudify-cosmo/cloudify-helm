@@ -70,11 +70,11 @@ Generate certificates for cloudify-services
 {{- if and (.Values.certs.ca_cert) (.Values.certs.ca_key) }}
 {{- $ca = buildCustomCert .Values.certs.ca_cert .Values.certs.ca_key }}
 {{- end }}
-{{- $externalCert := genSignedCert "nginx" nil (list "nginx") 3650 $ca -}}
+{{- $externalCert := genSignedCert "nginx" nil (list "nginx" "cloudify-entrypoint") 3650 $ca -}}
 {{- if and (.Values.certs.external_cert) (.Values.certs.external_key) }}
 {{- $externalCert = buildCustomCert .Values.certs.external_cert .Values.certs.external_key }}
 {{- end }}
-{{- $internalCert := genSignedCert "nginx" nil (list "nginx") 3650 $ca -}}
+{{- $internalCert := genSignedCert "nginx" nil (list "nginx" "cloudify-entrypoint") 3650 $ca -}}
 {{- if and (.Values.certs.internal_cert) (.Values.certs.internal_key) }}
 {{- $internalCert = buildCustomCert .Values.certs.internal_cert .Values.certs.internal_key }}
 {{- end }}
@@ -108,4 +108,22 @@ Output is a string like:
 {{- $curls = append $curls $cmd -}}
 {{- end -}}
 {{- printf (join " && " $curls ) -}}
+{{- end -}}
+
+
+{{/*
+Return env vars block with postgresql connection parameters.
+*/}}
+{{- define "cloudify-services.postgres_env_vars" -}}
+- name: POSTGRES_HOST
+  value: {{ .Values.db.host }}
+- name: POSTGRES_DB
+  value: {{ .Values.db.dbName }}
+- name: POSTGRES_USER
+  value: {{ .Values.db.user }}
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.db.k8sSecret.name }}
+      key: {{ .Values.db.k8sSecret.key }}
 {{- end -}}

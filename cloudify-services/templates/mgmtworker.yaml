@@ -39,7 +39,7 @@ roleRef:
   name: mgmtworker-role
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mgmtworker
 spec:
@@ -77,8 +77,10 @@ spec:
             - |
               /opt/rest-service/docker/prepare_secrets.sh
               python -m manager_rest.configure_manager --rabbitmq-wait rabbitmq
-              python -m manager_rest.configure_manager --db-wait postgresql
+              python -m manager_rest.configure_manager --db-wait $POSTGRES_HOST
               python -m manager_rest.configure_manager --create-admin-token /opt/mgmtworker/work/admin_token
+          env:
+            {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
@@ -123,3 +125,12 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mgmtworker
+spec:
+  selector:
+    app: mgmtworker
+  clusterIP: None
