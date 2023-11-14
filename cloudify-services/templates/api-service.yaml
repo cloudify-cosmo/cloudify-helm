@@ -26,8 +26,9 @@ spec:
             - -exuc
             - |
               /opt/rest-service/docker/prepare_secrets.sh
-              python -m manager_rest.configure_manager --db-wait postgresql
+              python -m manager_rest.configure_manager --db-wait $POSTGRES_HOST
           env:
+            {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
             - name: ENTRYPOINT
               value: localhost
       containers:
@@ -42,6 +43,8 @@ spec:
             capabilities:
               drop:
                 - ALL
+          env:
+            {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
           ports:
             - containerPort: {{ .Values.api_service.port }}
           {{- if .Values.api_service.probes.liveness.enabled }}

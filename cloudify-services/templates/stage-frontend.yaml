@@ -20,6 +20,7 @@ spec:
           imagePullPolicy: {{ .Values.stage_frontend.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: {{ .Values.stage_frontend.securityContext.runAsNonRoot }}
             readOnlyRootFilesystem: true
             seccompProfile:
               type: RuntimeDefault

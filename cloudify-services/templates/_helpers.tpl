@@ -109,3 +109,21 @@ Output is a string like:
 {{- end -}}
 {{- printf (join " && " $curls ) -}}
 {{- end -}}
+
+
+{{/*
+Return env vars block with postgresql connection parameters.
+*/}}
+{{- define "cloudify-services.postgres_env_vars" -}}
+- name: POSTGRES_HOST
+  value: {{ .Values.db.host }}
+- name: POSTGRES_DB
+  value: {{ .Values.db.dbName }}
+- name: POSTGRES_USER
+  value: {{ .Values.db.user }}
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.db.k8sSecret.name }}
+      key: {{ .Values.db.k8sSecret.key }}
+{{- end -}}

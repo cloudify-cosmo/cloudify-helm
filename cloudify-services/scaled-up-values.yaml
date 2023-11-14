@@ -1,0 +1,17 @@
+# this is an example values file showing how to scale up several services
+
+# rabbitmq and mgmtworker can be scaled by just increasing the pod count
+rabbitmq:
+  replicaCount: 2
+
+mgmtworker:
+  replicas: 2
+
+# with the bitnami postgresql chart, using architecture=replication will
+# start a primary and a read replica
+postgresql:
+  architecture: replication
+
+# all the db-using services need to be instructed to connect to the primary
+db:
+  host: "postgresql-primary"

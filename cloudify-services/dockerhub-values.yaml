@@ -13,9 +13,6 @@ execution_scheduler:
 mgmtworker:
   image: docker.io/cloudifyplatform/cloudify-manager-mgmtworker:7.0.3
 
-rabbitmq:
-  image: docker.io/cloudifyplatform/cloudify-manager-rabbitmq:7.0.3
-
 rest_service:
   image: docker.io/cloudifyplatform/cloudify-manager-restservice:7.0.3
 
