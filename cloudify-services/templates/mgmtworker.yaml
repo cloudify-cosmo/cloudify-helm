@@ -63,6 +63,12 @@ spec:
         - name: mgmtworker-init
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
+          env:
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: manager-security
+                  key: encryptionKey
           command:
             - /usr/bin/env
             - -S
