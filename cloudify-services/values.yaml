@@ -53,6 +53,8 @@ composer_backend:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
+  securityContext:
+    runAsNonRoot: true
 
 composer_frontend:
   replicas: 1
@@ -67,6 +69,8 @@ composer_frontend:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
+  securityContext:
+    runAsNonRoot: true
 
 execution_scheduler:
   replicas: 1
@@ -365,6 +369,8 @@ stage_backend:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
+  securityContext:
+    runAsNonRoot: true
 
 stage_frontend:
   replicas: 1
@@ -379,6 +385,8 @@ stage_frontend:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
+  securityContext:
+    runAsNonRoot: true
 
 prometheus:
   replicas: 1
