@@ -24,6 +24,8 @@ spec:
               value: http
             - name: RESTSERVICE_PORT
               value: "80"
+            - name: LISTEN_HOST
+              value: "::"
           image: {{ .Values.stage_backend.image }}
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           securityContext:
