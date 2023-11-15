@@ -15,6 +15,8 @@ spec:
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
+  ipFamilies:
+    - IPv6
   {{- if .Values.ingress.tls.enabled }}
   tls:
     - hosts:

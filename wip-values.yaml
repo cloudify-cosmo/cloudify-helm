@@ -1,0 +1,60 @@
+composer_backend:
+  image: docker.io/cloudifyplatform/cloudify-manager-composer-backend:7.0.2
+  securityContext:
+    runAsNonRoot: false
+
+composer_frontend:
+  image: docker.io/cloudifyplatform/cloudify-manager-composer-frontend:7.0.2
+  securityContext:
+    runAsNonRoot: false
+
+execution_scheduler:
+  image: docker.io/cloudifyplatform/cloudify-manager-execution-scheduler:7.0.2
+
+mgmtworker:
+  image: docker.io/cloudifyplatform/cloudify-manager-mgmtworker:7.0.2
+# rabbitmq:
+#   image: docker.io/cloudifyplatform/cloudify-manager-rabbitmq:7.0.2
+
+rest_service:
+  image: docker.io/library/wip-restservice-1
+  # image: docker.io/cloudifyplatform/cloudify-manager-restservice:7.0.2
+
+api_service:
+  image: docker.io/cloudifyplatform/cloudify-manager-apiservice:7.0.2
+
+stage_backend:
+  image: docker.io/cloudifyplatform/cloudify-manager-stage-backend:7.0.2
+  securityContext:
+    runAsNonRoot: false
+
+stage_frontend:
+  image: docker.io/cloudifyplatform/cloudify-manager-stage-frontend:7.0.2
+  securityContext:
+    runAsNonRoot: false
+
+rabbitmq:
+  replicaCount: 1
+  initContainers:
+    - name: ipv6-init
+      image: "docker.io/busybox:1.33.1"
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+      - name: ipv6-cfg
+        mountPath: /ipv6
+      command: ['sh', '-c', 'echo "{inet6, true}." > /ipv6/erl_inetrc']
+  extraVolumes:
+    - name: ipv6-cfg
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: ipv6-cfg
+      mountPath: /ipv6
+  extraEnvVars:
+    - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+      value: "-kernel inetrc '/ipv6/erl_inetrc' -proto_dist inet6_tcp"
+    - name: RABBITMQ_CTL_ERL_ARGS
+      value: "-proto_dist inet6_tcp"
+
+resources:
+  packages:
+    agents: null
