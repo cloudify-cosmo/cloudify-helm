@@ -63,12 +63,6 @@ spec:
         - name: mgmtworker-init
           image: {{ .Values.rest_service.image }}
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
-          env:
-            - name: ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: manager-security
-                  key: encryptionKey
           command:
             - /usr/bin/env
             - -S
@@ -81,6 +75,11 @@ spec:
               python -m manager_rest.configure_manager --create-admin-token /opt/mgmtworker/work/admin_token
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: manager-security
+                  key: encryptionKey
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
