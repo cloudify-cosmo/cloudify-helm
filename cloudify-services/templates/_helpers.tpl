@@ -127,3 +127,25 @@ Return env vars block with postgresql connection parameters.
       name: {{ .Values.db.k8sSecret.name }}
       key: {{ .Values.db.k8sSecret.key }}
 {{- end -}}
+
+{{/*
+Return env vars block with the secret keys envvars for the restservice.
+{{ include "cloudify-services.restservice_keys" . }}
+*/}}
+{{- define "cloudify-services.restservice_keys" -}}
+- name: ENCRYPTION_KEY
+  valueFrom:
+    secretKeyRef:
+      name: manager-security
+      key: encryptionKey
+- name: SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: manager-security
+      key: secretKey
+- name: HASH_SALT
+  valueFrom:
+    secretKeyRef:
+      name: manager-security
+      key: hashSalt
+{{- end -}}
