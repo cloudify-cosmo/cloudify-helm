@@ -29,6 +29,7 @@ spec:
               python -m manager_rest.configure_manager --db-wait $POSTGRES_HOST
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
+            {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
             - name: ENTRYPOINT
               value: localhost
             - name: ENCRYPTION_KEY
@@ -50,6 +51,7 @@ spec:
                 - ALL
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
+            {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
           ports:
             - containerPort: {{ .Values.api_service.port }}
           {{- if .Values.api_service.probes.liveness.enabled }}
