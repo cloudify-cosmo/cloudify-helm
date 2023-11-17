@@ -20,6 +20,7 @@ spec:
           imagePullPolicy: {{ .Values.execution_scheduler.imagePullPolicy }}
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
+            {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

@@ -34,11 +34,7 @@ spec:
               python -m manager_rest.configure_manager -c "{{ .Values.rest_service.configPath }}"
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
-            - name: ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: manager-security
-                  key: encryptionKey
+            {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
@@ -158,6 +154,7 @@ spec:
           imagePullPolicy: {{ .Values.rest_service.imagePullPolicy }}
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
+            {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -177,11 +174,6 @@ spec:
             {{- end }}
             - name: RUNTIME_ENVIRONMENT
               value: "k8s"
-            - name: ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: manager-security
-                  key: encryptionKey
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

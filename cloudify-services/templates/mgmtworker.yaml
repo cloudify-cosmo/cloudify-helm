@@ -75,11 +75,7 @@ spec:
               python -m manager_rest.configure_manager --create-admin-token /opt/mgmtworker/work/admin_token
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
-            - name: ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: manager-security
-                  key: encryptionKey
+            {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/cloudify/ssl
               name: ssl
