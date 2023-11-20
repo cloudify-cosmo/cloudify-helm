@@ -526,6 +526,47 @@ prometheus:
   podLabels: {}
   enableNetworkPolicy: true
 
+# -- Parameters group for bitnami/kube-state-metrics helm chart.
+# Details: https://github.com/bitnami/charts/tree/main/bitnami/kube-state-metrics/README.md
+# @default -- object
+kube-state-metrics:
+  enabled: true
+  fullnameOverride: kube-state-metrics
+  namespaces: "{{ .Release.Namespace }}"
+  extraArgs:
+    metric-allowlist: "kube_deployment_spec_replicas,kube_deployment_status_replicas,kube_deployment_status_replicas_ready,kube_deployment_status_replicas_unavailable,kube_statefulset_spec_replicas,kube_statefulset_status_replicas,kube_statefulset_status_replicas_ready,kube_statefulset_status_replicas_unavailable"
+  kubeResources:
+    deployments: true
+    certificatesigningrequests: false
+    configmaps: false
+    cronjobs: false
+    daemonsets: false
+    endpoints: false
+    horizontalpodautoscalers: false
+    ingresses: false
+    jobs: false
+    limitranges: false
+    mutatingwebhookconfigurations: false
+    namespaces: false
+    networkpolicies: false
+    nodes: false
+    persistentvolumeclaims: false
+    persistentvolumes: false
+    poddisruptionbudgets: false
+    pods: false
+    replicasets: false
+    replicationcontrollers: false
+    resourcequotas: false
+    secrets: false
+    services: false
+    statefulsets: true
+    storageclasses: false
+    verticalpodautoscalers: false
+    validatingwebhookconfigurations: false
+    volumeattachments: false
+  podLabels: {}
+  enableNetworkPolicy: true
+
 # -- Parameters group for seaweed helm chart.
 # Details: https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
 # @default -- object
