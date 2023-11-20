@@ -8,5 +8,11 @@ dependencies:
 - name: rabbitmq
   repository: https://charts.bitnami.com/bitnami
   version: 12.0.9
-digest: sha256:42454fb78ccd88570660c3fe6677d10bb5d00bcf10daa58f51bbf6c3910cfa43
-generated: "2023-11-08T00:39:13.001792453+01:00"
+- name: prometheus
+  repository: https://charts.bitnami.com/bitnami
+  version: 0.1.6
+- name: kube-state-metrics
+  repository: https://charts.bitnami.com/bitnami
+  version: 3.5.8
+digest: sha256:83a7a34780fb6b077d5731941d59c52ce3f26735028a27a801adbe26eb25dc83
+generated: "2023-11-20T08:58:05.737545426+01:00"
