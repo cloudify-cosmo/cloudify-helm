@@ -453,6 +453,21 @@ prometheus:
             action: replace
     alertingRules:
       groups:
+        - name: manager
+          rules:
+            - record: manager_service
+              expr: group by(deployment, statefulset) (kube_deployment_status_replicas_ready or kube_statefulset_status_replicas_ready)
+              labels:
+            - record: manager_healthy
+              expr: sum by (namespace) (kube_deployment_status_replicas_ready{deployment="api-service"} or kube_deployment_status_replicas_ready{deployment="rest-service"} or kube_deployment_status_replicas_ready{deployment="execution-scheduler"} or kube_deployment_status_replicas_ready{deployment="nginx"} or kube_statefulset_status_replicas_ready{statefulset="mgmtworker"}) >= 5
+              labels:
+            - alert: manager_down
+              expr: kube_deployment_status_replicas_ready{deployment="api-service"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="api-service"}) or kube_deployment_status_replicas_ready{deployment="rest-service"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="rest-service"}) or kube_deployment_status_replicas_ready{deployment="execution-scheduler"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="execution-scheduler"}) or kube_deployment_status_replicas_ready{deployment="nginx"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="nginx"}) or kube_statefulset_status_replicas_ready{statefulset="mgmtworker"} == 0 or absent(kube_statefulset_status_replicas_ready{statefulset="mgmtworker"})
+              for: 15s
+              labels:
+                severity: critical
+              annotations:
+                summary: "Manager is down"
         - name: postgresql
           rules:
             - record: postgres_healthy
