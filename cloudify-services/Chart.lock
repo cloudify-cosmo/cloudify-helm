@@ -11,5 +11,8 @@ dependencies:
 - name: prometheus
   repository: https://charts.bitnami.com/bitnami
   version: 0.1.6
-digest: sha256:1e3120417a1219241957c2f2918d179b9a8ce36a338d1a1a1ab2330222feccfb
-generated: "2023-11-17T10:50:24.183027421+01:00"
+- name: kube-state-metrics
+  repository: https://charts.bitnami.com/bitnami
+  version: 3.5.8
+digest: sha256:83a7a34780fb6b077d5731941d59c52ce3f26735028a27a801adbe26eb25dc83
+generated: "2023-11-20T08:58:05.737545426+01:00"
