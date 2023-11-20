@@ -2,25 +2,25 @@
 # using images published to dockerhub
 
 composer_backend:
-  image: docker.io/cloudifyplatform/cloudify-manager-composer-backend:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-composer-backend:7.0.3-rc
 
 composer_frontend:
-  image: docker.io/cloudifyplatform/cloudify-manager-composer-frontend:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-composer-frontend:7.0.3-rc
 
 execution_scheduler:
-  image: docker.io/cloudifyplatform/cloudify-manager-execution-scheduler:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-execution-scheduler:7.0.3-rc
 
 mgmtworker:
-  image: docker.io/cloudifyplatform/cloudify-manager-mgmtworker:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-mgmtworker:7.0.3-rc
 
 rest_service:
-  image: docker.io/cloudifyplatform/cloudify-manager-restservice:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-restservice:7.0.3-rc
 
 api_service:
-  image: docker.io/cloudifyplatform/cloudify-manager-apiservice:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-apiservice:7.0.3-rc
 
 stage_backend:
-  image: docker.io/cloudifyplatform/cloudify-manager-stage-backend:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-stage-backend:7.0.3-rc
 
 stage_frontend:
-  image: docker.io/cloudifyplatform/cloudify-manager-stage-frontend:7.0.3
+  image: docker.io/cloudifyplatform/cloudify-manager-stage-frontend:7.0.3-rc
