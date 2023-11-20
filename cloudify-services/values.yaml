@@ -340,7 +340,7 @@ rest_service:
       file_server_type: s3
       s3_resources_bucket: resources
       s3_server_url: http://seaweedfs-s3.default.svc.cluster.local:8333
-      prometheus_url: http://prometheus:9090
+      prometheus_url: http://prometheus-server:9090
 
 api_service:
   replicas: 1
@@ -388,11 +388,199 @@ stage_frontend:
   securityContext:
     runAsNonRoot: true
 
+# -- Parameters group for bitnami/prometheus helm chart.
+# Details: https://github.com/bitnami/charts/blob/main/bitnami/prometheus/README.md
+# @default -- object
 prometheus:
-  replicas: 1
-  image: prom/prometheus
-  imagePullPolicy: IfNotPresent
-  api_port: 9090
+  enabled: true
+  fullnameOverride: prometheus
+  alertmanager:
+    enabled: false
+  server:
+    persistence:
+      enabled: true
+    image:
+      tag: 2.45.0
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 1
+      requests:
+        memory: 512Mi
+        cpu: 0.1
+    replicaCount: 1
+    service:
+      ports:
+        http: 9090
+        type: ClusterIP
+    extraScrapeConfigs:
+      - job_name: kube-state-metrics
+        kubernetes_sd_configs:
+          - role: service
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_service_label_app_kubernetes_io_name
+            action: keep
+            regex: kube-state-metrics
+      - job_name: postgresql-metrics
+        kubernetes_sd_configs:
+          - role: service
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_service_name
+            action: keep
+            regex: postgresql-metrics
+          - source_labels:
+              - __meta_kubernetes_service_cluster_ip
+            target_label: host
+            action: replace
+      - job_name: rabbitmq-metrics
+        kubernetes_sd_configs:
+          - role: service
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_service_label_app_kubernetes_io_name
+            action: keep
+            regex: rabbitmq
+          - source_labels:
+              - __meta_kubernetes_service_port_name
+            action: keep
+            regex: metrics
+          - source_labels:
+              - __meta_kubernetes_service_cluster_ip
+            target_label: host
+            action: replace
+    alertingRules:
+      groups:
+        - name: manager
+          rules:
+            - record: manager_service
+              expr: group by(deployment, statefulset) (kube_deployment_status_replicas_ready or kube_statefulset_status_replicas_ready)
+              labels:
+            - record: manager_healthy
+              expr: sum by (namespace) (kube_deployment_status_replicas_ready{deployment="api-service"} or kube_deployment_status_replicas_ready{deployment="rest-service"} or kube_deployment_status_replicas_ready{deployment="execution-scheduler"} or kube_deployment_status_replicas_ready{deployment="nginx"} or kube_statefulset_status_replicas_ready{statefulset="mgmtworker"}) >= 5
+              labels:
+            - alert: manager_down
+              expr: kube_deployment_status_replicas_ready{deployment="api-service"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="api-service"}) or kube_deployment_status_replicas_ready{deployment="rest-service"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="rest-service"}) or kube_deployment_status_replicas_ready{deployment="execution-scheduler"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="execution-scheduler"}) or kube_deployment_status_replicas_ready{deployment="nginx"} == 0 or absent(kube_deployment_status_replicas_ready{deployment="nginx"}) or kube_statefulset_status_replicas_ready{statefulset="mgmtworker"} == 0 or absent(kube_statefulset_status_replicas_ready{statefulset="mgmtworker"})
+              for: 15s
+              labels:
+                severity: critical
+              annotations:
+                summary: "Manager is down"
+        - name: postgresql
+          rules:
+            - record: postgres_healthy
+              expr: pg_up{job="postgresql-metrics"} > 0 and up{job="postgresql-metrics"} > 0
+              labels:
+            - alert: postgres_down
+              expr: pg_up{job="postgresql-metrics"} == 0 or absent(up{job="postgresql-metrics"})
+              for: 15s
+              labels:
+                severity: critical
+              annotations:
+                summary: "PostgreSQL is down"
+        - name: rabbitmq
+          rules:
+            - record: rabbitmq_healthy
+              expr: sum by(host, instance, job, monitor) (up{job="rabbitmq-metrics"}) > 0
+              labels:
+            - alert: rabbitmq_down
+              expr: up{job="rabbitmq-metrics"} == 0
+              for: 15s
+              labels:
+                severity: critical
+              annotations:
+                summary: "RabbitMQ is down"
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    # Rewriting configuration to render `rule_files:` part which otherwise requires alertmanager to be enabled.  This is how
+    # the original configuration is rendered in Bitnami's Helm chart for Prometheus:
+    # https://github.com/bitnami/charts/blob/c0cb65e21512743aa17ca55a7e97609d7e2b273a/bitnami/prometheus/values.yaml#L635-L646
+    configuration: |
+      global:
+        {{- if .Values.server.scrapeInterval }}
+        scrape_interval: {{ .Values.server.scrapeInterval }}
+        {{- end }}
+        {{- if .Values.server.scrapeTimeout }}
+        scrape_timeout: {{ .Values.server.scrapeTimeout }}
+        {{- end }}
+        {{- if .Values.server.evaluationInterval }}
+        evaluation_interval: {{ .Values.server.evaluationInterval }}
+        {{- end }}
+        external_labels:
+          monitor: {{ template "common.names.fullname" . }}
+          {{- if .Values.server.externalLabels }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.server.externalLabels "context" $) | nindent 4 }}
+          {{- end }}
+      {{- if .Values.server.remoteWrite }}
+      remote_write: {{- include "common.tplvalues.render" (dict "value" .Values.server.remoteWrite "context" $) | nindent 4 }}
+      {{- end }}
+      scrape_configs:
+        - job_name: prometheus
+        {{- include "prometheus.scrape_config" (dict "component" "server" "context" $) | nindent 4 }}
+      {{- if .Values.alertmanager.enabled }}
+        - job_name: alertmanager
+          {{- include "prometheus.scrape_config" (dict "component" "alertmanager" "context" $) | nindent 4 }}
+      {{- end }}
+      {{- if .Values.server.extraScrapeConfigs}}
+      {{- include "common.tplvalues.render" (dict "value" .Values.server.extraScrapeConfigs "context" $) | nindent 2 }}
+      {{- end }}
+      {{- if or .Values.alertmanager.enabled .Values.server.alertingEndpoints}}
+      alerting:
+        alertmanagers:
+          {{- if .Values.server.alertingEndpoints }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.server.alertingEndpoints "context" $) | nindent 4 }}
+          {{- end }}
+          - scheme: HTTP
+            static_configs:
+              - targets: [ "{{ printf "%s.%s.svc.%s:%d" (include "prometheus.alertmanager.fullname" .) (include "common.names.namespace" .) .Values.clusterDomain (int .Values.alertmanager.service.ports.http) }}" ]
+      {{- end }}
+      rule_files:
+        - rules.yaml
+  podLabels: {}
+  enableNetworkPolicy: true
+
+# -- Parameters group for bitnami/kube-state-metrics helm chart.
+# Details: https://github.com/bitnami/charts/tree/main/bitnami/kube-state-metrics/README.md
+# @default -- object
+kube-state-metrics:
+  enabled: true
+  fullnameOverride: kube-state-metrics
+  namespaces: "{{ .Release.Namespace }}"
+  extraArgs:
+    metric-allowlist: "kube_deployment_spec_replicas,kube_deployment_status_replicas,kube_deployment_status_replicas_ready,kube_deployment_status_replicas_unavailable,kube_statefulset_spec_replicas,kube_statefulset_status_replicas,kube_statefulset_status_replicas_ready,kube_statefulset_status_replicas_unavailable"
+  kubeResources:
+    deployments: true
+    certificatesigningrequests: false
+    configmaps: false
+    cronjobs: false
+    daemonsets: false
+    endpoints: false
+    horizontalpodautoscalers: false
+    ingresses: false
+    jobs: false
+    limitranges: false
+    mutatingwebhookconfigurations: false
+    namespaces: false
+    networkpolicies: false
+    nodes: false
+    persistentvolumeclaims: false
+    persistentvolumes: false
+    poddisruptionbudgets: false
+    pods: false
+    replicasets: false
+    replicationcontrollers: false
+    resourcequotas: false
+    secrets: false
+    services: false
+    statefulsets: true
+    storageclasses: false
+    verticalpodautoscalers: false
+    validatingwebhookconfigurations: false
+    volumeattachments: false
+  podLabels: {}
+  enableNetworkPolicy: true
 
 # -- Parameters group for seaweed helm chart.
 # Details: https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
