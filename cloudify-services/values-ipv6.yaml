@@ -1,5 +1,3 @@
-ipv6_enabled: true
-
 rabbitmq:
   replicaCount: 1
   initContainers:
@@ -21,3 +19,9 @@ rabbitmq:
       value: "-kernel inetrc '/ipv6/erl_inetrc' -proto_dist inet6_tcp"
     - name: RABBITMQ_CTL_ERL_ARGS
       value: "-proto_dist inet6_tcp"
+  extraConfiguration: |-
+    management.ssl.ip         = ::
+    management.ssl.port       = 15671
+    management.ssl.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
+    management.ssl.certfile   = /opt/bitnami/rabbitmq/certs/server_certificate.pem
+    management.ssl.keyfile    = /opt/bitnami/rabbitmq/certs/server_key.pem
