@@ -8,6 +8,13 @@ dev-cluster:
 	kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 .PHONY: dev-cluster
 
+dev-cluster-ipv6:
+	kind create cluster --config "dev-cluster/kind-config-ipv6.yaml"
+	kubectl apply -f dev-cluster/deploy-ipv6.yaml
+	# opt out of online validation, kind won't have access to the internet necessarily
+	kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+.PHONY: dev-cluster-ipv6
+
 regcred:
 	dev-cluster/aws_regcred.sh
 .PHONY: regcred
@@ -38,4 +45,7 @@ load-images:
 deploy:
 	dev-cluster/default_values_override.sh
 	helm install cloudify-services ./cloudify-services --values values-override.yaml
+deploy-ipv6:
+	dev-cluster/default_values_override.sh
+	helm install cloudify-services ./cloudify-services --values values-override.yaml --values cloudify-services/values-ipv6.yaml
 .PHONY: deploy
