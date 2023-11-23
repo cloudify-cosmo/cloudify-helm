@@ -149,3 +149,16 @@ Return env vars block with the secret keys envvars for the restservice.
       name: manager-security
       key: hashSalt
 {{- end -}}
+
+
+{{/*
+Set the s3_server_url parameter: when using builtin seaweedfs, generate the url
+*/}}
+{{- define "cloudify-services.s3_server_url" -}}
+{{- if .Values.seaweedfs.enabled -}}
+  {{- tpl "http://seaweedfs-s3.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.seaweedfs.s3.port }}" . -}}
+{{- else -}}
+  {{- tpl .Values.rest_service.config.manager.s3_server_url . -}}
+{{- end -}}
+{{- end -}}
+

@@ -31,7 +31,17 @@ spec:
               cd /opt/rest-service/migrations
               alembic upgrade head
 
-              python -m manager_rest.configure_manager -c "{{ .Values.rest_service.configPath }}"
+              # setup config overrides based on the cluster state/values:
+              # - if using the builtin seaweedfs, set s3_server_url to its fully-qualified address
+              echo '{}'> /tmp/config-overrides.yaml
+              {{- if .Values.seaweedfs.enabled }}
+              cat >/tmp/config-overrides.yaml <<EOF
+              manager:
+                s3_server_url: "{{ include "cloudify-services.s3_server_url" . }}"
+              EOF
+              {{- end }}
+
+              python -m manager_rest.configure_manager -c "{{ .Values.rest_service.configPath }}" -c "/tmp/config-overrides.yaml"
           env:
             {{- include "cloudify-services.postgres_env_vars" . | nindent 12 }}
             {{- include "cloudify-services.restservice_keys" . | nindent 12 }}
@@ -50,7 +60,7 @@ spec:
           command: ['sh', '-c', "aws s3 ls s3://resources || aws s3 mb s3://resources"]
           env:
             - name: AWS_ENDPOINT_URL
-              value: {{ .Values.rest_service.config.manager.s3_server_url }}
+              value: {{ include "cloudify-services.s3_server_url" . }}
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -125,7 +135,7 @@ spec:
                 - ALL
           env:
             - name: AWS_ENDPOINT_URL
-              value: {{ .Values.rest_service.config.manager.s3_server_url }}
+              value: {{ include "cloudify-services.s3_server_url" . }}
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -231,4 +241,4 @@ metadata:
   name: rest-service-config
 data:
   config.yaml: |
-    {{ .Values.rest_service.config | toYaml | nindent 4 }}
+    {{ tpl (.Values.rest_service.config | toYaml | nindent 4) . }}
