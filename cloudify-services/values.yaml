@@ -339,7 +339,8 @@ rest_service:
       public_ip: localhost
       file_server_type: s3
       s3_resources_bucket: resources
-      s3_server_url: http://seaweedfs-s3.default.svc.cluster.local:8333
+      # -- s3_server_url is the address of the s3 endpoint. Ignored and auto-generated when using builtin seaweedfs
+      s3_server_url: ""
       prometheus_url: http://prometheus-server:9090
 
 api_service:
