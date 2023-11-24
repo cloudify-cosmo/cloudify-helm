@@ -26,6 +26,10 @@ spec:
               value: "80"
             - name: LISTEN_HOST
               value: "::"
+            {{- if .Values.stage_backend.mapsAccessToken }}
+            - name: MAPS_ACCESS_TOKEN
+              value: {{ .Values.stage_backend.mapsAccessToken }}
+            {{- end }}
           image: {{ .Values.stage_backend.image }}
           imagePullPolicy: {{ .Values.stage_backend.imagePullPolicy }}
           securityContext:
