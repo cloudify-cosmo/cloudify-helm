@@ -1,5 +1,4 @@
 rabbitmq:
-  replicaCount: 1
   initContainers:
     - name: ipv6-init
       image: "docker.io/busybox:1.33.1"

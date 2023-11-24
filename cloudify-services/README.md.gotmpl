@@ -4,7 +4,7 @@
 
 ## Description
 
-It's a helm chart for deploy cloudify-services stack, including following microservices:
+Helm chart deploying the cloudify-services stack, including the following services:
 
 - api-service
 - composer-backend
@@ -19,10 +19,6 @@ It's a helm chart for deploy cloudify-services stack, including following micros
 - rest-service
 - stage-backend
 - stage-frontend
-
-## Configuration options of cloudify-services values.yaml
-
-{{ template "chart.valuesTable" . }}
 
 ## Prerequisites
 
@@ -89,6 +85,22 @@ In this example we using "alb" ingress class (provided by "AWS Load Balancer Con
 $ helm install cloudify-services oci://163877087245.dkr.ecr.eu-west-1.amazonaws.com/cloudify-services-helm --version 0.1.0 -f VALUES_FILE -n NAMESPACE
 ```
 
+## Using IPv6
+
+When deploying on an IPv6-only cluster, additional settings must be applied to make RabbitMQ compatible. See `values-ipv6.yaml` for the changed parameters, or use this values file directly when installing the chart.
+
+Remember that when using an IPv6 cluster, the ingress controller must support IPv6 as well.
+
+## Scaling
+
+There's several components you might want to scale up:
+
+- RabbitMQ: the RabbitMQ chart provides out-of-the-box clustering, and the amount of replicas can be controlled via the `rabbitmq.replicaCount` setting.
+- PostgreSQL: the PostgreSQL chart allows primary/replica replication (active/passive replication scheme with read replicas). To enable it, set `postgresql.architecture` to `replication`. When doing so, point the DB clients at the DB primary by setting `db.host` to `postgresql-primary` (read replicas are unused by Cloudify).
+- Management worker: set `mgmtworker.replicas` to a number higher than 1, to start multiple mgmtworker instances, allowing better operation concurrency.
+
+For an example of a scaled-up deployment, see the `scaled-up-values.yaml` example values file.
+
 ## Uninstallation
 
 Uninstall helm release:
@@ -96,3 +108,7 @@ Uninstall helm release:
 ```bash
 $ helm uninstall cloudify-services -n NAMESPACE
 ```
+
+## Configuration options of cloudify-services values.yaml
+
+{{ template "chart.valuesTable" . }}
