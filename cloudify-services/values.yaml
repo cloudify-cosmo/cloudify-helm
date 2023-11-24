@@ -362,6 +362,7 @@ stage_backend:
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-backend:latest-x86_64
   imagePullPolicy: IfNotPresent
   port: 8088
+  mapsAccessToken: null
   probes:
     liveness:
       enabled: true
