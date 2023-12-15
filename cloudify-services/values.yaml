@@ -432,10 +432,10 @@ prometheus:
           - source_labels:
               - __meta_kubernetes_service_name
             action: keep
-            regex: postgresql-metrics
+            regex: postgresql.*-metrics
           - source_labels:
-              - __meta_kubernetes_service_cluster_ip
-            target_label: host
+              - __meta_kubernetes_namespace
+            target_label: namespace
             action: replace
       - job_name: rabbitmq-metrics
         kubernetes_sd_configs:
@@ -453,12 +453,16 @@ prometheus:
               - __meta_kubernetes_service_cluster_ip
             target_label: host
             action: replace
+          - source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+            action: replace
     alertingRules:
       groups:
         - name: manager
           rules:
             - record: manager_service
-              expr: group by(deployment, statefulset) (kube_deployment_status_replicas_ready or kube_statefulset_status_replicas_ready)
+              expr: kube_deployment_status_replicas_ready >= 1 or kube_statefulset_status_replicas_ready >= 1
               labels:
             - record: manager_healthy
               expr: sum by (namespace) (kube_deployment_status_replicas_ready{deployment="api-service"} or kube_deployment_status_replicas_ready{deployment="rest-service"} or kube_deployment_status_replicas_ready{deployment="execution-scheduler"} or kube_deployment_status_replicas_ready{deployment="nginx"} or kube_statefulset_status_replicas_ready{statefulset="mgmtworker"}) >= 5
@@ -485,7 +489,7 @@ prometheus:
         - name: rabbitmq
           rules:
             - record: rabbitmq_healthy
-              expr: sum by(host, instance, job, monitor) (up{job="rabbitmq-metrics"}) > 0
+              expr: sum by(host, instance, job, monitor, namespace) (up{job="rabbitmq-metrics"}) > 0
               labels:
             - alert: rabbitmq_down
               expr: up{job="rabbitmq-metrics"} == 0
