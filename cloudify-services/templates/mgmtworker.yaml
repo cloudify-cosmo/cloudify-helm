@@ -99,6 +99,8 @@ spec:
           env:
             - name: RUNTIME_ENVIRONMENT
               value: "k8s"
+            - name: MAX_WORKERS
+              value: {{ .Values.mgmtworker.max_workers | quote }}
           envFrom:
             - configMapRef:
                 name: mgmtworker-envvars

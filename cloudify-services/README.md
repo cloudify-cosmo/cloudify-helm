@@ -174,6 +174,7 @@ $ helm uninstall cloudify-services -n NAMESPACE
 | mgmtworker.access.local_cluster | bool | `true` |  |
 | mgmtworker.image | string | `"263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-mgmtworker:latest-x86_64"` |  |
 | mgmtworker.imagePullPolicy | string | `"IfNotPresent"` |  |
+| mgmtworker.max_workers | int | `10` | The Mgmtworker's MAX_WORKER settings, controlling the amount of concurrent operations that can be run |
 | mgmtworker.replicas | int | `1` |  |
 | nameOverride | string | `""` |  |
 | nginx.http_port | int | `80` |  |

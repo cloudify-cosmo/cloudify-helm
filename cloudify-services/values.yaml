@@ -81,6 +81,8 @@ mgmtworker:
   replicas: 1
   image: 263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-mgmtworker:latest-x86_64
   imagePullPolicy: IfNotPresent
+  # -- The Mgmtworker's MAX_WORKER settings, controlling the amount of concurrent operations that can be run
+  max_workers: 10
   access:
     local_cluster: true
 
