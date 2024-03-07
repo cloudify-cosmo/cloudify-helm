@@ -101,6 +101,8 @@ spec:
               value: "k8s"
             - name: MAX_WORKERS
               value: {{ .Values.mgmtworker.max_workers | quote }}
+            - name: MAX_OPERATION_WORKERS
+              value: {{ .Values.mgmtworker.max_operation_workers | quote }}
           envFrom:
             - configMapRef:
                 name: mgmtworker-envvars
