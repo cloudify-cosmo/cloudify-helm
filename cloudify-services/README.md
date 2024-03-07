@@ -174,7 +174,8 @@ $ helm uninstall cloudify-services -n NAMESPACE
 | mgmtworker.access.local_cluster | bool | `true` |  |
 | mgmtworker.image | string | `"263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-mgmtworker:latest-x86_64"` |  |
 | mgmtworker.imagePullPolicy | string | `"IfNotPresent"` |  |
-| mgmtworker.max_workers | int | `10` | The Mgmtworker's MAX_WORKER settings, controlling the amount of concurrent operations that can be run |
+| mgmtworker.max_operation_workers | int | `20` | The Mgmtworker's MAX_OPERATION_WORKERS setting, controlling the amount of concurrent operations This should be larger than max_workers, otherwise deadlocks are possible when using Components |
+| mgmtworker.max_workers | int | `10` | The Mgmtworker's MAX_WORKER setting, controlling the amount of concurrent workflows that can be run |
 | mgmtworker.replicas | int | `1` |  |
 | nameOverride | string | `""` |  |
 | nginx.http_port | int | `80` |  |
@@ -269,6 +270,7 @@ $ helm uninstall cloudify-services -n NAMESPACE
 | serviceAccount.name | string | `""` |  |
 | stage_backend.image | string | `"263721492972.dkr.ecr.eu-west-1.amazonaws.com/cloudify-manager-stage-backend:latest-x86_64"` |  |
 | stage_backend.imagePullPolicy | string | `"IfNotPresent"` |  |
+| stage_backend.mapsAccessToken | string | `nil` |  |
 | stage_backend.port | int | `8088` |  |
 | stage_backend.probes.liveness.enabled | bool | `true` |  |
 | stage_backend.probes.liveness.failureThreshold | int | `3` |  |
