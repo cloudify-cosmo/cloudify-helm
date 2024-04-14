@@ -125,6 +125,38 @@ spec:
             '
         {{- end }}
       containers:
+      {{- if .Values.nginx.fastly.enabled }}
+      - name: sigsci-agent
+        image: {{ include "helper.fastly.image" (dict "fastly" .Values.nginx.fastly) }}
+        imagePullPolicy: Always
+        env:
+        - name: SIGSCI_ACCESSKEYID
+          valueFrom:
+            secretKeyRef:
+              name: sigsci.fusion
+              key: accesskeyid
+        - name: SIGSCI_SECRETACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: sigsci.fusion
+              key: secretaccesskey
+        # Configure the revproxy listener to listen on a new port 8001
+        # forwarding to the app on the original port 8000 as the upstream
+        - name: SIGSCI_REVPROXY_LISTENER
+          value: {{ include "helper.fastly.revproxy.listener" (dict "fastly" .Values.nginx.fastly) }}
+        ports:
+          - containerPort: {{ include "helper.fastly.revproxy.port" (dict "fastly" .Values.nginx.fastly) | int }}
+            protocol: TCP
+        securityContext:
+          # The sigsci-agent container should run with its root filesystem read only
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        # Default volume mount location for sigsci-agent writeable data
+        # NOTE: Also change `SIGSCI_SHARED_CACHE_DIR` (default `/sigsci/tmp/cache`)
+        #       if mountPath is changed, but best not to change.
+        - name: sigsci-tmp
+          mountPath: /sigsci/tmp
+      {{- end }}
       - name: {{ template "cloudify-manager-worker.name" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}

@@ -119,3 +119,33 @@ Return values or placeholders for replace in script
         {{- .Values.config.security.adminPassword -}}
     {{- end -}}
 {{- end -}}
+
+{{/*
+Function to generate Fastly image name
+*/}}
+{{- define "helper.fastly.image" -}}
+{{- printf "%s/%s:%s" .fastly.repo .fastly.image_name .fastly.tag }}
+{{- end }}
+
+{{/*
+{{ include "helper.fastly.revproxy.port" (dict "fastly" $.Values.nginx.fastly) }}
+*/}}
+
+{{/*
+Determine Fastly Service Port
+*/}}
+{{- define "helper.fastly.revproxy.port" -}}
+{{- if .fastly.enabled }}
+{{- .fastly.nginx.proxy_port }}
+{{- else }}
+80
+{{- end }}
+{{- end }}
+
+{{/*
+Generate String with Proxy Port
+*/}}
+{{- define "helper.fastly.revproxy.listener" -}}
+{{- $proxyPort := .fastly.nginx.proxy_port }}
+{{- print "http:{listener='http://0.0.0.0:" $proxyPort "',upstreams='http://0.0.0.0:80',access-log='/dev/stdout'}" }}
+{{- end }}

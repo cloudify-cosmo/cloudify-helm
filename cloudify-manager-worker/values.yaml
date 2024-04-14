@@ -338,6 +338,20 @@ startupProbe:
   # -- startup probe initial delay in seconds
   initialDelaySeconds: 30
 
+nginx:
+  # -- Fastly WAF option
+  # --set nginx.fastly.enabled to true if used as "saas_manager" with public access
+  # --set nginx.fastly.accesskeyid and --set nginx.fastly.secretaccesskey with values during deploy ..
+  fastly:
+    enabled: false
+    repo: docker.io/signalsciences
+    image_name: sigsci-agent
+    tag: latest
+    accesskeyid: 
+    secretaccesskey: 
+    nginx:
+      proxy_port: 8002
+
 # -- Parameters group for ingress (managed external access to service)
 # @default -- object
 ingress:

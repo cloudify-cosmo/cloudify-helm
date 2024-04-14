@@ -1,0 +1,61 @@
+config:
+  labels:
+    compute-type: fargate
+  public_ip: ${manager_host}
+  replicas: 2
+  security:
+    existingAdminPassword:
+      secret: cfy-admin-password
+containerSecurityContext:
+  capabilities:
+    add: null
+    drop: null
+
+image:
+  tag: 7.0.2
+
+license:
+  secretName: cfy-license
+  useSecret: true
+
+resources:
+  limits:
+    cpu: 2
+    memory: 6Gi
+  requests:
+    cpu: 2
+    memory: 6Gi
+
+nginx:
+  # -- Fastly WAF option
+  # --set nginx.fastly.enabled to true if used as "saas_manager" with public access
+  # --set nginx.fastly.accesskeyid and --set nginx.fastly.secretaccesskey with values during deploy ..
+  fastly:
+    enabled: true
+    repo: docker.io/signalsciences
+    image_name: sigsci-agent
+    tag: latest
+    accesskeyid: override
+    secretaccesskey: override
+    nginx:
+      proxy_port: 8002
+
+ingress:
+  enabled: true
+  host: saas-manager.dev.nativeedge.dell.com
+  ingressClassName: alb
+  annotations:
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '60'
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '20'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:702886132326:certificate/87a36f47-14d2-44b3-9551-665ef7a84688
+    alb.ingress.kubernetes.io/group.name: eoaas-development
+  tls:
+    enabled: false
