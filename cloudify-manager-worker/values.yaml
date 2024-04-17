@@ -60,6 +60,12 @@ initContainers:
         memory: 50Mi
         cpu: 0.1
 
+fastly:
+  enabled: false
+  repo: signalsciences
+  image_name: sigsci-agent
+  tag: latest
+
 # -- Parameters group for connection to PostgreSQL database
 # @default -- object
 db:

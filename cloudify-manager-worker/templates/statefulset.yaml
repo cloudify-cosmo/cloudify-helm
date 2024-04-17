@@ -255,7 +255,45 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
+      {{- if .Values.fastly.enabled }}
+      - name: sigsci-agent
+        image: {{ include "fastly.image" . }}
+        imagePullPolicy: Always
+        env:
+        - name: SIGSCI_ACCESSKEYID
+          valueFrom:
+            secretKeyRef:
+              name: fastly-sigsci
+              key: accesskeyid
+        - name: SIGSCI_SECRETACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: fastly-sigsci
+              key: secretaccesskey
+        # Configure the revproxy listener to listen on a new port 8001
+        # forwarding to the app on the original port 8000 as the upstream
+        - name: SIGSCI_REVPROXY_LISTENER
+          value: "http:{listener='http://0.0.0.0:8002',upstreams='http://0.0.0.0:80',access-log='/dev/stdout'}"
+        ports:
+          - containerPort: 8002
+            protocol: TCP
+        securityContext:
+          # The sigsci-agent container should run with its root filesystem read only
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        # Default volume mount location for sigsci-agent writeable data
+        # NOTE: Also change `SIGSCI_SHARED_CACHE_DIR` (default `/sigsci/tmp/cache`)
+        #       if mountPath is changed, but best not to change.
+        - name: sigsci-tmp
+          mountPath: /sigsci/tmp
+      {{- end }}
       volumes:
+      # Define a volume where sigsci-agent will write temp data and share the socket file,
+      # which is required with the root filesystem is mounted read only
+      {{- if .Values.fastly.enabled }}
+      - name: sigsci-tmp
+        emptyDir: {}
+      {{- end }}
       - name: run
         emptyDir:
           medium: Memory
