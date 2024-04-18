@@ -119,3 +119,7 @@ Return values or placeholders for replace in script
         {{- .Values.config.security.adminPassword -}}
     {{- end -}}
 {{- end -}}
+
+{{- define "fastly.image" -}}
+{{- printf "%s/%s:%s" .Values.fastly.repo .Values.fastly.image_name .Values.fastly.tag }}
+{{- end }}

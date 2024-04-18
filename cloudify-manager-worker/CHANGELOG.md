@@ -12,6 +12,28 @@ Provides a release information for each version splitted by the next sections
 
 </br>
 
+# [v0.4.9]
+
+## Changed
+
+- statefulset has now the fastly sidecar container
+
+## Added
+
+- values for fastly sidecar image
+
+## Fixed
+
+-
+
+## Removed
+
+-
+
+## Upgrade notes
+
+- in case you want to deploy the worker with Fastly WAF you need to provide the secret for fastly that needs to include values for accesskey and secretkey (Fastly Agent). Additionaly set fastly.enabled=true during install, by default its not enabled.
+
 # [v0.4.8]
 
 ## Changed
