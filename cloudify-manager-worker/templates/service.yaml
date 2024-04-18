@@ -12,11 +12,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.http.port }}
-      {{- if .Values.fastly.enabled }}
-      targetPort: 8002
-      {{- else }}
       targetPort: {{ .Values.service.http.port }}
-      {{- end }}
       protocol: TCP
       name: http
     - port: {{ .Values.service.https.port }}

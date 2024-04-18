@@ -60,15 +60,6 @@ initContainers:
         memory: 50Mi
         cpu: 0.1
 
-fastly:
-  existingFastlySecretName: fastly-sigsci
-  existingFastlyAccessKeyName: accesskeyid
-  existingFastlySecretAccessKeyName: secretaccesskey
-  enabled: false
-  repo: signalsciences
-  image_name: sigsci-agent
-  tag: latest
-
 # -- Parameters group for connection to PostgreSQL database
 # @default -- object
 db:
