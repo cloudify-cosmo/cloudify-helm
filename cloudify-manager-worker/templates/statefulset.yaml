@@ -263,13 +263,13 @@ spec:
         - name: SIGSCI_ACCESSKEYID
           valueFrom:
             secretKeyRef:
-              name: fastly-sigsci
-              key: accesskeyid
+              name: {{ .Values.fastly.existingFastlySecretName }}
+              key: {{ .Values.fastly.existingFastlyAccessKeyName }}
         - name: SIGSCI_SECRETACCESSKEY
           valueFrom:
             secretKeyRef:
-              name: fastly-sigsci
-              key: secretaccesskey
+              name: {{ .Values.fastly.existingFastlySecretName }}
+              key: {{ .Values.fastly.existingFastlySecretAccessKeyName }}
         # Configure the revproxy listener to listen on a new port 8001
         # forwarding to the app on the original port 8000 as the upstream
         - name: SIGSCI_REVPROXY_LISTENER
